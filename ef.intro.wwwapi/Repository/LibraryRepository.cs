@@ -1,5 +1,6 @@
 ﻿using ef.intro.wwwapi.Context;
 using ef.intro.wwwapi.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 namespace ef.intro.wwwapi.Repository
@@ -33,7 +34,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Books.Add(book);
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -43,7 +45,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Remove(db.Authors.Find(id));
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -53,7 +56,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Remove(db.Books.Find(id));
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -75,7 +79,9 @@ namespace ef.intro.wwwapi.Repository
             Author result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code                
+                result = db.Authors.Find(id);
+                db.SaveChanges();
+                return result;
             };
             return result;
         }
@@ -85,7 +91,9 @@ namespace ef.intro.wwwapi.Repository
             Book result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code              
+                result = db.Books.Find(id);
+                db.SaveChanges();
+                return result;
             };
             return result;
         }
@@ -94,7 +102,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Update(author);
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -104,7 +113,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Update(book);
+                db.SaveChanges();
                 return true;
             };
             return false;

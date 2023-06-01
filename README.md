@@ -10,7 +10,6 @@
 		  randomly generating names of both authors & books!
 
 ## Exercise   
-
 Complete the LibraryRepository.cs.  Finish all methods, replacing "throw new NotImplementedException();" with 
    relevant C# Entity Framework code by using the LibraryContext.  
 
