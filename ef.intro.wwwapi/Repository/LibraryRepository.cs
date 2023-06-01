@@ -73,7 +73,7 @@ namespace ef.intro.wwwapi.Repository
 
         public Author GetAuthor(int id)
         {
-            Author result;
+           
             using (var db = new LibraryContext())
             {
                 return db.Authors.Find(id);        
@@ -83,7 +83,7 @@ namespace ef.intro.wwwapi.Repository
 
         public Book GetBook(int id)
         {
-            Book result;
+        
             using (var db = new LibraryContext())
             {
                 return db.Books.Find(id);             
@@ -98,6 +98,8 @@ namespace ef.intro.wwwapi.Repository
                 db.Authors.Find(author.Id).FirstName = author.FirstName;
                 db.Authors.Find(author.Id).LastName = author.LastName;
                 db.Authors.Find(author.Id).Email = author.Email;
+                db.Authors.Find(author.Id).Books = author.Books;
+                db.SaveChanges();
 
                 return true;
             };
@@ -110,6 +112,7 @@ namespace ef.intro.wwwapi.Repository
             {
                 db.Books.Find(book.Id).Title = book.Title;
                 db.Books.Find(book.Id).AuthorId = book.AuthorId;
+                db.SaveChanges(true);
                 return true;
             };
             
