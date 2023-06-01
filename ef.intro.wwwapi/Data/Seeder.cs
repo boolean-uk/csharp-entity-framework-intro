@@ -96,8 +96,10 @@ namespace ef.intro.wwwapi.Data
             {
                 Random authorRandom = new Random();                       
                 Random bookRandom = new Random();
+                Random publisherRandom = new Random();
                 var authors = new List<Author>();
                 var books = new List<Book>();
+                var publishers = new List<Publisher>();
 
                 if (!db.Authors.Any())
                 {
@@ -133,13 +135,18 @@ namespace ef.intro.wwwapi.Data
 
                 //TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
 
-                if(1==2)
+                if(!db.Publishers.Any())
                 {
-                    for(int i = 0; i < 100;  i++)
+                    for(int i = 1; i < 101;  i++)
                     {
                         string publishername = GeneratePublisherName();
+                        Publisher publisher = new Publisher();
+                        publisher.Id = i;
+                        publisher.Name = publishername;
+                        publishers.Add(publisher);
                         //populate in memory database with test data
                     }
+                    db.Publishers.AddRange(publishers);
                 }
                 db.SaveChanges();            
             }

@@ -117,5 +117,57 @@ namespace ef.intro.wwwapi.Repository
             };
             return false;
         }
+
+        public IEnumerable<Publisher> GetAllPublishers()
+        {
+            using (var db = new LibraryContext())
+            {
+                return db.Publishers.ToList();
+            }
+            return null;
+        }
+
+        public Publisher GetPublisher(int id)
+        {
+            Publisher result;
+            using (var db = new LibraryContext())
+            {
+                return db.Publishers.Find(id);
+            };
+            return result;
+        }
+
+        public bool AddPublisher(Publisher publisher)
+        {
+            using (var db = new LibraryContext())
+            {
+                db.Publishers.Add(publisher);
+                db.SaveChanges();
+                return true;
+            };
+            return false;
+        }
+
+        public bool UpdatePublisher(Publisher publisher)
+        {
+            using (var db = new LibraryContext())
+            {
+                db.Publishers.Find(publisher.Id).Name = publisher.Name;
+                db.SaveChanges();
+                return true;
+            };
+            return false;
+        }
+
+        public bool DeletePublisher(int id)
+        {
+            using (var db = new LibraryContext())
+            {
+                db.Remove(db.Publishers.Find(id));
+                db.SaveChanges();
+                return true;
+            };
+            return false;
+        }
     }
 }
