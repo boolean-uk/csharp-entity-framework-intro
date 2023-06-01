@@ -47,7 +47,7 @@ namespace ef.intro.wwwapi.EndPoint
         {
             try
             {
-                if (service.AddBook(book)) return Results.Ok();
+                if (service.AddBook(book)) return Results.Ok(book);
                 return Results.NotFound();
 
             }
