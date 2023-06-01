@@ -78,7 +78,15 @@ namespace ef.intro.wwwapi.Repository
             Author result;
             using (var db = new LibraryContext())
             {
-                return db.Authors.Find(id);               
+                List<Author> one = new List<Author>();
+                one = db.Authors.Include(a => a.Books).ToList();
+                Author author = new Author();
+                foreach (var a in one)
+                {
+                    if (a.Id == id)
+                        author = a;
+                }
+                return author;               
             };
             return result;
         }
@@ -100,6 +108,7 @@ namespace ef.intro.wwwapi.Repository
                 db.Authors.Find(author.Id).FirstName = author.FirstName;
                 db.Authors.Find(author.Id).LastName = author.LastName;
                 db.Authors.Find(author.Id).Email = author.Email;
+                db.Authors.Find(author.Id).Books = author.Books;
                 db.SaveChanges ();
                 return true;
             };
