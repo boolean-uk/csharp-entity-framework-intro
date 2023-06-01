@@ -87,18 +87,7 @@ namespace ef.intro.wwwapi.Repository
             Author result;
             using (var db = new LibraryContext())
             {
-                List<Author> authorList = new List<Author>();
-                var author = new Author();
-                authorList = db.Authors.Include(a => a.Books).ToList();
-                foreach (var a in authorList)
-                {
-                    if (a.Id == id)
-                    {
-                        author = a;
-                        return author;
-                    }   
-                }
-                return null;
+                result = db.Authors.Include(b => b.Books).FirstOrDefault(x => x.Id == id);
             };
             return result;
         }
@@ -108,40 +97,42 @@ namespace ef.intro.wwwapi.Repository
             Book result;
             using (var db = new LibraryContext())
             {
-                result = db.Books.Find(id);
-                if (result != null)
-                {
-                    return result;
-                }
-                return result;
+                result = db.Books.FirstOrDefault(x => x.Id == id);
             };
+            return result;
         }
 
         public bool UpdateAuthor(Author author)
         {
             using (var db = new LibraryContext())
             {
-                db.Authors.Find(author.Id).FirstName = author.FirstName;
-                db.Authors.Find(author.Id).LastName = author.LastName;
-                db.Authors.Find(author.Id).Email = author.Email;
-                db.Authors.Find(author.Id).Books = author.Books;
-                db.SaveChanges();
-                return true;
+                var item = db.Authors.FirstOrDefault(x => x.Id == author.Id);
+                if (item != null)
+                {
+                    item.FirstName = author.FirstName;
+                    item.LastName = author.LastName;
+                    item.Email = author.Email;
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             };
-            return false;
         }
 
         public bool UpdateBook(Book book)
         {
             using (var db = new LibraryContext())
             {
-                db.Books.Find(book.Id).Title = book.Title;
-                db.Books.Find(book.Id).AuthorId = book.AuthorId;
-                db.SaveChanges();
-                return true;
+                var item = db.Books.FirstOrDefault(x => x.Id == book.Id);
+                if (item != null)
+                {
+                    item.Title = book.Title;
+                    item.AuthorId = book.AuthorId;
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             };
-            return false;
-
         }
 
         public IEnumerable<Publisher> GetAllPublishers()
@@ -168,11 +159,15 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                db.Publishers.Find(publisher.Id).Name = publisher.Name;
-                db.SaveChanges();
-                return true;
+                var item = db.Publishers.FirstOrDefault(x => x.Id == publisher.Id);
+                if (item != null)
+                {
+                    item.Name = publisher.Name;
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         public bool DeletePublisher(int id)
@@ -195,13 +190,9 @@ namespace ef.intro.wwwapi.Repository
             Publisher result;
             using (var db = new LibraryContext())
             {
-                result = db.Publishers.Find(id);
-                if (result != null)
-                {
-                    return result;
-                }
-                return null;
+                result = db.Publishers.FirstOrDefault(x => x.Id == id);
             }
+            return result;
         }
     }
 }
