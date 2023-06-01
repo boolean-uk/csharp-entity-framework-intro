@@ -1,5 +1,6 @@
 ﻿using ef.intro.wwwapi.Context;
 using ef.intro.wwwapi.Models;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace ef.intro.wwwapi.Repository
@@ -33,7 +34,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Books.Add(book);
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -43,23 +45,33 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
-                return true;
+                var author = db.Authors.Find(id);
+                if (author != null)
+                {
+                    db.Remove(author);
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             };
-            return false;
         }
 
         public bool DeleteBook(int id)
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
-                return true;
+                var book = db.Books.Find(id);
+                if (book != null)
+                {
+                    db.Remove(book);
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             };
-            return false;
+
         }
 
-       
 
         public IEnumerable<Book> GetAllBooks()
         {
@@ -75,7 +87,18 @@ namespace ef.intro.wwwapi.Repository
             Author result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code                
+                List<Author> authorList = new List<Author>();
+                var author = new Author();
+                authorList = db.Authors.Include(a => a.Books).ToList();
+                foreach (var a in authorList)
+                {
+                    if (a.Id == id)
+                    {
+                        author = a;
+                        return author;
+                    }   
+                }
+                return null;
             };
             return result;
         }
@@ -85,16 +108,24 @@ namespace ef.intro.wwwapi.Repository
             Book result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code              
+                result = db.Books.Find(id);
+                if (result != null)
+                {
+                    return result;
+                }
+                return result;
             };
-            return result;
         }
 
         public bool UpdateAuthor(Author author)
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Authors.Find(author.Id).FirstName = author.FirstName;
+                db.Authors.Find(author.Id).LastName = author.LastName;
+                db.Authors.Find(author.Id).Email = author.Email;
+                db.Authors.Find(author.Id).Books = author.Books;
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -104,10 +135,13 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Books.Find(book.Id).Title = book.Title;
+                db.Books.Find(book.Id).AuthorId = book.AuthorId;
+                db.SaveChanges();
                 return true;
             };
             return false;
+
         }
     }
 }
