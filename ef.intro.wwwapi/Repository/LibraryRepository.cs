@@ -33,7 +33,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Books.Add(book);
+                db.SaveChanges(); //did TODO
                 return true;
             };
             return false;
@@ -43,23 +44,33 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
-                return true;
-            };
-            return false;
+                var a = db.Authors.Find(id);
+                if (a != null)
+                {
+                    db.Authors.Remove(a);
+                    db.SaveChanges();
+                    return true;        //did TODO
+                }
+                return false;
+             };
         }
 
         public bool DeleteBook(int id)
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
-                return true;
+                var b = db.Books.Find(id);
+                if (b != null)
+                {
+                    db.Books.Remove(b);
+                    db.SaveChanges();
+                    return true;        //did TODO
+                }
+                return false;
             };
-            return false;
         }
 
-       
+
 
         public IEnumerable<Book> GetAllBooks()
         {
@@ -75,7 +86,7 @@ namespace ef.intro.wwwapi.Repository
             Author result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code                
+                result = db.Authors.Find(id); // did TODO               
             };
             return result;
         }
@@ -85,7 +96,8 @@ namespace ef.intro.wwwapi.Repository
             Book result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code              
+                result = db.Books.Find(id); // did TODO               
+
             };
             return result;
         }
@@ -94,8 +106,12 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
-                return true;
+                db.Authors.Find(author.Id).FirstName = author.FirstName;
+                db.Authors.Find(author.Id).LastName = author.LastName;
+                db.Authors.Find(author.Id).Email = author.Email;
+                db.Authors.Find(author.Id).Books = author.Books;
+                db.SaveChanges();
+                return true; // did TODO
             };
             return false;
         }
@@ -104,8 +120,10 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
-                return true;
+               db.Books.Find(book.Id).Title = book.Title;
+                db.Books.Find(book.Id).AuthorId = book.AuthorId;
+                db.SaveChanges();
+                return true; // did TODO
             };
             return false;
         }
