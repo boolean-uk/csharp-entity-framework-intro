@@ -4,6 +4,12 @@ namespace ef.intro.wwwapi.Repository
 {
     public interface ILibraryRepository
     {
+        IEnumerable<Publisher> GetAllPublishers();
+        Publisher GetPublisher(int id);
+        bool AddPublisher(Publisher publisher);
+        bool UpdatePublisher(Publisher publisher);
+        bool DeletePublisher(int id);
+
         IEnumerable<Author> GetAllAuthors();
         Author GetAuthor(int id);
         bool AddAuthor(Author author);
