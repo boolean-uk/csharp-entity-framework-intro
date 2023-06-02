@@ -41,11 +41,16 @@ namespace ef.intro.wwwapi.Repository
 
         public bool DeleteAuthor(int id)
         {
+
             using (var db = new LibraryContext())
             {
-                db.Remove(db.Authors.Find(id));
-                db.SaveChanges();
-                return true;
+                var author = db.Authors.Find(id);
+                if (author != null) {
+                    db.Remove(author);
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             };
         }
 
@@ -53,9 +58,14 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                db.Remove(db.Books.Find(id));
-                db.SaveChanges();
-                return true;
+                var book = db.Books.Find(id);
+                if (book != null)
+                {
+                    db.Remove(book);
+                    db.SaveChanges();
+                    return true;
+                }
+                return false;
             };
             
         }
@@ -95,13 +105,16 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                db.Authors.Find(author.Id).FirstName = author.FirstName;
-                db.Authors.Find(author.Id).LastName = author.LastName;
-                db.Authors.Find(author.Id).Email = author.Email;
-                db.Authors.Find(author.Id).Books = author.Books;
-                db.SaveChanges();
+                if (db.Authors.Find(author.Id) != null) {
+                    db.Authors.Find(author.Id).FirstName = author.FirstName;
+                    db.Authors.Find(author.Id).LastName = author.LastName;
+                    db.Authors.Find(author.Id).Email = author.Email;
+                    db.Authors.Find(author.Id).Books = author.Books;
+                    db.SaveChanges();
 
-                return true;
+                    return true;
+                }
+                return false;
             };
            
         }
@@ -110,10 +123,13 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                db.Books.Find(book.Id).Title = book.Title;
-                db.Books.Find(book.Id).AuthorId = book.AuthorId;
-                db.SaveChanges(true);
-                return true;
+                if (db.Books.Find(book.Id) != null) {
+                    db.Books.Find(book.Id).Title = book.Title;
+                    db.Books.Find(book.Id).AuthorId = book.AuthorId;
+                    db.SaveChanges(true);
+                    return true;
+                }
+                return false;
             };
             
         }
