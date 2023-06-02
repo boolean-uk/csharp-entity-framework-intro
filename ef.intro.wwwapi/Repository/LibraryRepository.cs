@@ -24,7 +24,8 @@ namespace ef.intro.wwwapi.Repository
         {            
             using (var db = new LibraryContext())
             {
-                return db.Authors.Include(a => a.Books).ToList();
+                return db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).ToList();
+
             }
             return null;
         }
@@ -71,12 +72,11 @@ namespace ef.intro.wwwapi.Repository
         }
 
 
-
         public IEnumerable<Book> GetAllBooks()
         {
             using (var db = new LibraryContext())
             {
-                return db.Books.ToList();
+                return db.Books.Include(x => x.Publisher).ToList();
             }
             return null;
         }
@@ -126,6 +126,65 @@ namespace ef.intro.wwwapi.Repository
                 return true; // did TODO
             };
             return false;
+        }
+ 
+        public IEnumerable<Publisher> GetAllPublishers()
+        {
+            //throw new NotImplementedException();
+
+            using (var db = new LibraryContext())
+            {
+                return db.Publishers.ToList();
+            }
+            return null;
+        }
+
+        public Publisher GetAPublisher(int id)
+        {
+            Publisher result;
+            using(var db = new LibraryContext())
+            {
+                result = db.Publishers.Find(id);
+            }
+            return result;
+        }
+
+        public bool AddPublisher(Publisher publisher)
+        {
+            using(var db = new LibraryContext())
+            {
+                db.Publishers.Add(publisher);
+                db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool UpdatePublisher(Publisher publisher)
+        {
+            using(var db = new LibraryContext())
+            {
+                db.Publishers.Find(publisher.Id).Name = publisher.Name;
+                //db.Publishers.Update(publisher); could this one like do the same?
+                db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public bool DeletePublisher(int id)
+        {
+            using (var db = new LibraryContext())
+            {
+                var a = db.Publishers.Find(id);
+                if (a != null)
+                {
+                    db.Publishers.Remove(a);
+                    db.SaveChanges();
+                    return true;        
+                }
+                return false;
+            };
         }
     }
 }
