@@ -13,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
 builder.Services.AddDbContext<LibraryContext>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); // for automapper
 
 var app = builder.Build();
 
