@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ef.intro.wwwapi.Models
 {
@@ -9,10 +10,12 @@ namespace ef.intro.wwwapi.Models
 
         [ForeignKey("Author")]
         public int AuthorId { get; set; }
+        [JsonIgnore]
         public Author Author { get; set; }
 
         [ForeignKey("Publisher")]
         public int PublisherId { get; set; }
+        [JsonIgnore]
         public Publisher Publisher { get; set; }
     }
 }

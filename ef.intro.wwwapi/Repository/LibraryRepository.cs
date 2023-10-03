@@ -120,16 +120,13 @@ namespace ef.intro.wwwapi.Repository
             return result;
         }
 
-        public bool UpdateAuthor(Author author)
+        public bool UpdateAuthor(Author author) // using SetValues
         {
             using (var db = new LibraryContext())
             {
                 var authorToUpdate = db.Authors.FirstOrDefault(a => a.Id == author.Id);
                 if (authorToUpdate == null) return false;
-                authorToUpdate.FirstName = author.FirstName;
-                authorToUpdate.LastName = author.LastName;
-                authorToUpdate.Email = author.Email;
-                // need to look into updating the books aswel or is this overkill if we also can update the book in its own method?
+                db.Entry(authorToUpdate).CurrentValues.SetValues(author);
                 db.SaveChanges();
                 return true;
             };
