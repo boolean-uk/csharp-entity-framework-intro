@@ -9,6 +9,7 @@ namespace ef.intro.wwwapi.Models
 
         [ForeignKey("Author")]
         public int AuthorId { get; set; }
+        public Author Author { get; set; }
 
         [ForeignKey("Publisher")]
         public int PublisherId { get; set; }

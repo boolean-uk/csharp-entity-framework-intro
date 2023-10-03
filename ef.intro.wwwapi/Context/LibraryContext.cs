@@ -19,6 +19,5 @@ namespace ef.intro.wwwapi.Context
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
-
     }
 }

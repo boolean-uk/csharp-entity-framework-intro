@@ -14,7 +14,6 @@ namespace ef.intro.wwwapi.Repository
                 db.SaveChanges();
                 return true;
             }
-            return false;
         }
         public bool AddBook(Book book)
         {
@@ -24,7 +23,6 @@ namespace ef.intro.wwwapi.Repository
                 db.SaveChanges();
                 return true;
             };
-            return false;
         }
 
         public bool AddPublisher(Publisher publisher)
@@ -35,7 +33,6 @@ namespace ef.intro.wwwapi.Repository
                 db.SaveChanges();
                 return true;
             }
-            return false;
         }
 
         public bool DeleteAuthor(int id)
@@ -79,15 +76,13 @@ namespace ef.intro.wwwapi.Repository
             {
                 return db.Authors.Include(a => a.Books).ToList();
             }
-            return null;
         }
         public IEnumerable<Book> GetAllBooks()
         {
             using (var db = new LibraryContext())
             {
-                return db.Books.ToList();
+                return db.Books.Include(b => b.Author).Include(b => b.Publisher).ToList();
             }
-            return null;
         }
 
         public IEnumerable<Publisher> GetAllPublishers()
@@ -96,7 +91,6 @@ namespace ef.intro.wwwapi.Repository
             {
                 return db.Publishers.ToList();
             }
-            return null;
         }
 
         public Author GetAuthor(int id)
@@ -106,7 +100,6 @@ namespace ef.intro.wwwapi.Repository
             {
                 return db.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == id);
             };
-            return result;
         }
         public Book GetBook(int id)
         {
