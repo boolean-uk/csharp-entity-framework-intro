@@ -4,6 +4,13 @@ namespace ef.intro.wwwapi.Repository
 {
     public interface ILibraryRepository
     {
+        IEnumerable<Book> GetAllBooks();
+        Book GetBook(int id);
+        bool AddBook(Book book);
+        bool UpdateBook(Book book);
+        bool DeleteBook(int id); 
+        
+
         IEnumerable<Author> GetAllAuthors();
         Author GetAuthor(int id);
         bool AddAuthor(Author author);
@@ -11,12 +18,10 @@ namespace ef.intro.wwwapi.Repository
         bool DeleteAuthor(int id);
 
 
-        IEnumerable<Book> GetAllBooks();
-        Book GetBook(int id);
-        bool AddBook(Book book);
-        bool UpdateBook(Book book);
-        bool DeleteBook(int id);
-
-
+        IEnumerable<Publisher> GetAllPublishers();
+        Publisher GetPublisher(int id);
+        bool AddPublisher(Publisher publisher);
+        bool UpdatePublisher(Publisher publisher);
+        bool DeletePublisher(int id);
     }
 }

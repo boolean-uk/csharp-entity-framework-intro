@@ -20,6 +20,7 @@ namespace ef.intro.wwwapi.Data
             "Charles",
             "Kate"
         };
+
         private static List<string> Lastnames = new List<string>()
         {
             "Hepburn",
@@ -32,8 +33,8 @@ namespace ef.intro.wwwapi.Data
             "Winslet",
             "Windsor",
             "Middleton"
-
         };
+
         private static List<string> Domain = new List<string>()
         {
             "bbc.co.uk",
@@ -47,6 +48,7 @@ namespace ef.intro.wwwapi.Data
             "gov.nl",
             "gov.ru"
         };
+
         private static List<string> FirstWord = new List<string>()
         {
             "The",            
@@ -56,9 +58,8 @@ namespace ef.intro.wwwapi.Data
             "A bunch of",
             "An army of",
             "A herd of"
-
-
         };
+
         private static List<string> SecondWord = new List<string>()
         {
             "Orange",
@@ -70,6 +71,7 @@ namespace ef.intro.wwwapi.Data
             "Rose Smelling",
             "Bitter"
         };
+
         private static List<string> ThirdWord = new List<string>()
         {
             "Buildings",
@@ -79,25 +81,26 @@ namespace ef.intro.wwwapi.Data
             "Flowers",
             "Leopards"
         };
+
         private static string GeneratePublisherName()
         {
             string[] words = { "Blue", "Readable", "Flying", "Expensive", "Reflective", "Feathery", "Shiny", "Clean", "Brown Bagel", "Unlimited"};
 
-
             Random random = new Random();
             return $"The {words[random.Next(words.Length)]} Publishing Company";
-
         }
+
         public static void Seed(this WebApplication app)
-        {
-         
-            
+        {     
             using (var db = new LibraryContext())
             {
-                Random authorRandom = new Random();                       
                 Random bookRandom = new Random();
-                var authors = new List<Author>();
+                Random authorRandom = new Random();
+                Random publisherRandom = new Random(); 
+
                 var books = new List<Book>();
+                var authors = new List<Author>();
+                var publishers = new List<Publisher>();
 
                 if (!db.Authors.Any())
                 {
@@ -108,45 +111,41 @@ namespace ef.intro.wwwapi.Data
                         author.FirstName = Firstnames[authorRandom.Next(Firstnames.Count)];
                         author.LastName = Lastnames[authorRandom.Next(Lastnames.Count)];
                         author.Email = $"{author.FirstName}.{author.LastName}@{Domain[authorRandom.Next(Domain.Count)]}".ToLower();
-                        authors.Add(author);
-
-                                              
+                        authors.Add(author);                                
                     }
+
                     db.Authors.AddRange(authors);
                 }
 
+                if (!db.Publishers.Any())
+                {
+                    for (int x = 0; x < 100; x++)
+                    {
+                        string publisherName = GeneratePublisherName();
+                        Publisher publisher = new Publisher { Id = x, Name = publisherName };
+                        publishers.Add(publisher);
+                    }
+
+                    db.Publishers.AddRange(publishers); 
+                }
 
                 if (!db.Books.Any())
                 {
-
                     for (int x = 1; x < 250; x++)
                     {
                         Book book = new Book();
                         book.Id = x;
                         book.Title = $"{FirstWord[bookRandom.Next(FirstWord.Count)]} {SecondWord[bookRandom.Next(SecondWord.Count)]} {ThirdWord[bookRandom.Next(ThirdWord.Count)]}";
                         book.AuthorId = authors[authorRandom.Next(authors.Count)].Id;
-                        //book.Author = authors[book.AuthorId-1];
+                        book.PublisherId = publishers[publisherRandom.Next(publishers.Count)].Id;
                         books.Add(book);
                     }
+
                     db.Books.AddRange(books);
                 }
 
-                //TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
-
-                if(1==2)
-                {
-                    for(int i = 0; i < 100;  i++)
-                    {
-                        string publishername = GeneratePublisherName();
-                        //populate in memory database with test data
-                    }
-                }
-                db.SaveChanges();            
+                db.SaveChanges();
             }
-
         }
     }
 }
-
-
-

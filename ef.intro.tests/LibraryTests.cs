@@ -3,7 +3,6 @@ using NUnit.Framework;
 
 namespace ef.intro.tests;
 
-
 [TestFixture]
 public class LibraryTests
 {

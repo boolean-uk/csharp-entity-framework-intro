@@ -3,24 +3,24 @@ using ef.intro.wwwapi.Repository;
 
 namespace ef.intro.wwwapi.EndPoint
 {
-    public static class AuthorApi
+    public static class PublisherApi
     {
-        public static void ConfigureAuthorApi(this WebApplication app)
+        public static void ConfigurePublisherApi(this WebApplication app)
         {
-            app.MapGet("/authors", GetAuthors);
-            app.MapGet("/authors/{id}", GetAuthor);
-            app.MapPost("/authors", AddAuthor);
-            app.MapPut("/authors", UpdateAuthor);
-            app.MapDelete("/authors", DeleteAuthor);
+            app.MapGet("/publishers", GetPublishers);
+            app.MapGet("/publishers/{id}", GetPublisher);
+            app.MapPost("/publishers", AddPublisher);
+            app.MapPut("/publishers", UpdatePublisher);
+            app.MapDelete("/publishers", DeletePublisher);
         }
 
-        private static async Task<IResult> GetAuthors(ILibraryRepository service)
+        private static async Task<IResult> GetPublishers(ILibraryRepository service)
         {
             try
             {
-                return await Task.Run(() => 
+                return await Task.Run(() =>
                 {
-                    return Results.Ok(service.GetAllAuthors());
+                    return Results.Ok(service.GetAllPublishers());
                 });
             }
             catch (Exception ex)
@@ -29,13 +29,13 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
-        private static async Task<IResult> GetAuthor(int id, ILibraryRepository service)
+        private static async Task<IResult> GetPublisher(int id, ILibraryRepository service)
         {
             try
             {
                 return await Task.Run(() =>
                 {
-                    var person = service.GetAuthor(id);
+                    var person = service.GetPublisher(id);
                     if (person == null) return Results.NotFound();
                     return Results.Ok(person);
                 });
@@ -46,11 +46,11 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
-        private static async Task<IResult> AddAuthor(Author author, ILibraryRepository service)
+        private static async Task<IResult> AddPublisher(Publisher publisher, ILibraryRepository service)
         {
             try
             {
-                if (service.AddAuthor(author)) return Results.Ok();
+                if (service.AddPublisher(publisher)) return Results.Ok();
                 return Results.NotFound();
             }
             catch (Exception ex)
@@ -59,13 +59,13 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
-        private static async Task<IResult> UpdateAuthor(Author author, ILibraryRepository service)
+        private static async Task<IResult> UpdatePublisher(Publisher publisher, ILibraryRepository service)
         {
             try
             {
                 return await Task.Run(() =>
                 {
-                    if (service.UpdateAuthor(author)) return Results.Ok();
+                    if (service.UpdatePublisher(publisher)) return Results.Ok();
                     return Results.NotFound();
                 });
             }
@@ -75,11 +75,11 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
-        private static async Task<IResult> DeleteAuthor(int id, ILibraryRepository service)
+        private static async Task<IResult> DeletePublisher(int id, ILibraryRepository service)
         {
             try
             {
-                if (service.DeleteAuthor(id)) return Results.Ok();
+                if (service.DeletePublisher(id)) return Results.Ok();
                 return Results.NotFound();
             }
             catch (Exception ex)
