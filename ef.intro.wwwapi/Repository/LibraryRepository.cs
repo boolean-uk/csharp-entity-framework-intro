@@ -26,6 +26,18 @@ namespace ef.intro.wwwapi.Repository
             };
             return false;
         }
+
+        public bool AddPublisher(Publisher publisher)
+        {
+            using (var db = new LibraryContext())
+            {
+                db.Publishers.Add(publisher);
+                db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
         public bool DeleteAuthor(int id)
         {
             using (var db = new LibraryContext())
@@ -48,6 +60,19 @@ namespace ef.intro.wwwapi.Repository
                 return true;
             }
         }
+
+        public bool DeletePublisher(int id)
+        {
+            using (var db = new LibraryContext())
+            {
+                var publisherToDelete = db.Publishers.FirstOrDefault(p => p.Id == id);
+                if (publisherToDelete == null) return false;
+                db.Publishers.Remove(publisherToDelete);
+                db.SaveChanges();
+                return true;
+            }
+        }
+
         public IEnumerable<Author> GetAllAuthors()
         {
             using (var db = new LibraryContext())
@@ -64,6 +89,16 @@ namespace ef.intro.wwwapi.Repository
             }
             return null;
         }
+
+        public IEnumerable<Publisher> GetAllPublishers()
+        {
+            using (var db = new LibraryContext())
+            {
+                return db.Publishers.ToList();
+            }
+            return null;
+        }
+
         public Author GetAuthor(int id)
         {
             Author result;
@@ -81,6 +116,17 @@ namespace ef.intro.wwwapi.Repository
                 return db.Books.FirstOrDefault(b => b.Id == id);
             };
         }
+
+        public Publisher GetPublisher(int id)
+        {
+            Publisher result;
+            using (var db = new LibraryContext())
+            {
+                result = db.Publishers.FirstOrDefault(p => p.Id == id);
+            };
+            return result;
+        }
+
         public bool UpdateAuthor(Author author)
         {
             using (var db = new LibraryContext())
@@ -106,6 +152,18 @@ namespace ef.intro.wwwapi.Repository
                 db.SaveChanges();
                 return true;
             }
+        }
+
+        public bool UpdatePublisher(Publisher publisher)
+        {
+            using (var db = new LibraryContext())
+            {
+                var publisherToUpdate = db.Publishers.FirstOrDefault(p => p.Id == publisher.Id);
+                if (publisherToUpdate == null) return false;
+                publisherToUpdate.Name = publisher.Name;
+                db.SaveChanges();
+                return true;
+            };
         }
     }
 }
