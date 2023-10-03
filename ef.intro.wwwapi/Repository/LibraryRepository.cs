@@ -8,7 +8,7 @@ namespace ef.intro.wwwapi.Repository
     {
         public bool AddAuthor(Author author)
         {
-            using(var db = new LibraryContext())
+            using (var db = new LibraryContext())
             {
                 db.Authors.Add(author);
                 db.SaveChanges();
@@ -20,7 +20,8 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                db.Books.Add(book);
+                db.SaveChanges();
                 return true;
             };
             return false;
@@ -29,19 +30,23 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                var authorToDelete = db.Authors.FirstOrDefault(a => a.Id == id);
+                if (authorToDelete == null) return false;
+                db.Authors.Remove(authorToDelete);
+                db.SaveChanges();
                 return true;
-            };
-            return false;
+            }
         }
         public bool DeleteBook(int id)
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                var bookToDelete = db.Books.FirstOrDefault(b => b.Id == id);
+                if (bookToDelete == null) return false;
+                db.Books.Remove(bookToDelete);
+                db.SaveChanges();
                 return true;
-            };
-            return false;
+            }
         }
         public IEnumerable<Author> GetAllAuthors()
         {
@@ -64,7 +69,7 @@ namespace ef.intro.wwwapi.Repository
             Author result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code                
+                return db.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == id);
             };
             return result;
         }
@@ -73,27 +78,34 @@ namespace ef.intro.wwwapi.Repository
             Book result;
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code              
+                return db.Books.FirstOrDefault(b => b.Id == id);
             };
-            return result;
         }
         public bool UpdateAuthor(Author author)
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                var authorToUpdate = db.Authors.FirstOrDefault(a => a.Id == author.Id);
+                if (authorToUpdate == null) return false;
+                authorToUpdate.FirstName = author.FirstName;
+                authorToUpdate.LastName = author.LastName;
+                authorToUpdate.Email = author.Email;
+                // need to look into updating the books aswel or is this overkill if we also can update the book in its own method?
+                db.SaveChanges();
                 return true;
             };
-            return false;
         }
         public bool UpdateBook(Book book)
         {
             using (var db = new LibraryContext())
             {
-                throw new NotImplementedException(); //TODO: Remove this line and add code
+                var bookToUpdate = db.Books.FirstOrDefault(b => b.Id == book.Id);
+                if (bookToUpdate == null) return false;
+                bookToUpdate.Title = book.Title;
+                bookToUpdate.AuthorId = book.AuthorId;
+                db.SaveChanges();
                 return true;
-            };
-            return false;
+            }
         }
     }
 }
