@@ -86,7 +86,7 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                return db.Authors.Include(a => a.Books).ToList();
+                return db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).ToList();
             }
             return null;
         }
@@ -95,7 +95,7 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                return db.Books.ToList();
+                return db.Books.Include(p => p.Publisher).ToList();
             }
             return null;
         }
@@ -115,7 +115,7 @@ namespace ef.intro.wwwapi.Repository
             using (var db = new LibraryContext())
             {
                 return db.Authors.Find(id);
-            };
+            }
             return result;
         }
         public Book GetBook(int id)
@@ -124,7 +124,7 @@ namespace ef.intro.wwwapi.Repository
             using (var db = new LibraryContext())
             {
                 return db.Books.Find(id);
-            };
+            }
             return result;
         }
 
@@ -134,7 +134,7 @@ namespace ef.intro.wwwapi.Repository
             using (var db = new LibraryContext())
             {
                 return db.Publishers.Find(id);
-            };
+            }
             return result;
         }
 
@@ -166,7 +166,7 @@ namespace ef.intro.wwwapi.Repository
                     existingBook.Title = book.Title;
                     db.SaveChanges();
                     return true;
-                };
+                }
                 return false;
             }
          }
@@ -182,7 +182,7 @@ namespace ef.intro.wwwapi.Repository
                     existingPublisher.Name = publisher.Name;
                     db.SaveChanges();
                     return true;
-                };
+                }
                 return false;
             }
         }

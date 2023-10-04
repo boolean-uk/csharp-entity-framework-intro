@@ -79,6 +79,17 @@ namespace ef.intro.wwwapi.Data
             "Flowers",
             "Leopards"
         };
+        private static List<string> Name = new List<string>()
+        {
+            "Publisher One",
+            "Publisher Two",
+            "Publisher Three",
+            "Publisher Four",
+            "Publisher Five",
+            "Publisher Six"
+
+        };
+
         private static string GeneratePublisherName()
         {
             string[] words = { "Blue", "Readable", "Flying", "Expensive", "Reflective", "Feathery", "Shiny", "Clean", "Brown Bagel", "Unlimited"};
@@ -94,9 +105,11 @@ namespace ef.intro.wwwapi.Data
             
             using (var db = new LibraryContext())
             {
-                Random authorRandom = new Random();                       
+                Random authorRandom = new Random(); 
+                Random publisherRandom = new Random();
                 Random bookRandom = new Random();
                 var authors = new List<Author>();
+                var publishers = new List<Publisher>();
                 var books = new List<Book>();
 
                 if (!db.Authors.Any())
@@ -115,6 +128,33 @@ namespace ef.intro.wwwapi.Data
                     db.Authors.AddRange(authors);
                 }
 
+                if (!db.Publishers.Any())
+                {
+                    for (int x = 1; x < 250; x++)
+                    {
+                        Publisher publisher = new Publisher();
+                        publisher.Id = x;
+                        publisher.Name = Name[publisherRandom.Next(Name.Count)];
+                        publishers.Add(publisher);
+
+
+                    }
+                    db.Publishers.AddRange(publishers);
+                }
+
+                if (1 == 1)
+                {
+                    for (int i = 0; i < 100; i++)
+                    {
+                        string publishername = GeneratePublisherName();
+                        Publisher publisher = new Publisher();
+                        publisher.Id = i;
+                        publisher.Name = publishername;
+                        //publisher.BookId = books[bookRandom.Next(books.Count)].Id;
+                        publishers.Add(publisher);
+                    }
+                }
+                db.SaveChanges();
 
                 if (!db.Books.Any())
                 {
@@ -125,27 +165,22 @@ namespace ef.intro.wwwapi.Data
                         book.Id = x;
                         book.Title = $"{FirstWord[bookRandom.Next(FirstWord.Count)]} {SecondWord[bookRandom.Next(SecondWord.Count)]} {ThirdWord[bookRandom.Next(ThirdWord.Count)]}";
                         book.AuthorId = authors[authorRandom.Next(authors.Count)].Id;
+                        book.PublisherId = publisherRandom.Next(authors.Count);
                         //book.Author = authors[book.AuthorId-1];
                         books.Add(book);
                     }
                     db.Books.AddRange(books);
                 }
+                db.SaveChanges();
+                // TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
+                // 
+               
 
-                //TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
-
-                if(1==2)
-                {
-                    for(int i = 0; i < 100;  i++)
-                    {
-                        string publishername = GeneratePublisherName();
-                        //populate in memory database with test data
-                    }
-                }
-                db.SaveChanges();            
             }
 
         }
     }
+    
 }
 
 
