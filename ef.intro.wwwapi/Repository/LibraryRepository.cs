@@ -26,6 +26,22 @@ namespace ef.intro.wwwapi.Repository
             };
             return false;
         }
+
+        public bool AddPublisher(Publisher publisher)
+        {
+            using (var db = new LibraryContext())
+            {
+                var result = db.Publishers.FirstOrDefault(p => p.Id == publisher.Id);
+                if (result != null)
+                    return false;
+
+                db.Publishers.Add(publisher);
+                db.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
         public bool DeleteAuthor(int id)
         {
             using (var db = new LibraryContext())

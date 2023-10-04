@@ -9,7 +9,7 @@ namespace ef.intro.wwwapi.EndPoint
         {
             app.MapGet("/publishers", GetPublishers);
             app.MapGet("/publishers/{id}", GetPublisher);
-            //app.MapPost("/publishers", InsertPublisher);
+            app.MapPost("/publishers", InsertPublisher);
             //app.MapPut("/publishers", UpdatePublisher);
             //app.MapDelete("/publishers", DeletePublisher);
         }
@@ -39,6 +39,24 @@ namespace ef.intro.wwwapi.EndPoint
                     var publisher = service.GetPublisher(id);
                     if (publisher == null) return Results.NotFound();
                     return Results.Ok(publisher);
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        }
+
+        private static async Task<IResult> InsertPublisher(Publisher publisher, ILibraryRepository service)
+        {
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    if (service.AddPublisher(publisher))
+                        return Results.Ok();
+                    return Results.NotFound();
                 });
 
             }

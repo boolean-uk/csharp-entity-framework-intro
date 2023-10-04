@@ -20,5 +20,6 @@ namespace ef.intro.wwwapi.Repository
 
         IEnumerable<Publisher> GetAllPublishers();
         Publisher GetPublisher(int id);
+        bool AddPublisher(Publisher publisher);
     }
 }
