@@ -8,7 +8,7 @@ namespace ef.intro.wwwapi.EndPoint
         public static void ConfigurePublishersApi(this WebApplication app)
         {
             app.MapGet("/publishers", GetPublishers);
-            //app.MapGet("/publishers/{id}", GetPublisher);
+            app.MapGet("/publishers/{id}", GetPublisher);
             //app.MapPost("/publishers", InsertPublisher);
             //app.MapPut("/publishers", UpdatePublisher);
             //app.MapDelete("/publishers", DeletePublisher);
@@ -24,11 +24,29 @@ namespace ef.intro.wwwapi.EndPoint
                 });
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return Results.Problem(ex.Message);
             }
         }
+
+        private static async Task<IResult> GetPublisher(int id, ILibraryRepository service)
+        {
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    var publisher = service.GetPublisher(id);
+                    if (publisher == null) return Results.NotFound();
+                    return Results.Ok(publisher);
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        }
+
     }
 }

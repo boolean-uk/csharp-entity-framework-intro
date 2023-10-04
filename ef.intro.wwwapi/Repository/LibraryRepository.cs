@@ -98,6 +98,17 @@ namespace ef.intro.wwwapi.Repository
             };
             return result;
         }
+
+        public Publisher GetPublisher(int id)
+        {
+            Publisher result;
+            using (var db = new LibraryContext())
+            {
+                result = db.Publishers.FirstOrDefault(p => p.Id == id);
+            }
+            return result;
+        }
+
         public bool UpdateAuthor(Author author)
         {
             using (var db = new LibraryContext())
