@@ -7,7 +7,5 @@ namespace ef.intro.wwwapi.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        [ForeignKey("Book")]
-        public int BookId { get; set; }
     }
 }

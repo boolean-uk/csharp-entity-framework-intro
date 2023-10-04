@@ -96,8 +96,10 @@ namespace ef.intro.wwwapi.Data
             {
                 Random authorRandom = new Random();                       
                 Random bookRandom = new Random();
+                Random publisherRandom = new Random();
                 var authors = new List<Author>();
                 var books = new List<Book>();
+                var publishers = new List<Publisher>();
 
                 if (!db.Authors.Any())
                 {
@@ -115,6 +117,22 @@ namespace ef.intro.wwwapi.Data
                     db.Authors.AddRange(authors);
                 }
 
+                //TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
+
+                if (!db.Publishers.Any())
+                {
+                    for (int i = 1; i < 100; i++)
+                    {
+                        string publishername = GeneratePublisherName();
+                        //populate in memory database with test data
+                        Publisher publisher = new Publisher();
+                        publisher.Id = i;
+                        publisher.Name = publishername;
+                        publishers.Add(publisher);
+                    }
+                    db.Publishers.AddRange(publishers);
+                }
+
 
                 if (!db.Books.Any())
                 {
@@ -126,21 +144,13 @@ namespace ef.intro.wwwapi.Data
                         book.Title = $"{FirstWord[bookRandom.Next(FirstWord.Count)]} {SecondWord[bookRandom.Next(SecondWord.Count)]} {ThirdWord[bookRandom.Next(ThirdWord.Count)]}";
                         book.AuthorId = authors[authorRandom.Next(authors.Count)].Id;
                         //book.Author = authors[book.AuthorId-1];
+                        book.PublisherId = publishers[publisherRandom.Next(publishers.Count)].Id;
                         books.Add(book);
                     }
                     db.Books.AddRange(books);
                 }
 
-                //TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
-
-                if(1==2)
-                {
-                    for(int i = 0; i < 100;  i++)
-                    {
-                        string publishername = GeneratePublisherName();
-                        //populate in memory database with test data
-                    }
-                }
+                
                 db.SaveChanges();            
             }
 

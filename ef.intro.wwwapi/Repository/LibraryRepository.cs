@@ -85,7 +85,7 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                return db.Authors.Include(a => a.Books).ToList();
+                return db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).ToList();
             }
             return null;
         }
@@ -94,7 +94,7 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                return db.Books.ToList();
+                return db.Books.Include(b => b.Publisher).ToList();
             }
             return null;
         }
@@ -166,6 +166,7 @@ namespace ef.intro.wwwapi.Repository
                     db.Books.Attach(target);
                     target.Title = book.Title;
                     target.AuthorId = book.AuthorId;
+                    target.PublisherId = book.PublisherId;
                     db.SaveChanges();
                     return true;
 
