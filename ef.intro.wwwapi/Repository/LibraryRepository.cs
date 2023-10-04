@@ -70,6 +70,16 @@ namespace ef.intro.wwwapi.Repository
             }
             return null;
         }
+
+        public IEnumerable<Publisher> GetAllPublishers()
+        {
+            using (var db = new LibraryContext())
+            {
+                return db.Publishers.ToList();
+            }
+            return null;
+        }
+
         public Author GetAuthor(int id)
         {
             Author result;
