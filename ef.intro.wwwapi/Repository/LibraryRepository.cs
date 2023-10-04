@@ -60,7 +60,7 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                var target = db.Books.FirstOrDefault(b => b.Id == id);
+                var target = db.Books.Include(b => b.Publisher).FirstOrDefault(b => b.Id == id);
                 if (target != null)
                 {
                     db.Remove(target);
@@ -98,7 +98,7 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                return db.Books.ToList();
+                return db.Books.Include(b => b.Publisher).ToList();
             }
             return null;
         }
@@ -126,7 +126,7 @@ namespace ef.intro.wwwapi.Repository
             Book result;
             using (var db = new LibraryContext())
             {
-                result = db.Books.FirstOrDefault(b => b.Id == id);
+                result = db.Books.Include(b => b.Publisher).FirstOrDefault(b => b.Id == id);
             };
             return result;
         }
@@ -163,12 +163,14 @@ namespace ef.intro.wwwapi.Repository
         {
             using (var db = new LibraryContext())
             {
-                var target = db.Books.FirstOrDefault(b => b.Id == book.Id);
+                var target = db.Books.Include(b => b.Publisher).FirstOrDefault(b => b.Id == book.Id);
                 if (target != null)
                 {
                     db.Books.Attach(target);
                     target.Title = book.Title;
                     target.AuthorId = book.AuthorId;
+                    target.PublisherId = book.PublisherId;
+                    target.Publisher = book.Publisher;
                     db.SaveChanges();
                     return true;
                 }

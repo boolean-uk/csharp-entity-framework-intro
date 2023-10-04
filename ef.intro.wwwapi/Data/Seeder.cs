@@ -96,6 +96,7 @@ namespace ef.intro.wwwapi.Data
             {
                 Random authorRandom = new Random();                       
                 Random bookRandom = new Random();
+                Random publisherRandom = new Random();
                 var authors = new List<Author>();
                 var publishers = new List<Publisher>();
                 var books = new List<Book>();
@@ -142,6 +143,8 @@ namespace ef.intro.wwwapi.Data
                         book.Title = $"{FirstWord[bookRandom.Next(FirstWord.Count)]} {SecondWord[bookRandom.Next(SecondWord.Count)]} {ThirdWord[bookRandom.Next(ThirdWord.Count)]}";
                         book.AuthorId = authors[authorRandom.Next(authors.Count)].Id;
                         //book.Author = authors[book.AuthorId-1];
+                        book.PublisherId = publishers[publisherRandom.Next(publishers.Count)].Id;
+                        book.Publisher = publishers[book.PublisherId - 1];
                         books.Add(book);
                     }
                     db.Books.AddRange(books);
