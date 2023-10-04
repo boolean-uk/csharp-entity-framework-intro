@@ -22,5 +22,6 @@ namespace ef.intro.wwwapi.Repository
         Publisher GetPublisher(int id);
         bool AddPublisher(Publisher publisher);
         bool UpdatePublisher(Publisher publisher);
+        bool DeletePublisher(int id);
     }
 }

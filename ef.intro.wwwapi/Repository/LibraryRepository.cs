@@ -70,6 +70,22 @@ namespace ef.intro.wwwapi.Repository
             };
             return false;
         }
+
+        public bool DeletePublisher(int id)
+        {
+            using (var db = new LibraryContext())
+            {
+                var target = db.Publishers.FirstOrDefault(p => p.Id == id);
+                if (target != null)
+                {
+                    db.Remove(target);
+                    db.SaveChanges();
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public IEnumerable<Author> GetAllAuthors()
         {
             using (var db = new LibraryContext())

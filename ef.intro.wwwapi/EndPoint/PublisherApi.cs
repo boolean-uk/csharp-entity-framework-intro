@@ -11,7 +11,7 @@ namespace ef.intro.wwwapi.EndPoint
             app.MapGet("/publishers/{id}", GetPublisher);
             app.MapPost("/publishers", InsertPublisher);
             app.MapPut("/publishers", UpdatePublisher);
-            //app.MapDelete("/publishers", DeletePublisher);
+            app.MapDelete("/publishers", DeletePublisher);
         }
 
         private static async Task<IResult> GetPublishers(ILibraryRepository service)
@@ -73,6 +73,24 @@ namespace ef.intro.wwwapi.EndPoint
                 return await Task.Run(() =>
                 {
                     if (service.UpdatePublisher(publisher))
+                        return Results.Ok();
+                    return Results.NotFound();
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        }
+
+        private static async Task<IResult> DeletePublisher(int id, ILibraryRepository service)
+        {
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    if (service.DeletePublisher(id))
                         return Results.Ok();
                     return Results.NotFound();
                 });
