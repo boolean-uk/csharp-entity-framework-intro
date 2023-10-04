@@ -35,6 +35,8 @@ app.ConfigureAuthorApi();
 
 app.ConfigureBooksApi();
 
+app.ConfigurePublishersApi();
+
 app.Seed();
 
 app.Run();

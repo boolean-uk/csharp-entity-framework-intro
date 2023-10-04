@@ -96,7 +96,9 @@ namespace ef.intro.wwwapi.Data
             {
                 Random authorRandom = new Random();                       
                 Random bookRandom = new Random();
+                Random publisherRandom = new Random();
                 var authors = new List<Author>();
+                var publishers = new List<Publisher>();
                 var books = new List<Book>();
 
                 if (!db.Authors.Any())
@@ -116,6 +118,21 @@ namespace ef.intro.wwwapi.Data
                 }
 
 
+                if (!db.Publishers.Any())
+                {
+                    for (int x = 1; x < 100; x++)
+                    {
+                        Publisher publisher = new Publisher
+                        {
+                            Id = x,
+                            Name = GeneratePublisherName()
+                        };
+                        publishers.Add(publisher);
+                    }
+                    db.Publishers.AddRange(publishers);
+                }
+
+
                 if (!db.Books.Any())
                 {
 
@@ -126,21 +143,13 @@ namespace ef.intro.wwwapi.Data
                         book.Title = $"{FirstWord[bookRandom.Next(FirstWord.Count)]} {SecondWord[bookRandom.Next(SecondWord.Count)]} {ThirdWord[bookRandom.Next(ThirdWord.Count)]}";
                         book.AuthorId = authors[authorRandom.Next(authors.Count)].Id;
                         //book.Author = authors[book.AuthorId-1];
+                        book.PublisherId = publishers[publisherRandom.Next(publishers.Count)].Id;
+                        book.Publisher = publishers[book.PublisherId - 1];
                         books.Add(book);
                     }
                     db.Books.AddRange(books);
                 }
 
-                //TODO: check for any Publishers and add 100 publishers.  change line below to check db context for publishers
-
-                if(1==2)
-                {
-                    for(int i = 0; i < 100;  i++)
-                    {
-                        string publishername = GeneratePublisherName();
-                        //populate in memory database with test data
-                    }
-                }
                 db.SaveChanges();            
             }
 
