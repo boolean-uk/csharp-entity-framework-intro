@@ -6,154 +6,185 @@ namespace ef.intro.wwwapi.Repository
 {
     public class LibraryRepository : ILibraryRepository
     {
-        public bool AddAuthor(Author author)
+        //added DI for not needing to do new LibraryContext
+        private readonly LibraryContext _dbContext;
+        public LibraryRepository(LibraryContext dbContext)
         {
-            using (var db = new LibraryContext())
-            {
-                db.Authors.Add(author);
-                db.SaveChanges();
-                return true;
-            }
-        }
-        public bool AddBook(Book book)
-        {
-            using (var db = new LibraryContext())
-            {
-                db.Books.Add(book);
-                db.SaveChanges();
-                return true;
-            };
+            _dbContext = dbContext;
         }
 
-        public bool AddPublisher(Publisher publisher)
+        // re-aranged everything to follow crud in the correct order for author, book and publisher, used regions https://medium.com/@fdikmen/how-to-organize-your-code-with-regions-in-your-ide-391ebc8a41a6
+
+        #region author
+        public IEnumerable<Author> GetAllAuthors()
         {
-            using (var db = new LibraryContext())
+            return _dbContext.Authors.ToList();
+        }
+
+        public Author GetAuthor(int id)
+        {
+            return _dbContext.Authors.FirstOrDefault(a => a.Id == id);
+        }
+        public bool AddAuthor(Author author)
+        {
+            try
             {
-                db.Publishers.Add(publisher);
-                db.SaveChanges();
+                _dbContext.Authors.Add(author);
+                _dbContext.SaveChanges();
                 return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateAuthor(Author author)
+        {
+            try
+            {
+                var authorToUpdate = _dbContext.Authors.Find(author.Id);
+                if (authorToUpdate == null) return false;
+                _dbContext.Entry(authorToUpdate).CurrentValues.SetValues(author);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
         public bool DeleteAuthor(int id)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                var authorToDelete = db.Authors.FirstOrDefault(a => a.Id == id);
+                var authorToDelete = _dbContext.Authors.Find(id);
                 if (authorToDelete == null) return false;
-                db.Authors.Remove(authorToDelete);
-                db.SaveChanges();
+                _dbContext.Authors.Remove(authorToDelete);
+                _dbContext.SaveChanges();
                 return true;
             }
+            catch
+            {
+                return false;
+            }
         }
+        #endregion
+
+        #region Book
+        public IEnumerable<Book> GetAllBooks()
+        {
+            return _dbContext.Books.Include(b => b.Author).Include(b => b.Publisher).ToList();
+        }
+
+        public Book GetBook(int id)
+        {
+            return _dbContext.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefault(b => b.Id == id);
+        }
+
+        public bool AddBook(Book book)
+        {
+            try
+            {
+                _dbContext.Books.Add(book);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateBook(Book book)
+        {
+            try
+            {
+                var bookToUpdate = _dbContext.Books.Find(book.Id);
+                if (bookToUpdate == null) return false;
+                _dbContext.Entry(bookToUpdate).CurrentValues.SetValues(book);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public bool DeleteBook(int id)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                var bookToDelete = db.Books.FirstOrDefault(b => b.Id == id);
+                var bookToDelete = _dbContext.Books.Find(id);
                 if (bookToDelete == null) return false;
-                db.Books.Remove(bookToDelete);
-                db.SaveChanges();
+                _dbContext.Books.Remove(bookToDelete);
+                _dbContext.SaveChanges();
                 return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        #endregion
+
+        #region Publisher
+        public IEnumerable<Publisher> GetAllPublishers()
+        {
+            return _dbContext.Publishers.ToList();
+        }
+
+        public Publisher GetPublisher(int id)
+        {
+            return _dbContext.Publishers.FirstOrDefault(p => p.Id == id);
+        }
+
+        public bool AddPublisher(Publisher publisher)
+        {
+            try
+            {
+                _dbContext.Publishers.Add(publisher);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public bool UpdatePublisher(Publisher publisher)
+        {
+            try
+            {
+                var publisherToUpdate = _dbContext.Publishers.Find(publisher.Id);
+                if (publisherToUpdate == null) return false;
+                _dbContext.Entry(publisherToUpdate).CurrentValues.SetValues(publisher);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
         public bool DeletePublisher(int id)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                var publisherToDelete = db.Publishers.FirstOrDefault(p => p.Id == id);
+                var publisherToDelete = _dbContext.Publishers.Find(id);
                 if (publisherToDelete == null) return false;
-                db.Publishers.Remove(publisherToDelete);
-                db.SaveChanges();
+                _dbContext.Publishers.Remove(publisherToDelete);
+                _dbContext.SaveChanges();
                 return true;
             }
-        }
-
-        public IEnumerable<Author> GetAllAuthors()
-        {
-            using (var db = new LibraryContext())
+            catch
             {
-                return db.Authors.Include(a => a.Books).ToList();
+                return false;
             }
         }
-        public IEnumerable<Book> GetAllBooks()
-        {
-            using (var db = new LibraryContext())
-            {
-                return db.Books.Include(b => b.Author).Include(b => b.Publisher).ToList();
-            }
-        }
-
-        public IEnumerable<Publisher> GetAllPublishers()
-        {
-            using (var db = new LibraryContext())
-            {
-                return db.Publishers.ToList();
-            }
-        }
-
-        public Author GetAuthor(int id)
-        {
-            Author result;
-            using (var db = new LibraryContext())
-            {
-                return db.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == id);
-            };
-        }
-        public Book GetBook(int id)
-        {
-            Book result;
-            using (var db = new LibraryContext())
-            {
-                return db.Books.FirstOrDefault(b => b.Id == id);
-            };
-        }
-
-        public Publisher GetPublisher(int id)
-        {
-            Publisher result;
-            using (var db = new LibraryContext())
-            {
-                result = db.Publishers.FirstOrDefault(p => p.Id == id);
-            };
-            return result;
-        }
-
-        public bool UpdateAuthor(Author author) // using SetValues
-        {
-            using (var db = new LibraryContext())
-            {
-                var authorToUpdate = db.Authors.FirstOrDefault(a => a.Id == author.Id);
-                if (authorToUpdate == null) return false;
-                db.Entry(authorToUpdate).CurrentValues.SetValues(author);
-                db.SaveChanges();
-                return true;
-            };
-        }
-        public bool UpdateBook(Book book)
-        {
-            using (var db = new LibraryContext())
-            {
-                var bookToUpdate = db.Books.FirstOrDefault(b => b.Id == book.Id);
-                if (bookToUpdate == null) return false;
-                bookToUpdate.Title = book.Title;
-                bookToUpdate.AuthorId = book.AuthorId;
-                db.SaveChanges();
-                return true;
-            }
-        }
-
-        public bool UpdatePublisher(Publisher publisher)
-        {
-            using (var db = new LibraryContext())
-            {
-                var publisherToUpdate = db.Publishers.FirstOrDefault(p => p.Id == publisher.Id);
-                if (publisherToUpdate == null) return false;
-                publisherToUpdate.Name = publisher.Name;
-                db.SaveChanges();
-                return true;
-            };
-        }
+        #endregion
     }
 }
