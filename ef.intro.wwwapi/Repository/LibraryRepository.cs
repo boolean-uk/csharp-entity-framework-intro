@@ -8,188 +8,251 @@ namespace ef.intro.wwwapi.Repository
     {
         public IEnumerable<Book> GetAllBooks()
         {
-            using (var db = new LibraryContext())
+            try
             {
-                return db.Books.ToList();
+                using (var db = new LibraryContext())
+                {
+                    return db.Books.ToList();
+                }
             }
-            // return null;
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public Book GetBook(int id)
         {      
-            Book result = null; 
             using (var db = new LibraryContext())
             {
-                result = db.Books.FirstOrDefault(b => b.Id == id);
+                Book result = db.Books.FirstOrDefault(b => b.Id == id);
+                return result;
             }
-            return result; 
         }
 
         public bool AddBook(Book book)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                db.Books.Add(book);
-                int affectedRows = db.SaveChanges();
-                if (affectedRows > 0)
+                using (var db = new LibraryContext())
                 {
-                    return true;
+                    db.Books.Add(book);
+                    int affectedRows = db.SaveChanges();
+                    return affectedRows > 0;
                 }
-                return false;
+            }
+            catch (Exception ex)
+            {
+                return false; 
             }
         }
 
         public bool UpdateBook(Book book)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                db.Books.Update(book);
-                int affectedRows = db.SaveChanges();
-                if (affectedRows > 0)
+                using (var db = new LibraryContext())
                 {
-                    return true;
+                    db.Books.Update(book);
+                    int affectedRows = db.SaveChanges();
+                    return affectedRows > 0;
                 }
-                return false;
+            }
+            catch (Exception ex)
+            {
+                return false; 
             }
         }
 
         public bool DeleteBook(int id)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                var bookToDelete = db.Books.FirstOrDefault(b => b.Id == id);
-                if (bookToDelete != null)
+                using (var db = new LibraryContext())
                 {
-                    db.Books.Remove(bookToDelete);
-                    db.SaveChanges();
-                    return true;
+                    var bookToDelete = db.Books.FirstOrDefault(b => b.Id == id);
+                    if (bookToDelete != null)
+                    {
+                        db.Books.Remove(bookToDelete);
+                        int affectedRows = db.SaveChanges();
+                        if (affectedRows > 0)
+                        {
+                            return true; 
+                        }
+                    }
+                    return false; 
                 }
-            };
-            return false;
+            }
+            catch (Exception ex)
+            {
+                return false; 
+            }
         }
         
         public IEnumerable<Author> GetAllAuthors()
         {
-            using (var db = new LibraryContext())
+            try
             {
-                return db.Authors.Include(a => a.Books).ToList();
+                using (var db = new LibraryContext())
+                {
+                    return db.Authors.Include(a => a.Books).ToList();
+                }
             }
-            // return null;
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public Author GetAuthor(int id)
         {
-            Author result = null;
             using (var db = new LibraryContext())
             {
-                result = db.Authors.FirstOrDefault(a => a.Id == id);
+                Author result = db.Authors.Include(a => a.Books).FirstOrDefault(a => a.Id == id);
+                return result;
             }
-            return result;
         }
 
         public bool AddAuthor(Author author)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                db.Authors.Add(author);
-                int affectedRows = db.SaveChanges();
-                if (affectedRows > 0)
+                using (var db = new LibraryContext())
                 {
-                    return true;
+                    db.Authors.Add(author);
+                    int affectedRows = db.SaveChanges();
+                    return affectedRows > 0;
                 }
+            }
+            catch (Exception ex)
+            {
                 return false;
             }
         }
 
         public bool UpdateAuthor(Author author)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                db.Authors.Update(author);
-                int affectedRows = db.SaveChanges();
-                if (affectedRows > 0)
+                using (var db = new LibraryContext())
                 {
-                    return true;
+                    db.Authors.Update(author);
+                    int affectedRows = db.SaveChanges();
+                    return affectedRows > 0;
                 }
+            }
+            catch (Exception ex)
+            {
                 return false;
             }
         }
 
         public bool DeleteAuthor(int id)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                var authorToDelete = db.Authors.FirstOrDefault(a => a.Id == id);
-                if (authorToDelete != null)
+                using (var db = new LibraryContext())
                 {
-                    db.Authors.Remove(authorToDelete);
-                    db.SaveChanges();
-                    return true;
+                    var authorToDelete = db.Authors.FirstOrDefault(a => a.Id == id);
+                    if (authorToDelete != null)
+                    {
+                        db.Authors.Remove(authorToDelete);
+                        int affectedRows = db.SaveChanges();
+                        if (affectedRows > 0)
+                        {
+                            return true; 
+                        }
+                    }
+                    return false; 
                 }
-            };
-            return false;
+            }
+            catch (Exception ex)
+            {
+                return false; 
+            }
         }
 
         public IEnumerable<Publisher> GetAllPublishers()
         {
-            using (var db = new LibraryContext())
+            try
             {
-                return db.Publishers.Include(p => p.Books).ToList();
+                using (var db = new LibraryContext())
+                {
+                    return db.Publishers.Include(p => p.Books).ToList();
+                }
             }
-            // return null;
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public Publisher GetPublisher(int id)
         {
-            Publisher result = null;
             using (var db = new LibraryContext())
             {
-                result = db.Publishers.FirstOrDefault(p => p.Id == id);
+                Publisher result = db.Publishers.Include(p => p.Books).FirstOrDefault(p => p.Id == id);
+                return result;
             }
-            return result;
         }
 
         public bool AddPublisher(Publisher publisher)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                db.Publishers.Add(publisher);
-                int affectedRows = db.SaveChanges();
-                if (affectedRows > 0)
+                using (var db = new LibraryContext())
                 {
-                    return true;
+                    db.Publishers.Add(publisher);
+                    int affectedRows = db.SaveChanges();
+                    return affectedRows > 0;
                 }
+            }
+            catch (Exception ex)
+            {
                 return false;
             }
         }
 
         public bool UpdatePublisher(Publisher publisher)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                db.Publishers.Update(publisher);
-                int affectedRows = db.SaveChanges();
-                if (affectedRows > 0)
+                using (var db = new LibraryContext())
                 {
-                    return true; 
+                    db.Publishers.Update(publisher);
+                    int affectedRows = db.SaveChanges();
+                    return affectedRows > 0;
                 }
-                return false; 
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
 
         public bool DeletePublisher(int id)
         {
-            using (var db = new LibraryContext())
+            try
             {
-                var publisherToDelete = db.Publishers.FirstOrDefault(p => p.Id == id);
-                if (publisherToDelete != null)
+                using (var db = new LibraryContext())
                 {
-                    db.Publishers.Remove(publisherToDelete);
-                    db.SaveChanges();
-                    return true;
+                    var publisherToDelete = db.Publishers.FirstOrDefault(p => p.Id == id);
+                    if (publisherToDelete != null)
+                    {
+                        db.Publishers.Remove(publisherToDelete);
+                        int affectedRows = db.SaveChanges();
+                        if (affectedRows > 0)
+                        {
+                            return true; 
+                        }
+                    }
+                    return false; 
                 }
-            };
-            return false;
+            }
+            catch (Exception ex)
+            {
+                return false; 
+            }
         }
     }
 }

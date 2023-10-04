@@ -7,11 +7,11 @@ namespace ef.intro.wwwapi.EndPoint
     {
         public static void ConfigureBookApi(this WebApplication app)
         {
+            app.MapPost("/books", AddBook);
             app.MapGet("/books", GetBooks);
             app.MapGet("/books/{id}", GetBook);
-            app.MapPost("/books", AddBook);
-            app.MapPut("/books", UpdateBook);
-            app.MapDelete("/books", DeleteBook);
+            app.MapPut("/books/{id}", UpdateBook);
+            app.MapDelete("/books/{id}", DeleteBook);
         }
 
         private static async Task<IResult> GetBooks(ILibraryRepository service)
@@ -50,7 +50,7 @@ namespace ef.intro.wwwapi.EndPoint
         {
             try
             {
-                if (service.AddBook(book)) return Results.Ok();
+                if (service.AddBook(book)) return Results.Ok(book);
                 return Results.NotFound();
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace ef.intro.wwwapi.EndPoint
             {
                 return await Task.Run(() =>
                 {
-                    if (service.UpdateBook(book)) return Results.Ok();
+                    if (service.UpdateBook(book)) return Results.Ok(book);
                     return Results.NotFound();
                 });
             }

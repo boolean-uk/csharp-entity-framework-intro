@@ -27,8 +27,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.ConfigureAuthorApi();
 app.ConfigureBookApi();
+app.ConfigureAuthorApi();
 app.ConfigurePublisherApi();
 
 app.Seed();

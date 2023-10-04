@@ -119,7 +119,7 @@ namespace ef.intro.wwwapi.Data
 
                 if (!db.Publishers.Any())
                 {
-                    for (int x = 0; x < 100; x++)
+                    for (int x = 1; x < 100; x++)
                     {
                         string publisherName = GeneratePublisherName();
                         Publisher publisher = new Publisher { Id = x, Name = publisherName };

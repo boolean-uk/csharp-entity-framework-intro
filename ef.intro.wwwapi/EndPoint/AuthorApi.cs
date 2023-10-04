@@ -7,11 +7,11 @@ namespace ef.intro.wwwapi.EndPoint
     {
         public static void ConfigureAuthorApi(this WebApplication app)
         {
+            app.MapPost("/authors", AddAuthor);
             app.MapGet("/authors", GetAuthors);
             app.MapGet("/authors/{id}", GetAuthor);
-            app.MapPost("/authors", AddAuthor);
-            app.MapPut("/authors", UpdateAuthor);
-            app.MapDelete("/authors", DeleteAuthor);
+            app.MapPut("/authors/{id}", UpdateAuthor);
+            app.MapDelete("/authors/{id}", DeleteAuthor);
         }
 
         private static async Task<IResult> GetAuthors(ILibraryRepository service)
@@ -50,7 +50,7 @@ namespace ef.intro.wwwapi.EndPoint
         {
             try
             {
-                if (service.AddAuthor(author)) return Results.Ok();
+                if (service.AddAuthor(author)) return Results.Ok(author);
                 return Results.NotFound();
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace ef.intro.wwwapi.EndPoint
             {
                 return await Task.Run(() =>
                 {
-                    if (service.UpdateAuthor(author)) return Results.Ok();
+                    if (service.UpdateAuthor(author)) return Results.Ok(author);
                     return Results.NotFound();
                 });
             }
