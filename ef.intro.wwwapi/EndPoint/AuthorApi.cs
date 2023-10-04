@@ -1,5 +1,6 @@
 ﻿using ef.intro.wwwapi.Models;
 using ef.intro.wwwapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ef.intro.wwwapi.EndPoint
 {
@@ -46,6 +47,7 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
         private static async Task<IResult> AddAuthor(Author author, ILibraryRepository service)
         {
             try
@@ -59,6 +61,7 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
         private static async Task<IResult> UpdateAuthor(Author author, ILibraryRepository service)
         {
             try
