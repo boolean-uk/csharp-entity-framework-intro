@@ -1,5 +1,6 @@
 ﻿using ef.intro.wwwapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Runtime.CompilerServices;
 
 namespace ef.intro.wwwapi.Context
@@ -21,5 +22,6 @@ namespace ef.intro.wwwapi.Context
         public DbSet<Book> Books { get; set; }
 
         //TODO:  add publisher DbSet Property
+        public DbSet<Publisher> Publishers { get; set; }
     }
 }

@@ -33,6 +33,8 @@ app.MapControllers();
 
 app.ConfigureAuthorApi();
 
+app.ConfigurePublisherApi();
+
 app.ConfigureBooksApi();
 
 app.Seed();
