@@ -10,7 +10,7 @@ namespace ef.intro.wwwapi.EndPoint
             app.MapGet("/publishers", GetPublishers);
             app.MapGet("/publishers/{id}", GetPublisher);
             app.MapPost("/publishers", InsertPublisher);
-            //app.MapPut("/publishers", UpdatePublisher);
+            app.MapPut("/publishers", UpdatePublisher);
             //app.MapDelete("/publishers", DeletePublisher);
         }
 
@@ -66,5 +66,22 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
+        private static async Task<IResult> UpdatePublisher(Publisher publisher, ILibraryRepository service)
+        {
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    if (service.UpdatePublisher(publisher))
+                        return Results.Ok();
+                    return Results.NotFound();
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+        }
     }
 }

@@ -159,5 +159,21 @@ namespace ef.intro.wwwapi.Repository
             };
             return false;
         }
+
+        public bool UpdatePublisher(Publisher publisher)
+        {
+            using (var db = new LibraryContext())
+            {
+                var target = db.Publishers.FirstOrDefault(p => p.Id == publisher.Id);
+                if (target != null)
+                {
+                    db.Publishers.Attach(target);
+                    target.Name = publisher.Name;
+                    db.SaveChanges();
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
