@@ -4,24 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ef.intro.wwwapi.EndPoint
 {
-    public static class BookApi
+    public static class PublisherApi
     {
-        public static void ConfigureBookApi(this WebApplication app)
+        public static void ConfigurePublisherApi(this WebApplication app)
         {
-            app.MapPost("/books", AddBook);
-            app.MapGet("/books", GetBooks);
-            app.MapGet("/books/{id}", GetBook);
-            app.MapPut("/books/{id}", UpdateBook);
-            app.MapDelete("/books/{id}", DeleteBook);
+            app.MapPost("/publishers", AddPublisher);
+            app.MapGet("/publishers", GetPublishers);
+            app.MapGet("/publishers/{id}", GetPublisher);
+            app.MapPut("/publishers/{id}", UpdatePublisher);
+            app.MapDelete("/publishers/{id}", DeletePublisher);
         }
 
-        private static async Task<IResult> GetBooks(ILibraryRepository service)
+        private static async Task<IResult> GetPublishers(ILibraryRepository service)
         {
             try
             {
-                return await Task.Run(() => 
+                return await Task.Run(() =>
                 {
-                    return Results.Ok(service.GetAllBooks());
+                    return Results.Ok(service.GetAllPublishers());
                 });
             }
             catch (Exception ex)
@@ -30,15 +30,15 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
-        private static async Task<IResult> GetBook(int id, ILibraryRepository service)
+        private static async Task<IResult> GetPublisher(int id, ILibraryRepository service)
         {
             try
             {
                 return await Task.Run(() =>
                 {
-                    var book = service.GetBook(id);
-                    if (book == null) return Results.NotFound();
-                    return Results.Ok(book);
+                    var person = service.GetPublisher(id);
+                    if (person == null) return Results.NotFound();
+                    return Results.Ok(person);
                 });
             }
             catch (Exception ex)
@@ -48,11 +48,11 @@ namespace ef.intro.wwwapi.EndPoint
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
-        private static async Task<IResult> AddBook(Book book, ILibraryRepository service)
+        private static async Task<IResult> AddPublisher(Publisher publisher, ILibraryRepository service)
         {
             try
             {
-                if (service.AddBook(book)) return Results.Ok(book);
+                if (service.AddPublisher(publisher)) return Results.Ok(publisher);
                 return Results.NotFound();
             }
             catch (Exception ex)
@@ -62,13 +62,13 @@ namespace ef.intro.wwwapi.EndPoint
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
-        private static async Task<IResult> UpdateBook(Book book, ILibraryRepository service)
+        private static async Task<IResult> UpdatePublisher(Publisher publisher, ILibraryRepository service)
         {
             try
             {
                 return await Task.Run(() =>
                 {
-                    if (service.UpdateBook(book)) return Results.Ok(book);
+                    if (service.UpdatePublisher(publisher)) return Results.Ok(publisher);
                     return Results.NotFound();
                 });
             }
@@ -78,11 +78,11 @@ namespace ef.intro.wwwapi.EndPoint
             }
         }
 
-        private static async Task<IResult> DeleteBook(int id, ILibraryRepository service)
+        private static async Task<IResult> DeletePublisher(int id, ILibraryRepository service)
         {
             try
             {
-                if (service.DeleteBook(id)) return Results.Ok();
+                if (service.DeletePublisher(id)) return Results.Ok();
                 return Results.NotFound();
             }
             catch (Exception ex)
