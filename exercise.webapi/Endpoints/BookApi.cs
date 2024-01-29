@@ -13,6 +13,7 @@ namespace exercise.webapi.Endpoints
             app.MapPut("/books/{id}" , UpdateBook);
             app.MapDelete("/books/{id}" , DeleteBook);
             app.MapPost("/books" , CreateBook);
+            app.MapGet("/publishers" , GetPublishers);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -86,8 +87,11 @@ namespace exercise.webapi.Endpoints
             return Results.Created("/books/{id}" , createdBookResponseDTO);
         }
 
-
-
+        private static async Task<IResult> GetPublishers([FromServices] IBookRepository bookRepository)
+        {
+            var publishers = await bookRepository.GetAllPublishers();
+            return TypedResults.Ok(publishers);
+        }
 
         private static BookResponseDTO MapToBookResponseDTO(Book book)
         {

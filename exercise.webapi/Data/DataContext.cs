@@ -1,7 +1,5 @@
 ﻿using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace exercise.webapi.Data
 {
@@ -24,9 +22,11 @@ namespace exercise.webapi.Data
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
 
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
     }
 }
