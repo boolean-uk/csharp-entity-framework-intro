@@ -23,5 +23,10 @@ namespace exercise.webapi.Repository
         {
             return await _db.Books.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
         }
+
+        public void SaveChanges()
+        {
+            _db.SaveChanges();   
+        }
     }
 }
