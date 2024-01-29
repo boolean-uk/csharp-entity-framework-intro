@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class BookRepository: IBookRepository
+    public class BookRepository : IBookRepository
     {
         DataContext _db;
         
@@ -17,6 +17,11 @@ namespace exercise.webapi.Repository
         {
             return await _db.Books.Include(b => b.Author).ToListAsync();
 
+        }
+
+        public async Task<Book?> GetBookById(int id)
+        {
+            return await _db.Books.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
         }
     }
 }
