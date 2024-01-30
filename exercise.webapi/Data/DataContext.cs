@@ -1,8 +1,5 @@
 ﻿using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Security.Cryptography.X509Certificates;
 
 namespace exercise.webapi.Data
 {

@@ -11,6 +11,7 @@ namespace exercise.webapi.Repository
         public Task<Author> CreateBook(int authorId, BookCreatePayload book);
 
         public Task<Book> DeleteBook(int Id);
-        public Task<ICollection<BookAuthor>> UpdateBook(int Id, BookUpdateDTO payload);
+        public Task<Book> UpdateBook(int Id, BookUpdateDTO payload);
+
     }
 }

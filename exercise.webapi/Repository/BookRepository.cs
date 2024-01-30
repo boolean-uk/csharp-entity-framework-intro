@@ -18,8 +18,9 @@ namespace exercise.webapi.Repository
         {
             var author = _db.Authors.FirstOrDefault(b => b.Id == authorId);
             var publisher = _db.Publishers.FirstOrDefault(p => p.Id == book.PublisherId);
-            Book b = new Book() {Title = book.Title, Authors = author.Books, PublisherId = book.PublisherId, Publisher = publisher};
+            Book b = new Book() {Title = book.Title, BookAuthors = author.BookAuthors, PublisherId = book.PublisherId};
             await _db.Books.AddAsync(b);
+            await _db.BookAuthors.AddAsync(new BookAuthor() {BookId = b.Id, AuthorId = author.Id});
             await _db.SaveChangesAsync();
             return author;
         }
@@ -31,13 +32,13 @@ namespace exercise.webapi.Repository
                 return null;
 
             _db.Books.Remove(book);
+            await _db.SaveChangesAsync();
             return book;
         }
-
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
             return await _db.Books
-                .Include(book => book.Authors)
+                .Include(book => book.BookAuthors)
                 .ThenInclude(authorBook => authorBook.Author)
                 .Include(publisher => publisher.Publisher)
                 .ToListAsync();
@@ -45,29 +46,20 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> GetBook(int id)
         {
-            if (id <= 0)
-            {
-                return null;
-            }
-            try
-            {
-                Book book = await _db.Books.FindAsync(id);
-                if (book == null)
-                {
-                    return null;
-                }
-                return book;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            var book = await _db.Books
+            .Include(book => book.BookAuthors)
+            .Include(book => book.BookAuthors.Select(authorBook => authorBook.Author))
+            .Include(book => book.Publisher)
+            .Where(book => book.Id == id)
+            .FirstOrDefaultAsync();
+            return book;
         }
-        public async Task<ICollection<BookAuthor>> UpdateBook(int Id, BookUpdateDTO payload)
+        
+        public async Task<Book> UpdateBook(int Id, BookUpdateDTO payload)
         {
             if(Id <= 0)
                 return null;
-            Book book = await _db.Books.FirstOrDefaultAsync(b => b.Id == Id);
+            Book book = await GetBook(Id);
 
             if(payload.Title != "") {
                 book.Title = payload.Title;
@@ -77,7 +69,7 @@ namespace exercise.webapi.Repository
                 _db.BookAuthors.Add(new BookAuthor {BookId = book.Id, AuthorId = payload.AuthorId});
             }
             await _db.SaveChangesAsync();
-            return book.Authors;
+            return book;
         }
 
         private bool isAuthor(int authorId) {

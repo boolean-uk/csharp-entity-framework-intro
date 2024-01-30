@@ -10,10 +10,6 @@ namespace exercise.webapi.Endpoints
         {
             app.MapGroup("/authors");
             app.MapGet("/authors", GetAuthors);
-            //app.MapPost("/", AddBook);
-            //app.MapGet("/{Id}", GetBook);
-            //app.MapPost("/{Id}", UpdateBook);
-            //app.MapDelete("/{Id}", DeleteBook);
         }
 
         private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)

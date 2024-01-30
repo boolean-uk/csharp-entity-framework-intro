@@ -11,7 +11,7 @@ namespace exercise.webapi.Endpoints
             //app.MapGroup("/publisher");
             //app.MapPost("/", AddBook);
             app.MapGet("/publisher", GetPublishers);
-            app.MapGet("/publisher/{publisherId}", GetPublishersById);
+            app.MapGet("/publisher/{publisherId}", GetPublisherById);
             //app.MapPost("/{Id}", UpdateBook);
             //app.MapDelete("/{Id}", DeleteBook);
         }
@@ -22,10 +22,11 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(publishers);
         }
 
-        private static async Task<IResult> GetPublishersById(IPublisherRepository publisherRepository, int Id)
+        public static async Task<IResult> GetPublisherById(IPublisherRepository publisherRepository, int publisherId)
         {
-            var publishers = new PublisherBookAuthorDTO(await publisherRepository.GetPublisherById(Id));
-            return TypedResults.Ok(publishers);
+        var publisher = await publisherRepository.GetPublisherById(publisherId);
+        var publisherDto = new PublisherDTO(publisher);
+        return TypedResults.Ok(publisherDto);
         }
 
     }

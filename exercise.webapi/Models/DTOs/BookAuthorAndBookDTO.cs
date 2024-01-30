@@ -1,21 +1,21 @@
 using exercise.webapi.Models;
 using exercise.webapi.Models.DTOs;
 
-public class BookAuthorResponseDTO {
+public class BookAuthorAndBookDTO {
         public int Id {get; set;}
         public string FirstName {get; set;}
         public string LastName {get; set;} 
 
-        public ICollection<BookAuthor> BookAuthor {get; set;} = null!;
+        public ICollection<BookDTO> Books {get; set;} = null!;
     
 
-        public BookAuthorResponseDTO(BookAuthor Author) {
-            Id = Author.AuthorId;
-            FirstName = Author.Author.FirstName;
-            LastName = Author.Author.LastName;
-            BookAuthor = new List<BookAuthor>();
-            BookAuthor.Add(Author);
+        public BookAuthorAndBookDTO(BookAuthor bookAuthor) {
+            Id = bookAuthor.AuthorId;
+            FirstName = bookAuthor.Author.FirstName;
+            LastName = bookAuthor.Author.LastName;
+            Books.Add(new BookDTO(bookAuthor.Book));
         }
+        
 
         public static List<BookAuthorResponseDTO> FromRepository(IEnumerable<BookAuthor> authors) {
              var results = new List<BookAuthorResponseDTO>();

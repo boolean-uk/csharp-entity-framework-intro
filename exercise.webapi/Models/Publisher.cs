@@ -6,6 +6,6 @@ namespace exercise.webapi.Models
     {
         public int Id { get; set; }
         public string Company { get; set; }
-        public ICollection<BookAuthor> Books { get; set; } = new List<BookAuthor>();
+        public ICollection<Book> Books { get; set; } = [];
     }
 }

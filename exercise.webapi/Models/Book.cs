@@ -8,6 +8,6 @@ namespace exercise.webapi.Models
         public string Title { get; set; }
         public int PublisherId {get; set;}
         public Publisher Publisher {get; set;} = null!;
-        public ICollection<BookAuthor> Authors { get; set; } = [];
+        public ICollection<BookAuthor> BookAuthors { get; set; } = [];
     }
 }

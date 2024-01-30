@@ -12,7 +12,7 @@ namespace exercise.webapi.Repository
 
         public Task<Author> DeleteAuthor(int authorId);
 
-        public Task<ICollection<Author>> UpdateAuthor(int authorId, AuthorUpdatePayload payload);
+        public Task<Author> UpdateAuthor(int authorId, AuthorUpdatePayload payload);
 
         public Task<Author> AddAuthor(string FirstName, string LastName, ICollection<BookAuthor>? Books);
     }

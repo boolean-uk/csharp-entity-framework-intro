@@ -20,7 +20,7 @@ namespace exercise.webapi.Repository
             {
                 FirstName = firstName,
                 LastName = lastName,
-                Books = books
+                BookAuthors = books
             };
 
             await _db.Authors.AddAsync(author);
@@ -45,7 +45,7 @@ namespace exercise.webapi.Repository
         public async Task<ICollection<Author>> GetAllAuthors()
         {
             return await _db.Authors
-            .Include(a => a.Books)
+            .Include(a => a.BookAuthors)
             .ThenInclude(ba => ba.Book)
             .ThenInclude(b => b.Publisher)
             .ToListAsync();
@@ -69,18 +69,13 @@ namespace exercise.webapi.Repository
                     foreach (BookAuthor book in payload.Books)
                     {
                         if(_db.Books.FindAsync(book) != null) {
-                            author.Books.Add(book);
+                            author.BookAuthors.Add(book);
                         }
                     }
                 }
                 await _db.SaveChangesAsync();
             }
             return author;
-        }
-
-        Task<ICollection<Author>> IAuthorRepository.UpdateAuthor(int authorId, AuthorUpdatePayload payload)
-        {
-            throw new NotImplementedException();
         }
     }
 }

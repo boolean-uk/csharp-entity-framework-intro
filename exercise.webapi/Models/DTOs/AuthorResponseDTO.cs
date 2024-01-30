@@ -16,7 +16,7 @@ namespace exercise.webapi.Models.DTOs {
             FirstName = Author.FirstName;
             LastName = Author.LastName;
             Books = new List<BookAuthorDTO>();
-            foreach (var book in Author.Books)
+            foreach (var book in Author.BookAuthors)
             {
                 Books.Add(new BookAuthorDTO(book.Book));
             }
