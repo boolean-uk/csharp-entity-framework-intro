@@ -10,12 +10,14 @@ namespace exercise.webapi.DTO
         public string Title { get; set; }
 
         public AuthorDTO Author { get; set; }
+        public PublisherDTO Publisher { get; set; }
 
         public BookResponseDTO(Book book)
         {
             Id = book.Id;
             Title = book.Title;
             Author = new AuthorDTO(book.Author);
+            Publisher = new PublisherDTO(book.Publisher);
         }
 
         public static List<BookResponseDTO> FromRepository(IEnumerable<Book> books)

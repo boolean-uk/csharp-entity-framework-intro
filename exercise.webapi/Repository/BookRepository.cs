@@ -17,7 +17,7 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
         }
 
         public async Task<Book>? GetBook(int id)
@@ -30,7 +30,7 @@ namespace exercise.webapi.Repository
         {
             var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
             _db.Books.Remove(book);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return await _db.Books.Include(b => b.Author).ToListAsync();
         }
