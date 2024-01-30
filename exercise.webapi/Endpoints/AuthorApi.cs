@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.DTO;
+using exercise.webapi.Models;
 using exercise.webapi.Repository;
 
 namespace exercise.webapi.Endpoints
@@ -22,7 +23,12 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> GetAuthorById(int id, IAuthorRepository authorRepository)
         {
-            throw new NotImplementedException();
+            Author? author = await authorRepository.GetAuthorById(id);
+            if (author == null)
+            {
+                return TypedResults.NotFound($"id {id} can not be found");
+            }
+            return TypedResults.Ok(new AuthorResponseDTO(author));
         }
     }
 }
