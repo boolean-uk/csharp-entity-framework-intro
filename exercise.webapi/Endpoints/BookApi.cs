@@ -15,6 +15,7 @@ namespace exercise.webapi.Endpoints
             bookGroup.MapGet("/", GetBooks);
             bookGroup.MapGet("/{id}", GetBook);
             bookGroup.MapPut("/{id}", UpdateBookAuthor);
+            bookGroup.MapDelete("/{id}", DeleteBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -51,6 +52,17 @@ namespace exercise.webapi.Endpoints
 
             bookRepository.SaveChanges();
             return TypedResults.Ok(new BookResponseDTO(book));
+        }
+
+        private static async Task<IResult> DeleteBook(int id, IBookRepository bookRepository)
+        {
+            Book? book = await bookRepository.DeleteBookById(id);
+            if (book == null)
+            {
+                return TypedResults.NotFound($"id {id} could not be found");
+            }
+            return TypedResults.Ok(new BookResponseDTO(book));
+            throw new NotImplementedException();
         }
     }
 }
