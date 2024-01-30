@@ -13,7 +13,6 @@ namespace exercise.webapi.Endpoints
             app.MapPut("/books/{id}" , UpdateBook);
             app.MapDelete("/books/{id}" , DeleteBook);
             app.MapPost("/books" , CreateBook);
-            app.MapGet("/publishers" , GetPublishers);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -23,7 +22,7 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(bookResponseDTOs);
         }
 
-        private static async Task<IResult> GetBookById([FromServices] IBookRepository bookRepository , [FromServices] IAuthorRepository authorRepository , int id)
+        private static async Task<IResult> GetBookById(IBookRepository bookRepository , [FromServices] IAuthorRepository authorRepository , int id)
         {
             var book = await bookRepository.GetBookById(id);
             if(book == null)
@@ -36,7 +35,7 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(bookResponseDTO);
         }
 
-        private static async Task<IResult> UpdateBook([FromServices] IBookRepository bookRepository , int id , [FromBody] BookUpdateDTO bookUpdateDTO)
+        private static async Task<IResult> UpdateBook(IBookRepository bookRepository , int id , [FromBody] BookUpdateDTO bookUpdateDTO)
         {
             var book = await bookRepository.GetBookById(id);
             if(book == null)
@@ -58,7 +57,7 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(updatedBookResponseDTO);
         }
 
-        private static async Task<IResult> DeleteBook([FromServices] IBookRepository bookRepository , int id)
+        private static async Task<IResult> DeleteBook(IBookRepository bookRepository , int id)
         {
             var book = await bookRepository.GetBookById(id);
             if(book == null)
@@ -68,7 +67,7 @@ namespace exercise.webapi.Endpoints
             return Results.Ok();
         }
 
-        private static async Task<IResult> CreateBook([FromServices] IBookRepository bookRepository , [FromBody] BookCreateDTO bookCreateDTO)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository , [FromBody] BookCreateDTO bookCreateDTO)
         {
             var author = await bookRepository.GetAuthorById(bookCreateDTO.AuthorId);
 
@@ -87,19 +86,14 @@ namespace exercise.webapi.Endpoints
             return Results.Created("/books/{id}" , createdBookResponseDTO);
         }
 
-        private static async Task<IResult> GetPublishers([FromServices] IBookRepository bookRepository)
-        {
-            var publishers = await bookRepository.GetAllPublishers();
-            return TypedResults.Ok(publishers);
-        }
-
         private static BookResponseDTO MapToBookResponseDTO(Book book)
         {
             return new BookResponseDTO
             {
                 Id = book.Id ,
                 Title = book.Title ,
-                Author = MapToAuthorResponseDTO(book.Author)
+                Author = MapToAuthorResponseDTO(book.Author) ,
+                Publisher = MapToPublisherResponseDTO(book.Publisher) // Add this line
             };
         }
 
@@ -116,6 +110,20 @@ namespace exercise.webapi.Endpoints
                 FirstName = author.FirstName ,
                 LastName = author.LastName ,
                 Email = author.Email ,
+            };
+        }
+
+        private static PublisherResponseDTO MapToPublisherResponseDTO(Publisher publisher)
+        {
+            if(publisher == null)
+            {
+                return new PublisherResponseDTO();
+            }
+
+            return new PublisherResponseDTO
+            {
+                Id = publisher.Id ,
+                Name = publisher.Name
             };
         }
     }

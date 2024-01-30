@@ -30,12 +30,27 @@ namespace exercise.webapi.Endpoints
 
         private static AuthorResponseDTO MapToAuthorResponseDTO(Author author)
         {
+            if(author == null)
+            {
+                return new AuthorResponseDTO();
+            }
+
             return new AuthorResponseDTO
             {
                 Id = author.Id ,
                 FirstName = author.FirstName ,
                 LastName = author.LastName ,
                 Email = author.Email ,
+                Books = author.Books.Select(MapToBookResponseDTO).ToList()
+            };
+        }
+
+        private static BookResponseDTO MapToBookResponseDTO(Book book)
+        {
+            return new BookResponseDTO
+            {
+                Id = book.Id ,
+                Title = book.Title ,
             };
         }
     }

@@ -1,5 +1,5 @@
-﻿using exercise.webapi.Repository;
-using Microsoft.AspNetCore.Mvc;
+﻿using exercise.webapi.Models;
+using exercise.webapi.Repository;
 
 namespace exercise.webapi.Endpoints
 {
@@ -11,20 +11,30 @@ namespace exercise.webapi.Endpoints
             app.MapGet("/publishers/{id}" , GetPublisherById);
         }
 
-        private static async Task<IResult> GetPublishers([FromServices] IBookRepository bookRepository)
+        private static async Task<IResult> GetPublishers(IBookRepository bookRepository)
         {
             var publishers = await bookRepository.GetAllPublishers();
-            return TypedResults.Ok(publishers);
+            var publisherResponseDTOs = publishers.Select(MapToPublisherResponseDTO).ToList();
+            return TypedResults.Ok(publisherResponseDTOs);
         }
 
-        private static async Task<IResult> GetPublisherById([FromServices] IBookRepository bookRepository , int id)
+        private static async Task<IResult> GetPublisherById(IBookRepository bookRepository , int id)
         {
             var publisher = await bookRepository.GetPublisherById(id);
             if(publisher == null)
                 return Results.NotFound();
 
-            return TypedResults.Ok(publisher);
+            var publisherResponseDTO = MapToPublisherResponseDTO(publisher);
+            return TypedResults.Ok(publisherResponseDTO);
+        }
+
+        private static PublisherResponseDTO MapToPublisherResponseDTO(Publisher publisher)
+        {
+            return new PublisherResponseDTO
+            {
+                Id = publisher.Id ,
+                Name = publisher.Name
+            };
         }
     }
-
 }

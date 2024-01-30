@@ -15,12 +15,12 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
         }
 
         public async Task<Book> GetBookById(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
         }
         public async Task<Author> GetAuthorById(int authorId)
         {
@@ -45,10 +45,7 @@ namespace exercise.webapi.Repository
         }
         public async Task<Publisher> GetPublisherById(int id)
         {
-            return await _db.Publishers
-                .Include(p => p.Books)
-                .ThenInclude(b => b.Author)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            return await _db.Publishers.Include(p => p.Books).ThenInclude(b => b.Author).FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<List<Publisher>> GetAllPublishers()
