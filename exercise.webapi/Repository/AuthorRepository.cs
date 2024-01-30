@@ -14,12 +14,12 @@ namespace exercise.webapi.Repository
         }
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            return await _db.Authors.Include(a => a.Books).ToListAsync();
+            return  await _db.Authors.Include(a => a.Books).ThenInclude(a => a.Publisher).ToListAsync();
         }
 
-        public async Task<Author?> GetAuthorbyID(int id)
+        public async Task<Author?> GetAuthorbyID(int id) 
         {
-            return await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(x => x.Id == id);
+            return await _db.Authors.Include(a => a.Books).ThenInclude(a => a.Publisher).FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

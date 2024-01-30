@@ -15,20 +15,20 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
 
         }
 
         public async Task<Book?> GetBookbyId(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(x => x.Id == id);
        //     return await _db.Books.Include(b => b.Author).ToListAsync();
 
         }
 
         public async Task<Book> UpdateBook(int id, int authorId)
         {
-            Book? book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
+            Book? book = await _db.Books.Include(b => b.Author).Include(b=> b.Publisher).FirstOrDefaultAsync(x => x.Id == id);
             if (book is null) return null;
             Author? author = await _db.Authors.FirstOrDefaultAsync(x => x.Id == authorId);
             if (author is null) throw new Exception();
@@ -40,7 +40,7 @@ namespace exercise.webapi.Repository
 
         public async Task<bool> DeleteBook(int id)
         {
-            Book? book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
+            Book? book = await _db.Books.FirstOrDefaultAsync(x => x.Id == id);
             if (book is null) return false;
             _db.Books.Remove(book);
             book.Author.Books.Remove(book);
