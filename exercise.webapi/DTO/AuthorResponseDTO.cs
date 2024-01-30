@@ -9,7 +9,8 @@ namespace exercise.webapi.DTO
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
+     
+        public ICollection<AuthorWithPublisherAndBookDTO> Books { get; set; } = new List<AuthorWithPublisherAndBookDTO>();
 
         public AuthorResponseDTO(Author author) {
             Id = author.Id;
@@ -17,10 +18,10 @@ namespace exercise.webapi.DTO
             LastName = author.LastName;
             Email = author.Email;
 
-            Books = new List<BookDTO>();
-            foreach (var book in author.Books)
+            Books = new List<AuthorWithPublisherAndBookDTO>();
+            foreach (var item in author.Books)
             {
-                Books.Add(new BookDTO(book));
+                Books.Add(new AuthorWithPublisherAndBookDTO(item));
             }
         }
 

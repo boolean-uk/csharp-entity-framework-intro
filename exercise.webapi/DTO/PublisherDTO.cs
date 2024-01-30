@@ -7,12 +7,9 @@ namespace exercise.webapi.DTO
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public PublisherDTO(Publisher publisher) {
-            
+        public PublisherDTO(Publisher publisher) {           
             Id = publisher.Id;
             Name = publisher.Name;
-            
-              
         }
 
     }

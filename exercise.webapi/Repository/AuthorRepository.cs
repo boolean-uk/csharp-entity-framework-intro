@@ -7,25 +7,22 @@ namespace exercise.webapi.Repository
     public class AuthorRepository : IAuthorRepository
     {
 
-        private DataContext _dataContext;
+        private DataContext _db;
 
-        public AuthorRepository(DataContext dataContext)
+        public AuthorRepository(DataContext db)
         {
-            _dataContext = dataContext;
+            _db = db;
         }
-
 
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            return await _dataContext.Authors.Include(a => a.Books).ToListAsync();
-            
+            return await _db.Authors.Include(b => b.Books).ThenInclude(p => p.Publisher).ToListAsync(); 
         }
 
 
         public async Task<Author?> GetAuthorById(int id)
         {
-            return await _dataContext.Authors.Include(b => b.Books).FirstOrDefaultAsync(a => a.Id == id);
-
+            return await _db.Authors.Include(b => b.Books).ThenInclude(p => p.Publisher).FirstOrDefaultAsync(a => a.Id == id);
         }
     }
 }

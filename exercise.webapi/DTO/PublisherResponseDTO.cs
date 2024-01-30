@@ -9,11 +9,10 @@ namespace exercise.webapi.DTO
         public string Name { get; set; }
 
         public ICollection<BookWithAuthorDTO> Books { get; set; } = new List<BookWithAuthorDTO>();
-        public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>();
 
         public PublisherResponseDTO(Publisher publisher)
         {
-            Id = publisher.Id; // no not want this time
+            Id = publisher.Id;
             Name = publisher.Name;
 
             Books = new List<BookWithAuthorDTO>();
@@ -22,9 +21,6 @@ namespace exercise.webapi.DTO
                 Books.Add(new BookWithAuthorDTO(book));
                 
             }
-            Authors = new List<AuthorDTO>();
-            
-
         }
 
         public static List<PublisherResponseDTO> FromRepository(IEnumerable<Publisher> publishers)
@@ -34,7 +30,6 @@ namespace exercise.webapi.DTO
             {
                 result.Add(new PublisherResponseDTO(publisher));
             }
-
             return result;
         }
 
