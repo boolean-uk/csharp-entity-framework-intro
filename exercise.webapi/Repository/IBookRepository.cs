@@ -8,7 +8,7 @@ namespace exercise.webapi.Repository
         public Task<IEnumerable<Book>> GetAllBooks();
         public Task<Book?> GetABook(int bookId);
 
-        public Task<Book?> CreateBook(string title, Author author);
+        public Task<Book?> CreateBook(string title, Author author, Publisher publisher);
 
         public Task<Book?> DeleteBook(int bookid);
         public void SaveChanges();

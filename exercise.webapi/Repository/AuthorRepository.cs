@@ -19,7 +19,7 @@ namespace exercise.webapi.Repository
         }
 
         public async Task<Author?> GetAnAuthor(int AuthorId){
-            return await _db.Authors.Include(b => b.Books).FirstOrDefaultAsync(b => b.Id == AuthorId);
+            return await _db.Authors.Include(b => b.Books).ThenInclude(a => a.Authors).FirstOrDefaultAsync(b => b.Id == AuthorId);
             
         }
     }

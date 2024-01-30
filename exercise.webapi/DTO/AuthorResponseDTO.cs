@@ -21,7 +21,7 @@ namespace exercise.webapi.Models
             Books = new List<BookDTO>();
             foreach (var book in author.Books)
             {
-               Books.Add(new BookDTO(book));
+               Books.Add(new BookDTO(book, author.Id));
             }
         }
 

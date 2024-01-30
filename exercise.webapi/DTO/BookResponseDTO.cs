@@ -7,15 +7,18 @@ namespace exercise.webapi.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        
-        public AuthorDTO Author { get; set; }
+        public PublisherDTO Publisher { get; set; }
+        public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>();
 
         public BookResponseDTO(Book book)
         {
             Id = book.Id;
             Title = book.Title;
-
-            Author = new AuthorDTO(book.Author);
+            Publisher = new PublisherDTO(book.Publisher);
+            foreach (var author in book.Authors)
+            {
+                Authors.Add(new AuthorDTO(author));
+            }
         }
 
         public static List<BookResponseDTO> FromRepository(IEnumerable<Book> books){

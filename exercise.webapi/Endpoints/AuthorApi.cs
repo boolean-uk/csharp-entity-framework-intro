@@ -8,16 +8,16 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureAuthorApi(this WebApplication app)
         {
-            app.MapGet("/Author", GetBooks);
-            app.MapGet("/getAnAuthor/{id}", GetABook);
+            app.MapGet("/Author", GetAuthor);
+            app.MapGet("/getAnAuthor/{id}", GetAnAuthor);
         }
 
-        private static async Task<IResult> GetBooks(IAuthorRepository authorRepository)
+        private static async Task<IResult> GetAuthor(IAuthorRepository authorRepository)
         {
             return TypedResults.Ok(AuthorResponseDTO.FromRepository(await authorRepository.GetAllAuthors()));
         }
 
-        private static async Task<IResult> GetABook(IAuthorRepository authorRepository, int authorId)
+        private static async Task<IResult> GetAnAuthor(IAuthorRepository authorRepository, int authorId)
         {
             return TypedResults.Ok(AuthorResponseDTO.FromRepository(await authorRepository.GetAnAuthor(authorId)));
         }

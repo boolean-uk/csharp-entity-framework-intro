@@ -30,7 +30,7 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(BookResponseDTO.FromRepository(book));
         }
 
-        public static async Task<IResult> UpdateBook(int bookId, int authorId, IBookRepository bookRepository, IAuthorRepository authorsRepository)
+        public static async Task<IResult> UpdateBook(int bookId,int authorId, int publisherId, IBookRepository bookRepository, IAuthorRepository authorsRepository, IPublisherRepository publisherRepository)
         {
             // get the book
             Book? book = await bookRepository.GetABook(bookId);
@@ -43,29 +43,32 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound();
             }
-            book.AuthorId = author.Id;
-            book.Author = author;
-
+            book.Authors.Add(author);
+            book.PublisherId = publisherId;
+            Publisher publisher = await publisherRepository.GetAPublisher(publisherId);
+            book.Publisher = publisher;
             bookRepository.SaveChanges();
 
             return TypedResults.Ok(new BookResponseDTO(book)); //i assume this fulfills task to return book and author since we get a book and the author inside the book? correct me if wrong
         }
 
-        public static async Task<IResult> CreateBook(string title, int authorId, IBookRepository bookRepository, IAuthorRepository authorsRepository)
+        public static async Task<IResult> CreateBook(string title, int authorId, int publisherId, IBookRepository bookRepository, IAuthorRepository authorsRepository, IPublisherRepository publisherRepository)
         {
             Author? author = await authorsRepository.GetAnAuthor(authorId);
             if (author == null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound("author not found");
             }
-            Book book = await bookRepository.CreateBook(title, author);
+            Publisher? publisher = await publisherRepository.GetAPublisher(publisherId);
+             if (publisher == null)
+            {
+                return TypedResults.NotFound("author not found");
+            }
+            Book book = await bookRepository.CreateBook(title, author, publisher);
             if (book == null)
             {
                 return TypedResults.BadRequest("invalid input");
             }
-            book.Author = author;
-
-            bookRepository.SaveChanges();
 
             return TypedResults.Ok(new BookResponseDTO(book));
         }
