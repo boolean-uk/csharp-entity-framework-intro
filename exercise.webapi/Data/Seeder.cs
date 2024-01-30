@@ -1,4 +1,6 @@
 ﻿using exercise.webapi.Models;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace exercise.webapi.Data
 {
@@ -82,6 +84,7 @@ namespace exercise.webapi.Data
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
         private List<Publisher> _publishers = new List<Publisher>();
+        private List<BookAuthor> _bookauthors = new List<BookAuthor>();
 
         public Seeder()
         {
@@ -89,6 +92,7 @@ namespace exercise.webapi.Data
             Random authorRandom = new Random();
             Random bookRandom = new Random();
             Random publRandom = new Random();
+            Random rnd = new Random();
 
 
             for (int x = 1; x < 250; x++)
@@ -115,9 +119,24 @@ namespace exercise.webapi.Data
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
                 book.PublisherId = _publishers[publRandom.Next(_publishers.Count)].Id;
                 //book.Author = authors[book.AuthorId-1];
+                var auth = _authors.OrderBy(x => authorRandom.Next(_authors.Count)).Take(rnd.Next(1, 5));  // .OrderBy(x => rnd.Next()).Take(5)
+
+                foreach (Author el in auth)
+                {
+                    var ba = new BookAuthor
+                    {
+                        AuthorId = el.Id,
+                        BookId = book.Id
+                    };
+
+                    _bookauthors.Add(ba);
+
+                }
+
+
+
                 _books.Add(book);
             }
 
@@ -127,5 +146,7 @@ namespace exercise.webapi.Data
         public List<Book> Books { get { return _books; } }
 
         public List<Publisher> Publishers { get { return _publishers; } }
+
+        public List<BookAuthor> BookAuthors { get { return _bookauthors; } }
     }
 }

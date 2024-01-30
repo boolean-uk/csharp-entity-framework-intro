@@ -19,9 +19,9 @@ namespace exercise.webapi.DTO
             Email = author.Email;
 
             Books = new List<BookPublisherDTO>();
-            foreach (var item in author.Books)
+            foreach (BookAuthor item in author.BookAuthors)
             {
-                Books.Add(new BookPublisherDTO(item));
+                Books.Add(new BookPublisherDTO(item.Book));
             }
         }  
     }

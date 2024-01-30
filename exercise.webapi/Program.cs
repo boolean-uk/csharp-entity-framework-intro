@@ -2,6 +2,7 @@ using exercise.webapi.Data;
 using exercise.webapi.Endpoints;
 using exercise.webapi.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Libra
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorsRepository, AuthorRepository>();
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<IManyRepository, ManyRepository>();
 
 var app = builder.Build();
 

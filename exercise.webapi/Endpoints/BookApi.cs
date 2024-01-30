@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace exercise.webapi.Endpoints
 {
-    public record UpdateBookAuthorRequestDTO(int authorId);
-    public record CreateBookRequestDTO(string title, int authorId);
+    public record UpdateBookAuthorRequestDTO(List<int> authorId);
+    public record CreateBookRequestDTO(string title, List<int> authorId);
 
     [ApiController]
     public static class BookApi
@@ -40,6 +40,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAllBooks();
+
             return TypedResults.Ok(BookResponseDTO.FromRepository(books));
         }
 
@@ -57,21 +58,30 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.BadRequest();
             }
 
-            var auth = await authorsRepository.GetAuthor(payload.authorId);
 
+            
             var bk = await bookRepository.GetAllBooks();
 
             int maxim = bk.OrderByDescending(u => u.Id).FirstOrDefault().Id;
 
-            if (auth == null)
-            {
-                return TypedResults.NotFound("Not found!");
-            }
-
             var book = new Book();
             book.Id = maxim + 1;
-            book.AuthorId = payload.authorId;
+          
             book.Title = payload.title;
+
+
+            foreach(int el in payload.authorId)
+            {
+                var auth = await authorsRepository.GetAuthor(el);
+
+                if (auth == null)
+                {
+                    return TypedResults.NotFound("Not found!");
+                }
+
+                book.BookAuthors.Add(new BookAuthor() { AuthorId = el, BookId = book.Id });
+            }
+         
 
             bookRepository.AddBook(book);
 
@@ -104,13 +114,19 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.NotFound();
             }
 
-            Author? author = await authorsRepository.GetAuthor(payload.authorId);
-            if (author == null)
+            
+            foreach (int el in payload.authorId)
             {
-                return TypedResults.NotFound();
+                Author? author = await authorsRepository.GetAuthor(el);
+
+                if (author == null)
+                {
+                    return TypedResults.NotFound();
+                }
+
+                book.BookAuthors.Add(new BookAuthor() {  AuthorId = el, BookId  = book.Id } );
             }
-            book.AuthorId = author.Id;
-            book.Author = author;
+        
 
             bookRepository.SaveChanges();
 

@@ -7,7 +7,7 @@ namespace exercise.webapi.DTO
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public AuthorDTO Author { get; set; }
+        public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>();
 
         public PublisherPlainDTO Publisher { get; set; }
 
@@ -15,7 +15,13 @@ namespace exercise.webapi.DTO
         {
             Id = book.Id;
             Title = book.Title;
-            Author = new AuthorDTO(book.Author);
+
+            foreach(BookAuthor el in book.BookAuthors)
+            {
+               
+                Authors.Add( new AuthorDTO(el.Author)) ;
+            }
+            
             Publisher = new PublisherPlainDTO(book.Publisher);
         }
 
