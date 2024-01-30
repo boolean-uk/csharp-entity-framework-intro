@@ -21,6 +21,7 @@ namespace exercise.webapi.Endpoints
             app.MapGet("/books/{id}", GetBook);
             app.MapDelete("/books/{id}", DeleteBook);
             app.MapPut("/books/{bookId}/author/", UpdateBookAuthor);
+            app.MapDelete("/books/{bookId}/author/{authorId}", DeleteBookAuthor);
 
             app.UseExceptionHandler(c => c.Run(async context =>
             {
@@ -128,6 +129,33 @@ namespace exercise.webapi.Endpoints
             }
         
 
+            bookRepository.SaveChanges();
+
+            return TypedResults.Ok(new BookResponseDTO(book));
+        }
+
+        public static async Task<IResult> DeleteBookAuthor(int bookId, int authId,  IBookRepository bookRepository, IAuthorsRepository authorsRepository)
+        {
+
+            Book? book = await bookRepository.GetBook(bookId);
+            if (book == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+
+            
+            Author? author = await authorsRepository.GetAuthor(authId);
+
+            if (author == null)
+            {
+                 return TypedResults.NotFound();
+            }
+
+            BookAuthor ba = book.BookAuthors.Where(x => x.BookId == book.Id).First(x => x.AuthorId == author.Id);
+
+            book.BookAuthors.Remove(ba);
+           
             bookRepository.SaveChanges();
 
             return TypedResults.Ok(new BookResponseDTO(book));
