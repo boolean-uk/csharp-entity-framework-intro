@@ -29,10 +29,19 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Author>().HasMany(e => e.Books).WithMany(e => e.Authors);
 
             modelBuilder.Entity<Book>().HasMany(e => e.Authors).WithMany(e => e.Books);
+            modelBuilder.Entity<Author>()
+                    .HasMany(a => a.AuthorBooks)
+                    .WithOne(ab => ab.Author)
+                    .HasForeignKey(ab => ab.AuthorId);
 
+            modelBuilder.Entity<Book>()
+                .HasMany(b => b.AuthorBooks)
+                .WithOne(ab => ab.Book)
+                .HasForeignKey(ab => ab.BookId);
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<AuthorBook>().HasData(seeder.AuthorBooks);
 
         }
         public DbSet<Publisher> Publishers {get; set;}

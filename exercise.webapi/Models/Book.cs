@@ -6,6 +6,8 @@ namespace exercise.webapi.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        
+        [ForeignKey("PublisherId")]
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
         public ICollection<AuthorBook> AuthorBooks { get; set; } = new List<AuthorBook>();

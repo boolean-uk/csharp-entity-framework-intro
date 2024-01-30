@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace exercise.webapi.Models
 {
@@ -8,7 +9,9 @@ namespace exercise.webapi.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+
         public ICollection<AuthorBook> AuthorBooks { get; set; } = new List<AuthorBook>();
+
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

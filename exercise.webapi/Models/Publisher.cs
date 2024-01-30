@@ -7,7 +7,6 @@ namespace exercise.webapi.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public ICollection<Author> Authors { get; set; } = new List<Author>();
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }
