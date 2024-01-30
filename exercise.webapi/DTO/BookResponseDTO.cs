@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.DTO
 {
@@ -9,25 +10,19 @@ namespace exercise.webapi.DTO
         public string Title { get; set; }
 
         public AuthorDTO Author { get; set; }
-        //public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>();
-
+        public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>();
         //extension
         public PublisherDTO Publisher { get; set; }
-        //public ICollection<PublisherDTO> Publishers { get; set; } = new List<PublisherDTO>();
 
         public BookResponseDTO(Book book)
         {
             Id = book.Id;
             Title = book.Title;
 
+            // Have in mind to remove then many-to-many relation is implemented
             Author = new AuthorDTO(book.Author);
-            //Authors = new List<AuthorDTO>();
-            Publisher = new PublisherDTO(book.Publisher);   
-            /*foreach (var author in book.authors)
-            {
-                
-            }*/
-
+            Publisher = new PublisherDTO(book.Publisher); 
+            
         }
 
         public static List<BookResponseDTO> FromRepository(IEnumerable<Book> books)
@@ -37,8 +32,8 @@ namespace exercise.webapi.DTO
             {
                 result.Add(new BookResponseDTO(book));
             }
-
             return result;  
         }
+
     }
 }

@@ -18,8 +18,7 @@ namespace exercise.webapi.DTO
             Books = new List<BookWithAuthorDTO>();
         
             foreach (var book in publisher.Books) { 
-                Books.Add(new BookWithAuthorDTO(book));
-                
+                Books.Add(new BookWithAuthorDTO(book)); 
             }
         }
 
@@ -32,6 +31,5 @@ namespace exercise.webapi.DTO
             }
             return result;
         }
-
     }
 }

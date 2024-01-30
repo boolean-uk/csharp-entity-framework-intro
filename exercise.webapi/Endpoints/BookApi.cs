@@ -19,13 +19,14 @@ namespace exercise.webapi.Endpoints
             bookGroup.MapDelete("/{id}", DeleteBook);
             bookGroup.MapPost("/author/{authorId}", AddBook);
 
-            // extension
-            bookGroup.MapPut("/{bookId}/autjor/{authorId}", AddAuthorToBook);
+
+            
+
+           
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
-            //var books = await bookRepository.GetAllBooks();
             return TypedResults.Ok(BookResponseDTO.FromRepository(await bookRepository.GetAllBooks()));
         }
 
@@ -90,13 +91,8 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Problem(ex.ToString());
             }
         }
+      
         
-        private static async Task<IResult> AddAuthorToBook(int bookId, int authorId)
-        {
-            throw new NotImplementedException();
-        }
-        
-
 
 
     }

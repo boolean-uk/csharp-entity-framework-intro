@@ -13,6 +13,9 @@ namespace exercise.webapi.Models
         // extension
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
+
+        // extension many-to-many
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
         
     }
 }

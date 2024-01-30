@@ -1,5 +1,7 @@
 ﻿using exercise.webapi.Data;
+using exercise.webapi.DTO;
 using exercise.webapi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -16,13 +18,12 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
-
+            return await _db.Books.Include(a => a.Author).Include(p => p.Publisher).ToListAsync();
         }
 
         public async Task<Book?> GetBookById(int id)
         {
-            return await _db.Books.Include(p => p.Author).FirstOrDefaultAsync(p => p.Id == id);
+            return await _db.Books.Include(a => a.Author).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book?> DeleteBookById(int id)
@@ -63,6 +64,8 @@ namespace exercise.webapi.Repository
         {
             _db.SaveChanges();   
         }
+
+
 
     }
 }
