@@ -141,7 +141,7 @@ namespace exercise.webapi.Data
                 for (int y = 1; y < authorRandom.Next(); y++) {
                     bookAuthors.Add(_authors[authorRandom.Next(_authors.Count)]);
                 }
-                book.Authors = bookAuthors.ToList();
+                
             }
             
             for (int y = 1; y < 250; y++)

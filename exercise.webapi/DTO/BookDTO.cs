@@ -6,21 +6,14 @@ namespace exercise.webapi.DTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public ICollection<AuthorDTO> CoAuthors { get; set; } = new List<AuthorDTO>();
+        public ICollection<AuthorDTO> AuthorsToBook { get; set; } = new List<AuthorDTO>();
 
         public BookDTO(Book book, int callingAuthorId)
         {
             Id = book.Id;
             Title = book.Title;
 
-            foreach (var author in book.Authors)
-            {
-                if (author.Id == callingAuthorId)
-                {
-                    continue;
-                }
-                CoAuthors.Add(new AuthorDTO(author));
-            }
+            AuthorsToBook = book.AuthorBooks.Select(ab => new AuthorDTO(ab.Author)).ToList();
         }
 
         public BookDTO(Book book)
@@ -28,10 +21,7 @@ namespace exercise.webapi.DTO
             Id = book.Id;
             Title = book.Title;
 
-            foreach (var author in book.Authors)
-            {      
-                CoAuthors.Add(new AuthorDTO(author));
-            }
+            AuthorsToBook = book.AuthorBooks.Select(ab => new AuthorDTO(ab.Author)).ToList();
         }
 
     }

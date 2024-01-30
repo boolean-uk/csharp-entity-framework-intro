@@ -19,10 +19,11 @@ namespace exercise.webapi.Models
             LastName = author.LastName;
             Email = author.Email;
             Books = new List<BookDTO>();
-            foreach (var book in author.Books)
+            foreach (var authorBook in author.AuthorBooks)
             {
-               Books.Add(new BookDTO(book, author.Id));
+                Books.Add(new BookDTO(authorBook.Book, author.Id));
             }
+
         }
 
         public static List<AuthorResponseDTO> FromRepository(IEnumerable<Author> authors){

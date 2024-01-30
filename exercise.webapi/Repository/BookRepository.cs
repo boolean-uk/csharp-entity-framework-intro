@@ -17,11 +17,15 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Authors).Include(b => b.Publisher).ToListAsync();
+            return await _db.Books
+                .Include(book => book.AuthorBooks)
+                .ThenInclude(authorBook => authorBook.Author)
+                .Include(publisher => publisher.Publisher)
+                .ToListAsync();
         }
 
         public async Task<Book?> GetABook(int bookId){
-            return await _db.Books.Include(b => b.Authors).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == bookId);
+            return await _db.Books.Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == bookId);
         }
         public async Task<Book?> CreateBook(string title, Author author, Publisher publisher){
         if (title.GetType() != typeof(string))
@@ -35,11 +39,9 @@ namespace exercise.webapi.Repository
         Book book = new Book
         {
             Title = title,
-            Authors = new List<Author>(),
             PublisherId = publisher.Id,
             Publisher = publisher,
         };
-        book.Authors.Add(author);
 
         _db.Books.Add(book);
         await _db.SaveChangesAsync();

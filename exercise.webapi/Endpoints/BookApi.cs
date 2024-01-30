@@ -43,7 +43,7 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound();
             }
-            book.Authors.Add(author);
+            
             book.PublisherId = publisherId;
             Publisher publisher = await publisherRepository.GetAPublisher(publisherId);
             book.Publisher = publisher;

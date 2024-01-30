@@ -12,6 +12,5 @@ namespace exercise.webapi.Models
 
         public ICollection<AuthorBook> AuthorBooks { get; set; } = new List<AuthorBook>();
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }
