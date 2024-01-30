@@ -13,6 +13,15 @@ namespace exercise.webapi.Repository
         {
             _dataContext = dataContext;
         }
+
+
+        public async Task<IEnumerable<Author>> GetAllAuthors()
+        {
+            return await _dataContext.Authors.Include(a => a.Books).ToListAsync();
+            throw new NotImplementedException();
+        }
+
+
         public async Task<Author?> GetAuthorById(int id)
         {
             return await _dataContext.Authors.Include(b => b.Books).FirstOrDefaultAsync(a => a.Id == id);
