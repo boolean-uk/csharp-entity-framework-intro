@@ -2,16 +2,21 @@ using exercise.webapi.Models;
 
 namespace exercise.webapi.DTO
 {
-    public class BookDto{
-    public int Id { get; set; }
-    public string Title { get; set; }
+   public class AuthorDto{
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; } 
+        public string Email { get; set; }
 
-    public BookDto(Book book)
-    {
-        Id = book.Id;
-        Title = book.Title;
+        public AuthorDto(Author author)
+        {
+            Id = author.Id;
+            FirstName = author.FirstName;
+            LastName = author.LastName;
+            Email = author.Email;
+        }
     }
-    }
+      
 
 public class AutherResponseDto{
     public int Id { get; set; }
@@ -19,6 +24,8 @@ public class AutherResponseDto{
     public string Email { get; set; }
 
     public ICollection<BookDto> Books { get; set; } = new List<BookDto>();
+
+    public ICollection<PublisherDTO> Publishers { get; set; } = new List<PublisherDTO>();
 
     public AutherResponseDto(Author author)
     {
@@ -30,6 +37,7 @@ public class AutherResponseDto{
         {
             Books.Add(new BookDto(book));
         }
+        
     }
 
     public static List<AutherResponseDto> FromRepository(IEnumerable<Author> authors)

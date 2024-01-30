@@ -2,6 +2,7 @@
 using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using static System.Reflection.Metadata.BlobBuilder;
+using Microsoft.AspNetCore.Mvc;
 namespace exercise.webapi.Endpoints
 {
     public static class BookApi
@@ -32,6 +33,8 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(new BookResponseDto(book));
         }
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
        private static async Task<IResult> AddBook(IBookRepository bookRepository, BookPostPayload book)
         {
             var newBook = await bookRepository.AddBook(book.Title, book.AuthorId);
