@@ -15,10 +15,10 @@ namespace exercise.webapi.Repository
             return await _db.Publishers.Include(a => a.Books).ThenInclude(a => a.Author).ToListAsync();
         }
 
-        public async Task<Publisher> GetPublisherById(int id, IPublisherRepository publisherRepository)
+        public async Task<Publisher?> GetPublisherById(int id)
         {
-            var result = await _db.Publishers.Include(a => a.Books).ThenInclude(a => a.Author).FirstOrDefaultAsync(a => a.Id == id);
-            throw new NotImplementedException();
+            return await _db.Publishers.Include(a => a.Books).ThenInclude(a => a.Author).FirstOrDefaultAsync(a => a.Id == id);
+            
         }
     }
 }
