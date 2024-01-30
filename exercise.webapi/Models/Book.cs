@@ -6,8 +6,8 @@ namespace exercise.webapi.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        
-        public int AuthorId { get; set; }
-        public Author Author { get; set; }
+        public int PublisherId {get; set;}
+        public Publisher Publisher {get; set;} = null!;
+        public ICollection<BookAuthor> Authors { get; set; } = [];
     }
 }
