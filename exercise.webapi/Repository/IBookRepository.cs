@@ -1,4 +1,5 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Data;
+using exercise.webapi.Models;
 
 namespace exercise.webapi.Repository
 {
@@ -7,6 +8,7 @@ namespace exercise.webapi.Repository
         public Task<IEnumerable<Book>> GetAllBooks();
         public Task<Book?> GetBookById(int id);
         public Task<Book?> DeleteBookById(int id);
+        public Task<Book?> AddBook(BookPostPayload payload, int authorId);
         public void SaveChanges();
     }
 }

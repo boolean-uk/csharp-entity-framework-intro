@@ -1,4 +1,5 @@
-﻿using exercise.webapi.DTO;
+﻿using exercise.webapi.Data;
+using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -16,6 +17,7 @@ namespace exercise.webapi.Endpoints
             bookGroup.MapGet("/{id}", GetBook);
             bookGroup.MapPut("/{id}", UpdateBookAuthor);
             bookGroup.MapDelete("/{id}", DeleteBook);
+            bookGroup.MapPost("/author/{authorId}", AddBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -64,5 +66,32 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(new BookResponseDTO(book));
             throw new NotImplementedException();
         }
+
+        private static async Task<IResult> AddBook(int authorId, IBookRepository bookRepository, IAuthorRepository authorRepository, BookPostPayload payload)
+        {
+            try
+            {
+                var isAuthor = authorRepository.GetAuthorById(authorId);
+                if (isAuthor == null) // Id lesser than 0 is invalid
+                {
+                    return TypedResults.NotFound($"Author id {authorId} is invaid");
+                }
+                if (payload.title == null || payload.title == "")
+                {
+                    return TypedResults.BadRequest($"Invalid payload {payload}");
+                }
+                var result = await bookRepository.AddBook(payload, authorId);
+                return TypedResults.Created($"/author/{authorId}",new BookResponseDTO(result));
+            } catch (Exception ex)
+            {
+                return TypedResults.Problem(ex.ToString());
+            }
+        }
+        
+
+        
+
+
+
     }
 }

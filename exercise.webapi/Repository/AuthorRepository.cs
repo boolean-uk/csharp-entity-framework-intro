@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
@@ -14,7 +15,8 @@ namespace exercise.webapi.Repository
         }
         public async Task<Author?> GetAuthorById(int id)
         {
-            return await _dataContext.Authors.FindAsync(id);
+            return await _dataContext.Authors.Include(b => b.Books).FirstOrDefaultAsync(a => a.Id == id);
+            //return await _dataContext.Authors.FindAsync(id);
         }
     }
 }

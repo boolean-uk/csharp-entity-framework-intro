@@ -7,6 +7,7 @@ namespace exercise.webapi.Repository
     public class BookRepository : IBookRepository
     {
         DataContext _db;
+        private int current_id = 0;
         
         public BookRepository(DataContext db)
         {
@@ -36,9 +37,32 @@ namespace exercise.webapi.Repository
             return result;
         }
 
+        public async Task<Book?> AddBook(BookPostPayload payload, int authorId) 
+        {
+            try
+            {
+                var result = new Book() { Id = getNextId(), Title = payload.title, AuthorId = authorId };
+                _db.Add(result);
+                await _db.SaveChangesAsync();
+                return result;
+            } catch(Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occured {ex}");
+                return null;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private int getNextId()
+        {
+            return current_id++;
+        }
+
         public void SaveChanges()
         {
             _db.SaveChanges();   
         }
+
     }
 }
