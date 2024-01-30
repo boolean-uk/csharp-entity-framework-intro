@@ -7,6 +7,7 @@ using static System.Reflection.Metadata.BlobBuilder;
 namespace exercise.webapi.Endpoints
 {
     public record UpdatePostAuthorRequestDTO(string firstName, string lastName, string email);
+    public record BookPostPayload(string title);
 
     public static class BookApi
     {
@@ -16,6 +17,7 @@ namespace exercise.webapi.Endpoints
             app.MapGet("/books{id}", GetBook);
             app.MapPut("/books/{postId}/author/", UpdateAuthor);
             app.MapDelete("/books{id}", DeleteBook);
+            app.MapPost("/books{authorID}", CreateBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -55,6 +57,21 @@ namespace exercise.webapi.Endpoints
 
             var allBooks = await bookRepository.DeleteBook(id);
             return TypedResults.Ok(BookResponseDTO.FromRepository(allBooks));
+        }
+
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, BookPostPayload createdBook, int authorID)
+        {
+            var book = await bookRepository.CreateBook(createdBook.title);
+            if (book == null)
+                return Results.BadRequest(createdBook.title);
+
+            Author? author = await authorRepository.GetAuthor(authorID);
+            if (author == null)
+                return Results.NotFound("Author Id out of scope");
+
+            book.Author = author;
+            book.AuthorId = authorID;
+            return TypedResults.Ok(BookResponseDTO.FromARepository(book));
         }
     }
 }
