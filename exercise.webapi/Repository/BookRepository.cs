@@ -33,7 +33,7 @@ namespace exercise.webapi.Repository
             return bookToDTO(book);
         }
 
-        public async Task<BookDTO?> UpdateBook(int id, BookPush newBook)
+        public async Task<BookDTO?> UpdateBook(int id, BookPost newBook)
         {
             var bookToUpdate = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
             if (bookToUpdate == null) return null;
@@ -43,6 +43,34 @@ namespace exercise.webapi.Repository
             bookToUpdate.Author = author;
             await _db.SaveChangesAsync();
             return bookToDTO(bookToUpdate);
+        }
+
+        public async Task<BookDTO?> DeleteBook(int id)
+        {
+            var bookToDelete = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
+            if (bookToDelete == null) return null;
+            _db.Books.Remove(bookToDelete);
+            await _db.SaveChangesAsync();
+            return bookToDTO(bookToDelete);
+        }
+
+        public async Task<BookDTO?> CreateBook(BookPost newBook)
+        {
+            var author = await _db.Authors.FirstOrDefaultAsync(x => x.Id == newBook.AuthorId);
+            if (author == null) return null;
+            Book book = new Book()
+            {
+                Title = newBook.Title,
+                Author = author,
+            };
+            _db.Books.Add(book);
+            await _db.SaveChangesAsync();
+            return bookToDTO(book);
+        }
+
+        public async Task<int> GetNewId()
+        {
+            return await _db.Books.MaxAsync(x => x.Id);
         }
 
         private BookDTO bookToDTO(Book book)
