@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using exercise.webapi.DTOs;
+using System.Text.Json.Serialization;
 
 namespace exercise.webapi.Models
 {
