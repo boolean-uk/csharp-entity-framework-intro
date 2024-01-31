@@ -4,6 +4,7 @@ namespace exercise.webapi.Repository
 {
     public interface IBookRepository
     {
-        public Task<IEnumerable<Book>> GetAllBooks();
+        public Task<IEnumerable<BookDTO>> GetAllBooks();
+        public Task<BookDTO> GetBookById(int id);
     }
 }
