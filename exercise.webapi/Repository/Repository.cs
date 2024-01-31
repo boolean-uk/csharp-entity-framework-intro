@@ -76,15 +76,12 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<AuthorDTO>> GetAllAuthors()
         {
-            /*var result = new List<AuthorDTO>();
+            var result = new List<AuthorDTO>();
             foreach(var author in _db.Authors)
             {
                 result.Add(await GetAuthorById(author.Id));
             }
-            return result;*/
-
-            var result = await Task.WhenAll(_db.Authors.Select(author => GetAuthorById(author.Id)));
-            return result.ToList();
+            return result;
         }
     }
 }
