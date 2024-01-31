@@ -1,27 +1,9 @@
-﻿using exercise.webapi.Models;
-using exercise.webapi.Repository;
+﻿using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
+using static exercise.webapi.DTO.DTO;
 
 namespace exercise.webapi.Endpoints
 {
-    public class BookDTO
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public int authorID { get; set; }
-        public string AuthorFirstName { get; set; }
-        public string AuthorLastName { get; set; }
-        public BookDTO(Book book)
-        {
-            Id = book.Id;
-            Title = book.Title;
-            authorID = book.AuthorId;
-            AuthorFirstName = book.Author.FirstName;
-            AuthorLastName = book.Author.LastName;
-        }
-
-
-    }
     public static class BookApi
     {
         public static void ConfigureBooksApi(this WebApplication app)
