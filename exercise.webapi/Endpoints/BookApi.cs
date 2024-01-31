@@ -43,5 +43,16 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.NotFound(ex.Message);
             }
         }
+
+        private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int bookId)
+        {
+            try
+            {
+                return TypedResults.Ok(await bookRepository.DeleteBookById(bookId));
+            } catch (ArgumentException ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
+        }
     }
 }
