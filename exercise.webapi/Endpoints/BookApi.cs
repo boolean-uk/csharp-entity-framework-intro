@@ -19,10 +19,10 @@ namespace exercise.webapi.Endpoints
             bookGroup.MapDelete("/{id}", DeleteBook);
             bookGroup.MapPost("/author/{authorId}", AddBook);
 
+            bookGroup.MapGet("/details", GetAllBookDetails);
 
-            
 
-           
+
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -91,8 +91,13 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Problem(ex.ToString());
             }
         }
-      
-        
+
+        private static async Task<IResult> GetAllBookDetails(IBookRepository bookRepository)
+        {
+            var books = await bookRepository.GetAllBooks();
+            var bookDetailsDTOs = BookDetailsDTO.FromRepository(books);
+            return TypedResults.Ok(bookDetailsDTOs);
+        }
 
 
     }
