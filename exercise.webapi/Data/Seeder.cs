@@ -1,4 +1,5 @@
-﻿using exercise.webapi.Models;
+﻿using System.Collections.ObjectModel;
+using exercise.webapi.Models;
 
 namespace exercise.webapi.Data
 {
@@ -77,14 +78,43 @@ namespace exercise.webapi.Data
             "Leopards"
         };
 
+
+        private List<string> _company = new List<string>()
+        {
+            "Penguin Random House",
+            "HarperCollins",
+            "Simon & Schuster",
+            "Macmillan Publishers",
+            "Hachette Livre",
+            "Scholastic",
+            "Pearson",
+            "Wiley",
+            "Bloomsbury",
+            "Oxford University Press",
+            "Cambridge University Press",
+            "Elsevier",
+            "Springer",
+            "Taylor & Francis",
+            "John Wiley & Sons",
+            "MIT Press",
+            "Houghton Mifflin Harcourt",
+            "Pan Macmillan",
+            "Harlequin",
+            "Puffin Books"
+        };
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publishers = new List<Publisher>();
+
+        private List<BookAuthor> _bookAuthor = new List<BookAuthor>();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
+            Random publisherRandom = new Random();
+            Random bookAuthor = new Random();
 
 
 
@@ -99,19 +129,39 @@ namespace exercise.webapi.Data
             }
 
 
+
+            for (int x = 1; x < 250; x++)
+            {
+                Publisher publisher = new Publisher
+                {
+                    Id = x,
+                    Company = _company[publisherRandom.Next(_company.Count)]
+                };
+                _publishers.Add(publisher);
+            }
+
             for (int y = 1; y < 250; y++)
             {
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+                book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
                 _books.Add(book);
             }
 
+            for (int y = 1; y < 250; y++)
+            {
+                BookAuthor book = new BookAuthor();
+                book.Id = y;
+                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.BookId = _books[bookRandom.Next(_books.Count)].Id;
+                _bookAuthor.Add(book);
+            }
 
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publishers { get { return _publishers; } }
+        public List<BookAuthor> BookAuthors { get { return _bookAuthor; } }
     }
 }
