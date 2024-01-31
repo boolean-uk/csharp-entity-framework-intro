@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
+builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library")); // not sure if i was supposed to use this?
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 var app = builder.Build();
@@ -28,5 +29,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.ConfigureAuthorsApi();
 app.ConfigureBooksApi();
 app.Run();
