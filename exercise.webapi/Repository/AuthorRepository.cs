@@ -20,7 +20,7 @@ namespace exercise.webapi.Repository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Email = x.Email,
-                BookTitle = x.Books.Select(x => x.Title).ToArray(),
+                BookInfo = x.Books.Select(x => new BookPublisherDTO() { Title = x.Title, PublisherName = x.Publisher.Name }).ToArray(),
             }).ToListAsync();
         }
 
@@ -32,7 +32,7 @@ namespace exercise.webapi.Repository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Email = x.Email,
-                BookTitle = x.Books.Select(x => x.Title).ToArray(),
+                BookInfo = x.Books.Select(x => new BookPublisherDTO() { Title = x.Title, PublisherName = x.Publisher.Name }).ToArray(),
             }).FirstOrDefaultAsync();
         }
     }

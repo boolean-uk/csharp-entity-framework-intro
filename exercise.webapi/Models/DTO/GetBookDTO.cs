@@ -8,5 +8,7 @@
         public string AuthorFirstName { get; set; }
         public string AuthorLastName { get; set; }
         public string AuthorEmail { get; set; }
+        public int PublisherId { get; set; }
+        public string PublisherName { get; set; }
     }
 }

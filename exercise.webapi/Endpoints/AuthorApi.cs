@@ -12,15 +12,15 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> GetAuthorById(int id, IAuthorRepository authorRepository)
         {
-            var books = await authorRepository.GetAuthorById(id);
-            if (books == null) { return TypedResults.NotFound("Author not found"); }
-            return TypedResults.Ok(books);
+            var author = await authorRepository.GetAuthorById(id);
+            if (author == null) { return TypedResults.NotFound("Author not found"); }
+            return TypedResults.Ok(author);
         }
 
         private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
         {
-            var books = await authorRepository.GetAllAuthors();
-            return TypedResults.Ok(books);
+            var author = await authorRepository.GetAllAuthors();
+            return TypedResults.Ok(author);
         }
     }
 }

@@ -25,6 +25,8 @@ namespace exercise.webapi.Repository
                 AuthorEmail = x.Author.Email,
                 AuthorFirstName = x.Author.FirstName,
                 AuthorLastName = x.Author.LastName,
+                PublisherId = x.Publisher.Id,
+                PublisherName = x.Publisher.Name,
             }).FirstOrDefaultAsync();
         }
 
@@ -38,6 +40,8 @@ namespace exercise.webapi.Repository
                 AuthorEmail = x.Author.Email,
                 AuthorFirstName = x.Author.FirstName,
                 AuthorLastName = x.Author.LastName,
+                PublisherId = x.Publisher.Id,
+                PublisherName = x.Publisher.Name,
             }).ToListAsync();
 
         }
@@ -60,7 +64,9 @@ namespace exercise.webapi.Repository
                 AuthorId = newAuthor.Id,
                 AuthorFirstName = newAuthor.FirstName,
                 AuthorLastName = newAuthor.LastName,
-                AuthorEmail = newAuthor.Email
+                AuthorEmail = newAuthor.Email,
+                PublisherId = dbBook.Publisher.Id,
+                PublisherName = dbBook.Publisher.Name,
             };
         }
 
