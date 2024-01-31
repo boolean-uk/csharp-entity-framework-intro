@@ -40,9 +40,10 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(book);
         }
 
-        private static Task CreateBook(HttpContext context)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost model)
         {
-            throw new NotImplementedException();
+            var book = await bookRepository.CreateBook(model);
+            return TypedResults.Ok(book);
         }
     }
 }

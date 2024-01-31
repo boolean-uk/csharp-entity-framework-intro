@@ -16,24 +16,10 @@ namespace exercise.webapi.Repository
         /*
          * Get the Author by ID to correctly get the updated author object.
          */
-        public async Task<AuthorDTO> GetAuthorById(int authorId)
+        public async Task<Author> GetAuthorById(int authorId)
         {
             var author = await _db.Authors.FindAsync(authorId);
-
-            if (author == null)
-            {
-                return null;
-            }
-
-            var authorDTO = new AuthorDTO
-            {
-                Id = author.Id,
-                FirstName = author.FirstName,
-                LastName = author.LastName,
-                Email = author.Email
-            };
-
-            return authorDTO;
+            return author;
         }
 
         /*
@@ -92,12 +78,20 @@ namespace exercise.webapi.Repository
 
             var newAuthor = await GetAuthorById(authorId);
 
+            var authorDTO = new AuthorDTO
+            {
+                Id = newAuthor.Id,
+                FirstName = newAuthor.FirstName,
+                LastName = newAuthor.LastName,
+                Email = newAuthor.Email
+            };
+
             var bookUpdated = new BookDTO
             {
                 Id = bookToUpdate.Id,
                 Title = bookToUpdate.Title,
                 AuthorId = bookToUpdate.AuthorId,
-                Author = newAuthor
+                Author = authorDTO
             };
 
 
@@ -114,7 +108,7 @@ namespace exercise.webapi.Repository
             if (foundBook == null)
             {
                 return null;
-            }   
+            }
             _db.Books.Remove(foundBook);
             await _db.SaveChangesAsync();
 
@@ -123,8 +117,14 @@ namespace exercise.webapi.Repository
                 Id = foundBook.Id,
                 Title = foundBook.Title,
                 AuthorId = foundBook.AuthorId,
-                Author = await GetAuthorById(foundBook.Author.Id)
-            };  
+                Author = new AuthorDTO
+                {
+                    Id = foundBook.Author.Id,
+                    FirstName = foundBook.Author.FirstName,
+                    LastName = foundBook.Author.LastName,
+                    Email = foundBook.Author.Email
+                }
+            };
             return deletedBookDTO;
         }
 
@@ -132,9 +132,40 @@ namespace exercise.webapi.Repository
         /*
          * implement the CREATE book - it should return NotFound when author id is not valid and BadRequest when book object not valid
          */
-        public async Task<BookDTO> CreateBook(BookDTO bookDTO)
+        public async Task<BookDTO> CreateBook(BookPost book)
         {
-            throw new NotImplementedException();
+            int newId = _db.Books.Max(b => b.Id) + 1;
+            var newAuthor = await GetAuthorById(book.AuthorId);
+
+
+            Book newBook = new Book
+            {
+                Id = newId,
+                Title = book.Title,
+                AuthorId = book.AuthorId,
+                Author = newAuthor
+            };
+
+            _db.Books.Add(newBook);
+            _db.SaveChanges();
+
+
+            var bookDTO = new BookDTO
+            {
+                Id = newBook.Id,
+                Title = newBook.Title,
+                AuthorId = newBook.AuthorId,
+                Author = new AuthorDTO
+                {
+                    Id = newBook.Author.Id,
+                    FirstName = newBook.Author.FirstName,
+                    LastName = newBook.Author.LastName,
+                    Email = newBook.Author.Email
+                }
+            };
+
+
+            return bookDTO;
         }
 
 
