@@ -3,6 +3,7 @@
     public class CreateBookDTO
     {
         public string Title { get; set; }
-        public int AuthorId { get; set; }
+        public ICollection<int> AuthorIds { get; set; }
+        public int PublisherId { get; set; }
     }
 }

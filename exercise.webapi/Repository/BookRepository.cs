@@ -17,16 +17,19 @@ namespace exercise.webapi.Repository
 
         public async Task<GetBookDTO?> GetBookById(int id)
         {
-            return await _db.Books.Where(x => x.Id == id).Select(x => new GetBookDTO()
+            return await _db.Books.Where(x => x.Id == id).Select(y => new GetBookDTO()
             {
-                Id = x.Id,
-                Title = x.Title,
-                AuthorId = x.AuthorId,
-                AuthorEmail = x.Author.Email,
-                AuthorFirstName = x.Author.FirstName,
-                AuthorLastName = x.Author.LastName,
-                PublisherId = x.Publisher.Id,
-                PublisherName = x.Publisher.Name,
+                Id = y.Id,
+                Title = y.Title,
+                AuthorInfo = y.Authors.Select(z => new AuthorInfoDTO()
+                {
+                    AuthorId = z.Id,
+                    AuthorEmail = z.Email,
+                    AuthorFirstName = z.FirstName,
+                    AuthorLastName = z.LastName,
+                }).ToList(),
+                PublisherId = y.Publisher.Id,
+                PublisherName = y.Publisher.Name,
             }).FirstOrDefaultAsync();
         }
 
@@ -36,10 +39,13 @@ namespace exercise.webapi.Repository
             {
                 Id = x.Id,
                 Title = x.Title,
-                AuthorId = x.AuthorId,
-                AuthorEmail = x.Author.Email,
-                AuthorFirstName = x.Author.FirstName,
-                AuthorLastName = x.Author.LastName,
+                AuthorInfo = x.Authors.Select(y => new AuthorInfoDTO()
+                {
+                    AuthorId = y.Id,
+                    AuthorEmail = y.Email,
+                    AuthorFirstName = y.FirstName,
+                    AuthorLastName = y.LastName,
+                }).ToList(),
                 PublisherId = x.Publisher.Id,
                 PublisherName = x.Publisher.Name,
             }).ToListAsync();
@@ -55,16 +61,19 @@ namespace exercise.webapi.Repository
             }
             Book? dbBook = await _db.Books.Where(x => x.Id == updateDTO.BookId).FirstOrDefaultAsync();
             if (dbBook == null) { return null; }
-            dbBook.Author = newAuthor;
+            dbBook.Authors.Add(newAuthor);
             await _db.SaveChangesAsync();
             return new GetBookDTO()
             {
                 Id = dbBook.Id,
                 Title = dbBook.Title,
-                AuthorId = newAuthor.Id,
-                AuthorFirstName = newAuthor.FirstName,
-                AuthorLastName = newAuthor.LastName,
-                AuthorEmail = newAuthor.Email,
+                AuthorInfo = dbBook.Authors.Select(y => new AuthorInfoDTO()
+                {
+                    AuthorId = y.Id,
+                    AuthorEmail = y.Email,
+                    AuthorFirstName = y.FirstName,
+                    AuthorLastName = y.LastName,
+                }).ToList(),
                 PublisherId = dbBook.Publisher.Id,
                 PublisherName = dbBook.Publisher.Name,
             };
@@ -82,9 +91,17 @@ namespace exercise.webapi.Repository
         public async Task<int> CreateBook(CreateBookDTO createDTO)
         {
             if (createDTO.Title.Length == 0) { return -1; }
-            Author? dbAuthor = _db.Authors.Where(x => x.Id == createDTO.AuthorId).FirstOrDefault();
-            if (dbAuthor == null) { return -2; }
-            Book book = new Book() { Author = dbAuthor, AuthorId = dbAuthor.Id, Title = createDTO.Title };
+            List<Author> dbAuthor = await _db.Authors.Where(x => createDTO.AuthorIds.Contains(x.Id)).ToListAsync();
+            if (dbAuthor.Count == 0) { return -2; }
+            Publisher? dbPublisher = await _db.Publishers.Where(x => x.Id == createDTO.PublisherId).FirstOrDefaultAsync();
+            if (dbPublisher == null) { return -3; }
+            Book book = new Book()
+            {
+                Authors = dbAuthor,
+                PublisherId = createDTO.PublisherId,
+                Publisher = dbPublisher,
+                Title = createDTO.Title,
+            };
             _db.Books.Add(book);
             await _db.SaveChangesAsync();
             return 0;

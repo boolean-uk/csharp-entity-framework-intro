@@ -19,7 +19,17 @@ namespace exercise.webapi.Repository
             {
                 Id = x.Id,
                 Name = x.Name,
-                BookInfo = x.Books.Select(y => new BookAuthorDTO() { Title = y.Title, AuthorName = y.Author.FirstName + " " + y.Author.LastName }).ToList(),
+                BookAuthorInfo = x.Books.Select(y => new BookAuthorDTO()
+                {
+                    Title = y.Title,
+                    AuthorInfo = y.Authors.Select(z => new AuthorInfoDTO()
+                    {
+                        AuthorEmail = z.Email,
+                        AuthorFirstName = z.FirstName,
+                        AuthorId = z.Id,
+                        AuthorLastName = z.LastName,
+                    }).ToList()
+                }).ToList(),
             }).ToListAsync();
         }
 
@@ -29,7 +39,17 @@ namespace exercise.webapi.Repository
             {
                 Id = x.Id,
                 Name = x.Name,
-                BookInfo = x.Books.Select(y => new BookAuthorDTO() { Title = y.Title, AuthorName = y.Author.FirstName + " " + y.Author.LastName }).ToList(),
+                BookAuthorInfo = x.Books.Select(y => new BookAuthorDTO()
+                {
+                    Title = y.Title,
+                    AuthorInfo = y.Authors.Select(z => new AuthorInfoDTO()
+                    {
+                        AuthorEmail = z.Email,
+                        AuthorFirstName = z.FirstName,
+                        AuthorId = z.Id,
+                        AuthorLastName = z.LastName,
+                    }).ToList()
+                }).ToList(),
             }).FirstOrDefaultAsync();
         }
     }

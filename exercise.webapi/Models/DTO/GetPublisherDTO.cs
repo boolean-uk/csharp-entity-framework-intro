@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public IEnumerable<BookAuthorDTO> BookInfo { get; set; }
+        public IEnumerable<BookAuthorDTO> BookAuthorInfo { get; set; }
     }
 }

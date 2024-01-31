@@ -110,10 +110,10 @@ namespace exercise.webapi.Data
 
             for (int y = 1; y < 250; y++)
             {
-                Book book = new Book();
+                Book book = new();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.AuthorIds.Add(_authors[authorRandom.Next(_authors.Count)].Id);
                 book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);

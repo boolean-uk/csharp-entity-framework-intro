@@ -20,7 +20,11 @@ namespace exercise.webapi.Repository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Email = x.Email,
-                BookInfo = x.Books.Select(x => new BookPublisherDTO() { Title = x.Title, PublisherName = x.Publisher.Name }).ToArray(),
+                BookInfo = x.Books.Select(y => new BookPublisherDTO()
+                {
+                    Title = y.Title,
+                    PublisherName = y.Publisher.Name
+                }).ToArray(),
             }).ToListAsync();
         }
 

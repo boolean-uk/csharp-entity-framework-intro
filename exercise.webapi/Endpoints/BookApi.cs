@@ -50,6 +50,7 @@ namespace exercise.webapi.Endpoints
             var books = await bookRepository.CreateBook(createDTO);
             if (books == -1) { return TypedResults.BadRequest("Book object invalid"); }
             if (books == -2) { return TypedResults.NotFound("Author Id invalid"); }
+            if (books == -3) { return TypedResults.NotFound("Publisher Id invalid"); }
             return TypedResults.Ok();
         }
     }
