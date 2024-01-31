@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace exercise.webapi.Models
+namespace exercise.webapi.Models.DatabaseModels
 {
     public class Author
     {
