@@ -1,7 +1,6 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints;
 

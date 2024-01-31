@@ -13,10 +13,10 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<IEnumerable<BookDTO>> GetAllBooks()
+        public async Task<IEnumerable<BookWithAuthorDTO>> GetAllBooks()
         {
             var books = await _db.Books.Include(b => b.Author).ToListAsync();
-            var returnList = new List<BookDTO>();
+            var returnList = new List<BookWithAuthorDTO>();
             foreach (var book in books)
             {
                 returnList.Add(bookToDTO(book));
@@ -24,7 +24,7 @@ namespace exercise.webapi.Repository
             return returnList;
         }
 
-        public async Task<BookDTO?> GetBookById(int id)
+        public async Task<BookWithAuthorDTO?> GetBookById(int id)
         {
             var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
             if (book == null)
@@ -33,7 +33,7 @@ namespace exercise.webapi.Repository
             return bookToDTO(book);
         }
 
-        public async Task<BookDTO?> UpdateBook(int id, BookPost newBook)
+        public async Task<BookWithAuthorDTO?> UpdateBook(int id, BookPost newBook)
         {
             var bookToUpdate = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
             if (bookToUpdate == null) return null;
@@ -45,7 +45,7 @@ namespace exercise.webapi.Repository
             return bookToDTO(bookToUpdate);
         }
 
-        public async Task<BookDTO?> DeleteBook(int id)
+        public async Task<BookWithAuthorDTO?> DeleteBook(int id)
         {
             var bookToDelete = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
             if (bookToDelete == null) return null;
@@ -54,7 +54,7 @@ namespace exercise.webapi.Repository
             return bookToDTO(bookToDelete);
         }
 
-        public async Task<BookDTO?> CreateBook(BookPost newBook)
+        public async Task<BookWithAuthorDTO?> CreateBook(BookPost newBook)
         {
             var author = await _db.Authors.FirstOrDefaultAsync(x => x.Id == newBook.AuthorId);
             if (author == null) return null;
@@ -73,9 +73,9 @@ namespace exercise.webapi.Repository
             return await _db.Books.MaxAsync(x => x.Id);
         }
 
-        private BookDTO bookToDTO(Book book)
+        private BookWithAuthorDTO bookToDTO(Book book)
         {
-            return new BookDTO()
+            return new BookWithAuthorDTO()
                 {
                     Title = book.Title,
                     Author = new AuthorDTO()
