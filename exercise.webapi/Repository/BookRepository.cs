@@ -18,9 +18,11 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<GetBookDTO>> GetAllBooks()
         {
             IEnumerable <GetBookDTO> books = await _db.Books
+                .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .Select(b => new GetBookDTO()
                 {
+                    Publisher = b.Publisher,
                     Author = b.Author,
                     Id = b.Id,
                     Title = b.Title
@@ -31,11 +33,13 @@ namespace exercise.webapi.Repository
         public async Task<GetBookDTO> GetBookById(int id)
         {
             Book book = await _db.Books
+                .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .FirstOrDefaultAsync(b => b.Id == id)
                 ?? throw new ArgumentException($"No book with id: {id}");
             GetBookDTO dto = new()
             {
+                Publisher = book.Publisher,
                 Author = book.Author,
                 Id = book.Id,
                 Title = book.Title
@@ -46,6 +50,7 @@ namespace exercise.webapi.Repository
         public async Task<GetBookDTO> UpdateBookAuthor(int bookId, int authorId)
         {
             Book book = await _db.Books
+                .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .FirstOrDefaultAsync(b => b.Id == bookId)
                 ?? throw new ArgumentException($"No book with id: {bookId}");
@@ -66,6 +71,7 @@ namespace exercise.webapi.Repository
         public async Task<GetBookDTO> DeleteBookById(int bookId)
         {
             Book book = await _db.Books
+                .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .FirstOrDefaultAsync(b => b.Id == bookId)
                 ?? throw new ArgumentException($"No book with id: {bookId}");
