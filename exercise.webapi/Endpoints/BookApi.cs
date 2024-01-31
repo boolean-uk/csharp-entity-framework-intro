@@ -10,9 +10,13 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureBooksApi(this WebApplication app)
         {
-            app.MapGet("/books", GetBooks);
-            app.MapGet("/books/{id}", GetBook);
-            app.MapPut("/books/{id}", UpdateBook);
+            var group = app.MapGroup("/books");
+
+            group.MapGet("/", GetBooks);
+            group.MapGet("/{id}", GetBook);
+            group.MapPut("/{id}", UpdateBook);
+            group.MapDelete("/{id}", DeleteBook);
+            group.MapPost("/", CreateBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -52,6 +56,20 @@ namespace exercise.webapi.Endpoints
             } catch (ArgumentException ex)
             {
                 return TypedResults.NotFound(ex.Message);
+            }
+        }
+
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, CreateBookDTO dto)
+        {
+            try
+            {
+                return TypedResults.Created(nameof(CreateBook), await bookRepository.CreateBook(dto));
+            } catch (ArgumentException ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            } catch (BadHttpRequestException ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
             }
         }
     }

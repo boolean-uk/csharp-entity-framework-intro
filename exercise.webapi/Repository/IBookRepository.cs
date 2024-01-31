@@ -9,5 +9,6 @@ namespace exercise.webapi.Repository
         public Task<GetBookDTO> GetBookById(int id);
         public Task<GetBookDTO> UpdateBookAuthor(int bookId, int authorId);
         public Task<GetBookDTO> DeleteBookById(int id);
+        public Task<CreateBookDTO> CreateBook(CreateBookDTO book);
     }
 }

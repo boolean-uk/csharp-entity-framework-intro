@@ -2,6 +2,7 @@
 using exercise.webapi.DTOs;
 using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace exercise.webapi.Repository
 {
@@ -77,6 +78,24 @@ namespace exercise.webapi.Repository
                 Title = book.Title
             };
             return dto;
+        }
+
+        public async Task<CreateBookDTO> CreateBook(CreateBookDTO book)
+        {
+            if (book.Title == null || book.AuthorId == null)
+            {
+                throw new BadHttpRequestException("Not a valid format!");
+            }
+            Author author = await _db.Authors
+                .FirstOrDefaultAsync(a => a.Id == book.AuthorId)
+                ?? throw new ArgumentException($"No author with id: {book.AuthorId}");
+            Book newBook = new()
+            {
+                Author = author,
+                Title = book.Title
+            };
+            await _db.Books.AddAsync(newBook);
+            return book;
         }
     }
 }
