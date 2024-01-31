@@ -2,19 +2,46 @@
 using exercise.webapi.Repository;
 using static System.Reflection.Metadata.BlobBuilder;
 
-namespace exercise.webapi.Endpoints
+namespace exercise.webapi.Endpoints;
+
+public static class BookApi
 {
-    public static class BookApi
+    public static void ConfigureBooksApi(this WebApplication app)
     {
-        public static void ConfigureBooksApi(this WebApplication app)
+        var group = app.MapGroup("books");
+
+        group.MapGet("/", GetBooks);
+        group.MapGet("/{id}", GetBook);
+        group.MapPut("/{id}", UpdateBook);
+    }
+
+    private static async Task<IResult> GetBooks(IBookRepository bookRepository)
+    {
+        var books = await bookRepository.GetAllBooks();
+        return TypedResults.Ok(books);
+    }
+
+    private static async Task<IResult> GetBook(IBookRepository bookRepository, int id)
+    {
+        var book = await bookRepository.GetBookById(id);
+
+        if (book == null)
         {
-            app.MapGet("/books", GetBooks);
+            return TypedResults.NotFound($"Id: {id} not found!");
         }
 
-        private static async Task<IResult> GetBooks(IBookRepository bookRepository)
+        return TypedResults.Ok(book);
+    }
+
+    private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, BookPush book)
+    {
+        var updatedBook = await bookRepository.UpdateBook(id, book);
+
+        if (updatedBook == null)
         {
-            var books = await bookRepository.GetAllBooks();
-            return TypedResults.Ok(books);
+            return TypedResults.BadRequest();
         }
+
+        return TypedResults.Ok(updatedBook);
     }
 }
