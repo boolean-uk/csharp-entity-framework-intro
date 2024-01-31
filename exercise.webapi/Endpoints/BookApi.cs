@@ -1,5 +1,7 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.DTOs;
+using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -10,6 +12,7 @@ namespace exercise.webapi.Endpoints
         {
             app.MapGet("/books", GetBooks);
             app.MapGet("/books/{id}", GetBook);
+            app.MapPut("/books/{id}", UpdateBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -25,6 +28,17 @@ namespace exercise.webapi.Endpoints
                 var book = await bookRepository.GetBookById(id);
                 return TypedResults.Ok(book);
             } catch (ArgumentException ex) 
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
+        }
+
+        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int bookId, int authorId)
+        {
+            try
+            {
+                return TypedResults.Ok(await bookRepository.UpdateBookAuthor(bookId, authorId));
+            } catch (ArgumentException ex)
             {
                 return TypedResults.NotFound(ex.Message);
             }

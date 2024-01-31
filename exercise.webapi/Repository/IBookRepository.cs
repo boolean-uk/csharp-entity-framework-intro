@@ -7,5 +7,6 @@ namespace exercise.webapi.Repository
     {
         public Task<IEnumerable<GetBookDTO>> GetAllBooks();
         public Task<GetBookDTO> GetBookById(int id);
+        public Task<GetBookDTO> UpdateBookAuthor(int bookId, int authorId);
     }
 }

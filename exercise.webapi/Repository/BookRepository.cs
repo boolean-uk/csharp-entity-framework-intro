@@ -41,5 +41,24 @@ namespace exercise.webapi.Repository
             };
             return dto;
         }
+
+        public async Task<GetBookDTO> UpdateBookAuthor(int bookId, int authorId)
+        {
+            Book book = await _db.Books
+                .Include(b => b.Author)
+                .FirstOrDefaultAsync(b => b.Id == bookId)
+                ?? throw new ArgumentException($"No book with id: {bookId}");
+            Author author = await _db.Authors.FirstOrDefaultAsync(a => a.Id == authorId)
+                ?? throw new ArgumentException($"No author with id: {authorId}");
+            book.Author = author;
+            await _db.SaveChangesAsync();
+            var dto = new GetBookDTO()
+            {
+                Author = book.Author,
+                Id = book.Id,
+                Title = book.Title
+            };
+            return dto;
+        }
     }
 }
