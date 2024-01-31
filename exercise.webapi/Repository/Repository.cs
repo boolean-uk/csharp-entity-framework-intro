@@ -1,0 +1,92 @@
+﻿using exercise.webapi.Data;
+using exercise.webapi.Models.DatabaseModels;
+using Microsoft.EntityFrameworkCore;
+
+namespace exercise.webapi.Repository
+{
+    public class Repository<T, S> : IRepository<T, S> where T : class where S: class
+    {
+        DataContext _db;
+        private DbSet<T> _table_T = null;
+        private DbSet<S> _table_S = null;
+
+        public Repository(DataContext db)
+        {
+            _db = db;
+            _table_T = _db.Set<T>();
+            _table_S = _db.Set<S>();
+        }
+
+        public async Task<T?> Get(int id) 
+        {
+            IQueryable<T> result = _table_T;
+            if (typeof(T) == typeof(Book))
+            {
+                result = _table_T.Include(b => (b as Book).Author);
+                    
+            }
+            else if (typeof(T) == typeof(Author))
+            {
+                result = _table_T.Include(b => (b as Author).Books);
+            }
+            else
+            {
+                result = null;
+            }
+
+            return await result.Where(e => EF.Property<int>(e, "Id") == id).FirstOrDefaultAsync();
+
+
+        }
+
+        public async Task<IEnumerable<T>> GetAllT()
+        {
+            if (typeof(T) == typeof(Book))
+            {
+                return await _table_T
+                    .Include(b => (b as Book).Author)
+                    .ToListAsync();
+            }
+            else if (typeof(T) == typeof(Author))
+            {
+                return await _table_T
+                    .Include(b => (b as Author).Books)
+                    .ToListAsync();
+            }
+            else 
+            {
+                return null;
+            }
+        }
+
+        public async Task<T> Update(int id, T entity)
+        {
+            var dbEntity = _table_T.FindAsync(id);
+            // Update values of the dbEntity
+            _db.Entry(dbEntity).CurrentValues.SetValues(entity);
+            _db.Update(dbEntity); // entry marked as updated
+            await _db.SaveChangesAsync(); // Save changes
+            return await dbEntity;
+        }
+
+        public async Task<T> Insert(T entity)
+        {
+            var addedEntity = _table_T.Add(entity);
+            await _db.SaveChangesAsync();
+            return addedEntity.Entity;
+        }
+
+        public async Task<IEnumerable<S>> GetAllS()
+        {
+            return await _table_S.ToListAsync();
+        }
+
+        public async Task<T> Delete(int id)
+        {
+            T? entity = _table_T.Find(id);
+            _table_T.Remove(entity);
+            await _db.SaveChangesAsync();
+            return entity;
+        }
+    }
+}
