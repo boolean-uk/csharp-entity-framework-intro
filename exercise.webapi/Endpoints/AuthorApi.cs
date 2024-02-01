@@ -38,8 +38,12 @@ namespace exercise.webapi.Endpoints
                     };
                         foreach(Book b in entity.Books)
                     {
-                        BookDTO3 bookdto = new BookDTO3() { Id = b.Id, Title = b.Title };
+                        BookDTO bookdto = new BookDTO { Id = b.Id, Title = b.Title, PublisherDTO = new PublisherDTO() { Id = b.Publisher.Id, Name = b.Publisher.Name} };
                         authorDTO.Books.Add(bookdto);
+
+
+                       /* BookDTO3 bookdto = new BookDTO3() { Id = b.Id, Title = b.Title };
+                        authorDTO.Books.Add(bookdto);*/
                     }    
 
 
@@ -71,7 +75,7 @@ namespace exercise.webapi.Endpoints
                     Email = original.Email,
                     FirstName = original.FirstName,
                     LastName = original.LastName,
-                    Books = original.Books.Select(book => new BookDTO3 {Title = book.Title, Id = book.Id}).ToList()         // THIS IS IMPOIRTANT!!! NEED TO TRANSFER!
+                    Books = original.Books.Select(book => new BookDTO {Title = book.Title, Id = book.Id, PublisherDTO = new PublisherDTO() { Id = book.Publisher.Id, Name = book.Publisher.Name } }).ToList()         // THIS IS IMPOIRTANT!!! NEED TO TRANSFER!
                 };
 
                 return TypedResults.Ok(result);

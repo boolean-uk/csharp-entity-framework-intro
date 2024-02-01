@@ -26,6 +26,10 @@ namespace exercise.webapi.Endpoints
             //Target data:
             var booksDTO = new List<BookDTO>();
 
+
+
+
+
             //Transfer:
             foreach (Book book in books)
             {
@@ -33,13 +37,22 @@ namespace exercise.webapi.Endpoints
                 {
                     Id = book.Id,
                     Title = book.Title,
+
                     AuthorDTO = new AuthorDTO()
                     {
                         FirstName = book.Author.FirstName,
                         LastName = book.Author.LastName,
                         Email = book.Author.Email
+
                     }
-                });
+
+                   /* PublisherDTO = new PublisherDTO()
+                    {
+                        Name = book.Publisher.Name
+
+                    }*/
+
+                }); 
             }
             return TypedResults.Ok(booksDTO);
 

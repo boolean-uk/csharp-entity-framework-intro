@@ -7,6 +7,7 @@ namespace exercise.webapi.DTO
         public int Id { get; set; }
         public string Title { get; set; }
         public AuthorDTO AuthorDTO { get; set; }
+        public PublisherDTO PublisherDTO { get; set; }
     }
 }
 

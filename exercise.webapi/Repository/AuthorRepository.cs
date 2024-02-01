@@ -19,7 +19,7 @@ namespace exercise.webapi.Repository
         public async Task<Author> GetAnAuthors(int? id)
         {
             if (id == null) { throw new BadHttpRequestException("Invalid"); }
-            Author author = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
+            Author author = await _db.Authors.Include(a => a.Books).ThenInclude(p => p.Publisher).FirstOrDefaultAsync(a => a.Id == id);
 
             if (author == null) { throw new Exception("No match id"); }
             return author;
@@ -28,7 +28,7 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<Author>> GetAuthors()
         {
 
-             return await _db.Authors.Include(a => a.Books).ToListAsync();     // Not working
+             return await _db.Authors.Include(a => a.Books).ThenInclude(p => p.Publisher).ToListAsync();     // Not working
            // return await _db.Authors.AsNoTracking().Include(a => a.Books).ToListAsync(); //Not working
 
             //return await _db.Authors.Include(a => a.Books).Select(a => new Author() { })

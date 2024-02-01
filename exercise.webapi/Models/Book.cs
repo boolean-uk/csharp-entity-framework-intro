@@ -12,5 +12,6 @@ namespace exercise.webapi.Models
 
         // EXTESION:
         public int PublisherId { get; set; }    
+        public Publisher Publisher { get; set; }
     }
 }
