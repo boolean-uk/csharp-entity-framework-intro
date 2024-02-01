@@ -35,5 +35,18 @@ namespace exercise.webapi.Conversions
             return member;
 
         }
+
+        public static Book toCreate(PostBook postBook)
+        {
+
+            Book book = new Book()
+            {
+                Title = postBook.Title,
+                AuthorId = postBook.AuthorId, 
+                PublisherId = postBook.PublisherId
+            };
+
+            return book;
+        }
     }
 }

@@ -14,29 +14,17 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<Payload<Book>> CreateBook(PostBook postBook)
+        public async Task<Book> CreateBook(Book book)
         {
-            Payload<Book> payload = new Payload<Book>();
-            if (_db.Authors.Count(x => x.Id == postBook.AuthorId) == 0)
-            {
-                payload.status = Status.NotFound;
-                return payload;
-            }
-            if (!postBook.Title.Any())
-            {
-                payload.status = Status.BadRequest;
-                return payload;
-            }
-            Book book = new Book() { Title = postBook.Title, AuthorId = postBook.AuthorId };
             _db.Books.Add(book);
             _db.SaveChanges();
 
             int id = _db.Books.Max(x => x.Id);
-            payload.data = await 
+            var newBook = await 
                 _db.Books.Include(b => b.Author).Include(b => b.Publisher).
                 FirstOrDefaultAsync(x => x.Id == id);
 
-            return payload;
+            return newBook;
         }
 
         public async Task<Book> DeleteBook(int id)
@@ -93,15 +81,15 @@ namespace exercise.webapi.Repository
                 ToListAsync();
         }
 
-        public async Task<Book> UpdateBook(int id, int authorId)
+        public async Task<Book> UpdateBook(Book book)
         {
-            var book = await _db.Books.FirstOrDefaultAsync(x => x.Id == id);
-            book.AuthorId = authorId;
+            _db.Books.Attach(book);
+            _db.Entry(book).State = EntityState.Modified;
             await _db.SaveChangesAsync();
 
             return await 
                 _db.Books.Include(b => b.Author).Include(b => b.Publisher).
-                FirstOrDefaultAsync(x => x.Id == id);
+                FirstOrDefaultAsync(x => x.Id == book.Id);
         }
     }
 }

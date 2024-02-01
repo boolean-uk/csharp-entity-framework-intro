@@ -3,6 +3,7 @@ using exercise.webapi.Conversions;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -49,13 +50,17 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, int authorId)
         {
-            var book = await bookRepository.UpdateBook(id, authorId);
+            var book = await bookRepository.GetBook(id);
+            book.AuthorId = authorId;
+            await bookRepository.UpdateBook(book);
 
             var member = BookConversion.toBook(book);
 
             return TypedResults.Ok(member);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.DeleteBook(id); 
@@ -66,17 +71,32 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(member);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> CreateBook(IBookRepository bookRepository, PostBook postBook)
         {
-            Payload<Book> book = await bookRepository.CreateBook(postBook);
-            if( book.status == Status.NotFound) return TypedResults.NotFound("not found");
-            if (book.status == Status.BadRequest) return TypedResults.BadRequest("Bad request");
+            // check if elements exist
+            Book temporaryBook = BookConversion.toCreate(postBook);
+            Publisher publisher = await bookRepository.GetPublisher(temporaryBook.PublisherId);
+            Author author = await bookRepository.GetAuthor(temporaryBook.AuthorId);
 
-            var member = BookConversion.toBook(book.data);
+            // if not throw fault
+            if (author == null | publisher == null) 
+                return TypedResults.NotFound("Wrong ID inputted");
+            if (!postBook.Title.Any())
+                return TypedResults.BadRequest("Bad title");
+
+            // create element
+            Book book = await bookRepository.CreateBook(temporaryBook);
+
+            var member = BookConversion.toBook(book);
 
             return TypedResults.Ok(member);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetAuthor(IBookRepository bookRepository, int id)
         {
             var author = await bookRepository.GetAuthor(id);
@@ -103,9 +123,12 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(result);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetPublisher(IBookRepository bookRepository, int id)
         {
             var publisher = await bookRepository.GetPublisher(id);
+            if (publisher == null) return TypedResults.NotFound("id not found");
 
             APublisherDto publisherDto = PublisherConversion.toPublisher(publisher);
 

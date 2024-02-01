@@ -9,11 +9,11 @@ namespace exercise.webapi.Repository
 
         public Task<Book> GetBook(int id);
 
-        public Task<Book> UpdateBook(int id, int authorId);
+        public Task<Book> UpdateBook(Book book);
 
         public Task<Book> DeleteBook(int id);
 
-        public Task<Payload<Book>> CreateBook(PostBook postBook);
+        public Task<Book> CreateBook(Book book);
 
         public Task<Author> GetAuthor(int id);
 
