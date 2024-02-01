@@ -23,12 +23,18 @@ namespace exercise.webapi.Conversions
                 FirstName = author.FirstName,
                 LastName = author.LastName,
                 Email = author.Email, 
-                Books = new List<ABookDto>()
+                Books = new List<AMBookDto>()
             };
 
             foreach (var entity in author.Books)
             {
-                authorDto.Books.Add(new ABookDto() { Title =  entity.Title });
+                authorDto.Books.Add(new AMBookDto() 
+                { 
+                    Title =  entity.Title, 
+                    Publisher = new PPublisherDto() { Name = entity.Publisher.Name, 
+                                   ContactDetails = entity.Publisher.ContactDetails} 
+                }
+                );
             }
 
             return authorDto;

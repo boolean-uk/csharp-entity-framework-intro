@@ -1,4 +1,4 @@
-﻿using exercise.webapi.AlternativeModels;
+﻿    using exercise.webapi.AlternativeModels;
 using exercise.webapi.Models;
 
 namespace exercise.webapi.Conversions
@@ -6,9 +6,9 @@ namespace exercise.webapi.Conversions
     public static class BookConversion
     {
 
-        public static List<BBookDto> toBook(List<Book> books)
+        public static List<ABookDto> toBook(List<Book> books)
         {
-            List<BBookDto> result = new List<BBookDto>();
+            List<ABookDto> result = new List<ABookDto>();
             foreach (var entity in books)
             {
                 result.Add(toBook(entity));
@@ -17,17 +17,19 @@ namespace exercise.webapi.Conversions
             return result;
         }
 
-        public static BBookDto toBook(Book book)
+        public static ABookDto toBook(Book book)
         {
-            var member = new BBookDto()
+            var member = new ABookDto()
             {
                 Title = book.Title,
-                Author = new BAuthorDto()
+                Author = new PAuthorDto()
                 {
                     FirstName = book.Author.FirstName,
                     LastName = book.Author.LastName,
                     Email = book.Author.Email
-                }
+                },
+                Publisher = new PPublisherDto() { Name = book.Publisher.Name,
+                    ContactDetails = book.Publisher.ContactDetails }
             };
 
             return member;

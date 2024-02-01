@@ -1,6 +1,6 @@
 ﻿namespace exercise.webapi.AlternativeModels
 {
-    public class BAuthorDto
+    public class PAuthorDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

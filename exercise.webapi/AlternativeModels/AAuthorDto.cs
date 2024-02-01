@@ -6,6 +6,6 @@
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public List<ABookDto> Books { get; set; }
+        public List<AMBookDto> Books { get; set; }
     }
 }

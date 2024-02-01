@@ -1,11 +1,8 @@
 ﻿namespace exercise.webapi.AlternativeModels
 {
-    public class ABookDto
+    public class AMBookDto
     {
         public string Title { get; set; }
-        public PAuthorDto Author { get; set; }
-
         public PPublisherDto Publisher { get; set; }
-
     }
 }
