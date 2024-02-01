@@ -1,6 +1,7 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Models.DTO;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -17,7 +18,7 @@ namespace exercise.webapi.Endpoints
             books.MapDelete("/", DeleteBook);
             books.MapPost("/{id}", AddBook);
         }
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAllBooks();
@@ -28,7 +29,8 @@ namespace exercise.webapi.Endpoints
             }
             return TypedResults.Ok(result);
         }
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotvFound)]
         private static async Task<IResult> GetBook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.GetBook(id);
@@ -38,7 +40,8 @@ namespace exercise.webapi.Endpoints
             }
             return TypedResults.Ok(book.ToDTO());
         }
-
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int bookId, int authorId)
         {
             var book = await bookRepository.UpdateBook(bookId, authorId);
@@ -48,7 +51,8 @@ namespace exercise.webapi.Endpoints
             }
             return TypedResults.Created("/book/{id}", book.ToDTO());
         }
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int bookId)
         {
             var book = await bookRepository.DeleteBook(bookId);
@@ -58,7 +62,9 @@ namespace exercise.webapi.Endpoints
             }
             return TypedResults.Ok(book.ToDTO());
         }
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> AddBook(IBookRepository bookRepository, BookPost book)
         {
             if (book == null)

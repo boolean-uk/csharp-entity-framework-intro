@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Models.DTO;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints
 {
@@ -12,6 +13,7 @@ namespace exercise.webapi.Endpoints
             authors.MapGet("/", GetAuthors);
             authors.MapGet("/{id}", GetAuthor);
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
         {
             var authors = await authorRepository.GetAuthors();
@@ -22,6 +24,8 @@ namespace exercise.webapi.Endpoints
             }
             return TypedResults.Ok(authorsDTO);
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         private static async Task<IResult> GetAuthor(IAuthorRepository authorRepository, int id)
         {
             var author = await authorRepository.GetAuthor(id);

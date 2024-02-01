@@ -20,7 +20,7 @@ namespace exercise.webapi.Models
 
         public AuthorResponseDTO ToDTOResponse()
         {
-            var result = new List<BookResponseTDO>();
+            var result = new List<BookResponseDTO>();
             foreach (var book in Books)
             {
                 result.Add(book.ToTDOResponse());

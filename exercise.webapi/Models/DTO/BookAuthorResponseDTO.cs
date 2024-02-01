@@ -1,10 +1,9 @@
 ﻿namespace exercise.webapi.Models.DTO
 {
-    public class BookDTO
+    public class BookAuthorResponseDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public AuthorDTO Author { get; set; }
-        public PublisherDTO Publisher { get; set; }
     }
 }
