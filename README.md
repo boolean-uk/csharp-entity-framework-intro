@@ -15,7 +15,6 @@ As guidelines we suggest:
 - implement the UPDATE boook where you can change the author via id (you may skip updating other properties like title, etc); make sure to return the Book + Author once the update is done
 - implement the DELETE book
 - implement the CREATE book - it should return NotFound when author id is not valid and BadRequest when book object not valid
-
 - implement the author API (interested in just the GET, GET all) -> the author should return the list of books, use its own author response DTO
 
 
