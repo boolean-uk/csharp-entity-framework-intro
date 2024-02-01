@@ -7,6 +7,6 @@ namespace exercise.webapi.DTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public ICollection<BookDTO3> Books { get; set; } = new List<BookDTO3>();
+        //public ICollection<BookDTO3> Books { get; set; } = new List<BookDTO3>();
     }
 }

@@ -9,5 +9,8 @@ namespace exercise.webapi.Models
         
         public int AuthorId { get; set; }
         public Author Author { get; set; }
+
+        // EXTESION:
+        public int PublisherId { get; set; }    
     }
 }
