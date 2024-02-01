@@ -1,4 +1,5 @@
-﻿using exercise.webapi.Repository;
+﻿using exercise.webapi.Models.DTOs;
+using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints;
@@ -17,7 +18,12 @@ public static class AuthorApi
     private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
     {
         var authors = await authorRepository.GetAllAuthors();
-        return TypedResults.Ok(authors);
+        var returnList = new List<AuthorWithBooksAndPublisherDTO>();
+        foreach (var author in authors)
+        {
+            returnList.Add(AuthorWithBooksAndPublisherDTO.AuthorToDTO(author));
+        }
+        return TypedResults.Ok(returnList);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,6 +36,6 @@ public static class AuthorApi
             return TypedResults.NotFound($"Id: {id} not found!");
         }
 
-        return TypedResults.Ok(author);
+        return TypedResults.Ok(AuthorWithBooksAndPublisherDTO.AuthorToDTO(author));
     }
 }

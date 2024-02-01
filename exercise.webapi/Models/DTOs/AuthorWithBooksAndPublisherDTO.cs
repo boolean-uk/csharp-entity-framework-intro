@@ -2,21 +2,21 @@
 
 namespace exercise.webapi.Models.DTOs;
 
-public class AuthorWithBooksDTO
+public class AuthorWithBooksAndPublisherDTO
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Email { get; set; }
-    public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
+    public ICollection<BookWithPublisherDTO> Books { get; set; } = new List<BookWithPublisherDTO>();
 
-    public static AuthorWithBooksDTO AuthorToDTO(Author author)
+    public static AuthorWithBooksAndPublisherDTO AuthorToDTO(Author author)
     {
-        var books = new List<BookDTO>();
+        var books = new List<BookWithPublisherDTO>();
         foreach (var book in author.Books)
         {
-            books.Add(BookDTO.BookToDTO(book));
+            books.Add(BookWithPublisherDTO.BookToDTO(book));
         }
-        return new AuthorWithBooksDTO()
+        return new AuthorWithBooksAndPublisherDTO()
         {
             FirstName = author.FirstName,
             LastName = author.LastName,
