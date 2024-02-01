@@ -9,6 +9,6 @@
 
         public string Email { get; set; }
 
-        public ICollection<BookDTO> Books { get; set; }
+        public IEnumerable<BookDTO> Books { get; set; }
     }
 }

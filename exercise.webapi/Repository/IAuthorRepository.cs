@@ -4,7 +4,7 @@ namespace exercise.webapi.Repository
 {
     public interface IAuthorRepository
     {
-        public Task<IEnumerable<AuthorDTO>> GetAllAuthors();
-        public Task<AuthorDTO> GetAuthor(int id);
+        public Task<IEnumerable<Author>> GetAllAuthors();
+        public Task<Author> GetAuthor(int id);
     }
 }
