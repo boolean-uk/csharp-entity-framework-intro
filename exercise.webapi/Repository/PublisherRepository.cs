@@ -21,7 +21,9 @@ namespace exercise.webapi.Repository
 
         public async Task<Publisher> GetPublisher(int id)
         {
-            Publisher publisher = await _db.Publishers.Include(p => p.Books).FirstOrDefaultAsync(a => a.Id == id);
+            var publisher = await _db.Publishers.Include(p => p.Books)
+                                                      .ThenInclude(b => b.Author)
+                                                      .FirstOrDefaultAsync(a => a.Id == id);
             return publisher;
         }
     }
