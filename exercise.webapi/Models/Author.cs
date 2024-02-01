@@ -28,6 +28,13 @@ namespace exercise.webapi.Models
 
     }
 
+    public class SimpleAuthorDTO
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+    }
+
     public class AuthorAndBooksDTO
     {
         public string FirstName { get; set; }

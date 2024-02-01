@@ -8,6 +8,8 @@ namespace exercise.webapi.Models
         public string Title { get; set; }
         public int AuthorId { get; set; }
         public Author Author { get; set; }
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
     }
 
     public class BookPost
@@ -23,6 +25,12 @@ namespace exercise.webapi.Models
 
         // author id
         public AuthorDTO Author { get; set; }
+    }
+
+    public class BookForPublisherDTO
+    {
+        public string Title { get; set; }
+        public SimpleAuthorDTO Author { get; set; }
     }
 
     public class SimpleBookDTO
