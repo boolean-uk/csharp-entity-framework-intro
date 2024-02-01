@@ -9,18 +9,21 @@ namespace exercise.webapi.Endpoints
         {
             var group = app.MapGroup("publishers");
             group.MapGet("/", GetPublishers);
+            group.MapGet("/{id}", GetPublisherById);
         }
 
         private static async Task<IResult> GetPublishers(IPublisherRepository publisherRepository)
         {
+            // Getting dto obj from PublisherRepository (is this more accurate than creating dto here)
             var result = await publisherRepository.GetPublishers();
-            List<PublisherDTO> publishers = new List<PublisherDTO>();
-            foreach (var publisher in result)
-            {
-                publishers.Add(new PublisherDTO(publisher));
-            }
+            return TypedResults.Ok(result);
+        }
 
-            return TypedResults.Ok(publishers);
+        private static async Task<IResult> GetPublisherById(IPublisherRepository publisherRepository, int id)
+        {
+            // Getting dto obj from PublisherRepository
+            var result = await publisherRepository.GetPublisher(id);
+            return TypedResults.Ok(result);
         }
     }
 }

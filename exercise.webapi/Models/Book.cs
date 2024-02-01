@@ -27,12 +27,6 @@ namespace exercise.webapi.Models
         public AuthorDTO Author { get; set; }
     }
 
-    public class BookForPublisherDTO
-    {
-        public string Title { get; set; }
-        public SimpleAuthorDTO Author { get; set; }
-    }
-
     public class SimpleBookDTO
     {
         public string Title { get; set; }

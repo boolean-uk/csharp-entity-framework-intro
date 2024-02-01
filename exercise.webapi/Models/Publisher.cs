@@ -12,38 +12,19 @@ namespace exercise.webapi.Models
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 
-    public class PublisherDTO
+    public class PublisherAndBooksWithAuthorDTO 
     {
-        private string _firstName;
-        private string _lastName;
-        private List<BookForPublisherDTO> _books = new List<BookForPublisherDTO>();
-
-        public PublisherDTO(Publisher publisher) {
-
-            _firstName = publisher.FirstName;
-            _lastName = publisher.LastName;
-            if (publisher.Books.Count > 0)
-            {
-                foreach (var book in publisher.Books)
-                {
-                    if (book != null && book.Author != null)
-                    {
-                        _books.Add(new BookForPublisherDTO()
-                        {
-                            Title = book.Title,
-                            Author = new SimpleAuthorDTO
-                            {
-                                FirstName = book.Author.FirstName,
-                                LastName = book.Author.LastName
-                            }
-                        });
-                    }
-                }
-            }
-        }
-        public string FirstName { get { return _firstName; } }
-        public string LastName { get { return _lastName; } }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         [JsonInclude]
-        public List<BookForPublisherDTO> Books { get {  return _books; } }
+        public ICollection<BookAndAuthorDTO> Books { get; set; } = new List<BookAndAuthorDTO>();
     }
+
+    public class BookAndAuthorDTO
+    {
+        public string BookTitle { get; set; }
+        public string AuthorName { get; set; }
+    }
+
+
 }

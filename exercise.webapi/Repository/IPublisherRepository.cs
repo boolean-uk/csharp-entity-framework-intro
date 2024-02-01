@@ -5,6 +5,7 @@ namespace exercise.webapi.Repository
 {
     public interface IPublisherRepository
     {
-        Task<IEnumerable<Publisher>> GetPublishers();
+        Task<PublisherAndBooksWithAuthorDTO> GetPublisher(int id);
+        Task<IEnumerable<PublisherAndBooksWithAuthorDTO>> GetPublishers();
     }
 }
