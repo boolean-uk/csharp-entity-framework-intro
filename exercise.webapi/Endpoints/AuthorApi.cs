@@ -21,7 +21,7 @@ namespace exercise.webapi.Endpoints
             {
                 authorsDTOs.Add(CreateAuthorDTO(author));
             }
-            return TypedResults.Ok(authors);
+            return TypedResults.Ok(authorsDTOs);
         }
         private static async Task<IResult> GetAuthor(IRepository repository, int id)
         {

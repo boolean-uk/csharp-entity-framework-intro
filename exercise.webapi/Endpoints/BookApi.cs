@@ -53,7 +53,8 @@ namespace exercise.webapi.Endpoints
             var bookDTO = new BookDTO();
             bookDTO.Id = book.Id;
             bookDTO.Title = book.Title;
-            bookDTO.author = new AuthorBooklessDTO() { Email = book.Author.Email, FirstName = book.Author.FirstName, LastName = book.Author.LastName };
+            bookDTO.Author = new AuthorBooklessDTO() { Email = book.Author.Email, FirstName = book.Author.FirstName, LastName = book.Author.LastName };
+            bookDTO.Publisher = new PublisherBooklessDTO() { Name = book.Publisher.Name };
             return bookDTO;
         }
     }

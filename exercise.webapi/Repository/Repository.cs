@@ -15,13 +15,13 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b=>b.Publisher).ToListAsync();
 
         }
 
         public async Task<Book> GetBookById(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstAsync(x=>x.Id==id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstAsync(x=>x.Id==id);
         }
 
         public async Task<Book> UpdateBook(int id, int NewAuthorId)
@@ -47,12 +47,17 @@ namespace exercise.webapi.Repository
         public async Task<Book> CreateBook(InputBook newbook)
         {
             var author = await _db.Authors.FirstOrDefaultAsync(x => x.Id == newbook.AuthorId);
-            if (author == null) { return null; }
-            Book book = new Book();
-            book.Id = _db.Books.Max(x => x.Id)+1;
-            book.Title = newbook.Title;
-            book.AuthorId=newbook.AuthorId;
-            book.Author = author;
+            var publisher = await _db.Publishers.FirstOrDefaultAsync(x => x.Id == newbook.PublisherId);
+            if (author == null || publisher == null) { return null; }
+            Book book = new Book
+            {
+                Id = _db.Books.Max(x => x.Id) + 1,
+                Title = newbook.Title,
+                AuthorId = newbook.AuthorId,
+                Author = author,
+                PublisherId = newbook.PublisherId,
+                Publisher = publisher
+            };
             _db.Books.Add(book);
             _db.SaveChangesAsync();
 
@@ -60,12 +65,22 @@ namespace exercise.webapi.Repository
         }
         public async Task<Author> GetAuthorById(int id)
         {
-            return await _db.Authors.Include(a=>a.Books).FirstOrDefaultAsync(x => id == x.Id);
+            return await _db.Authors.Include(a=>a.Books).ThenInclude(b=>b.Publisher).FirstOrDefaultAsync(x => id == x.Id);
         }
 
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            return await _db.Authors.Include(a => a.Books).ToListAsync();
+            return await _db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).ToListAsync();
+        }
+
+        public async Task<Publisher> GetPublisherById(int id)
+        {
+            return await _db.Publishers.Include(a => a.Books).FirstOrDefaultAsync(x => id == x.Id);
+        }
+
+        public async Task<IEnumerable<Publisher>> GetAllPublishers()
+        {
+            return await _db.Publishers.Include(a => a.Books).ToListAsync();
         }
     }
 }
