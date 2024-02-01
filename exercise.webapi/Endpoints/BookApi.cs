@@ -15,6 +15,20 @@ namespace exercise.webapi.Endpoints
             app.MapPut("/{id}", UpdateBook);
             app.MapDelete("/{id}", DeleteBook);
             app.MapPost("/", CreateBook);
+            app.MapPut("/{id}/Add-Author", AddAuthor);
+            app.MapPut("/{id}/Remove-Author", RemoveAuthor);
+        }
+
+        private async static Task<IResult> AddAuthor(IBookRepository bookRepository, int id, int Authorid)
+        {
+
+            return TypedResults.Ok(await bookRepository.AssignAuthor(id, Authorid));
+
+        }
+        private async static Task<IResult>RemoveAuthor(IBookRepository bookRepository, int id)
+        {
+
+            return TypedResults.Ok(await bookRepository.RemoveAuthor(id));
         }
 
 
