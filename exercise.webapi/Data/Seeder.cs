@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Models.DatabaseModels;
+using exercise.webapi.Models.JunctionModels;
 
 namespace exercise.webapi.Data
 {
@@ -142,16 +143,31 @@ namespace exercise.webapi.Data
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+
                 Publisher randomPublisher = _publishers[publisherRandom.Next(_publishers.Count)];
-                // book.Publisher = randomPublisher;
                 book.PublisherId = randomPublisher.Id;
-                // randomPublisher.AddBook(book);
 
                 _books.Add(book);
             }
 
+            for (int y = 1; y < 250; y++) 
+            {
+                Book book = _books[y - 1];
+
+                int authorsCount = authorRandom.Next(1, 3); // Add between 1 and 3 authors to each book
+                for (int i = 0; i < authorsCount; i++) 
+                {
+                    Author selectedAuthor = _authors[authorRandom.Next(_authors.Count)];
+
+                    BookAuthor bookAuthor = new BookAuthor() 
+                    {
+                        BookId = book.Id,
+                        AuthorId = selectedAuthor.Id,
+                    };
+
+                    book.BookAuthors.Add(bookAuthor);
+                }
+            }
 
         }
         public List<Author> Authors { get { return _authors; } }

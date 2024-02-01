@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using exercise.webapi.Models.JunctionModels;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.webapi.Models.DatabaseModels
 {
@@ -8,8 +9,12 @@ namespace exercise.webapi.Models.DatabaseModels
         public string Title { get; set; }
 
         [ForeignKey("Author")]
-        public int AuthorId { get; set; }
-        public Author Author { get; set; }
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
+
+        public IEnumerable<Author> GetAuthors() 
+        {
+            return BookAuthors.Select(a => a.Author).ToList();
+        }
 
         [ForeignKey("Publisher")]
         public int PublisherId { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using exercise.webapi.Models.JunctionModels;
+using System.Text.Json.Serialization;
 
 namespace exercise.webapi.Models.DatabaseModels
 {
@@ -9,7 +10,12 @@ namespace exercise.webapi.Models.DatabaseModels
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
+
+        public IEnumerable<Book> GetBooks() 
+        {
+            return BookAuthors.Select(b => b.Book).ToList();
+        }
 
     }
 }
