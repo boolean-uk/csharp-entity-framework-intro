@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Models.BaseModels;
 
 namespace exercise.webapi.Data
 {
@@ -15,7 +15,15 @@ namespace exercise.webapi.Data
             "Mick",
             "Kate",
             "Charles",
-            "Kate"
+            "Kate",
+            "Corky",
+            "Ted",
+            "Mark",
+            "Teddy",
+            "Mimmi",
+            "Max",
+            "Chuck",
+            "Chad"
         };
         private List<string> _lastnames = new List<string>()
         {
@@ -28,8 +36,11 @@ namespace exercise.webapi.Data
             "Jagger",
             "Winslet",
             "Windsor",
-            "Middleton"
-
+            "Middleton",
+            "Corky",
+            "Zuckerberg",
+            "Norris",
+            "Kroeger",
         };
         private List<string> _domain = new List<string>()
         {
@@ -50,11 +61,22 @@ namespace exercise.webapi.Data
             "Two",
             "Several",
             "Fifteen",
-            "A bunch of",
-            "An army of",
-            "A herd of"
-
-
+            "A Bunch of",
+            "An Army of",
+            "A herd of",
+            "My Story:",
+            "The Hidden Downsides of",
+            "Casually explained:",
+            "The Potential of",
+            "A Tale of",
+            "We Need to Talk About",
+            "Keys to",
+            "Man's Search for",
+            "The Secret of",
+            "Untold Stories of",
+            "The Story of",
+            "The Chronicles of",
+            "Story of My Life:"
         };
         private List<string> _secondword = new List<string>()
         {
@@ -65,7 +87,15 @@ namespace exercise.webapi.Data
             "Green",
             "Transparent",
             "Rose Smelling",
-            "Bitter"
+            "Bitter",
+            "Ancient",
+            "Future",
+            "Magnificent",
+            "Urban",
+            "Cyclical",
+            "Award-Winning",
+            "Mediocre",
+            "Underrated"
         };
         private List<string> _thirdword = new List<string>()
         {
@@ -74,7 +104,27 @@ namespace exercise.webapi.Data
             "Planets",
             "Houses",
             "Flowers",
-            "Leopards"
+            "Leopards",
+            "Hamsters",
+            "Food Trucks",
+            "Street Food",
+            "Food",
+            "Smartphones",
+            "Cesspools",
+            "Table Cloths",
+            "Science Teachers",
+            "Vegan Food Recipes",
+            "Fake News Stories",
+            "Influencers",
+            "Craft Beers",
+            "Pancakes",
+            "Hollywood Actors",
+            "Storage Units",
+            "Shopping Malls",
+            "Politicians",
+            "Coffee Cups",
+            "Cats",
+            "Dogs"
         };
 
         private List<Author> _authors = new List<Author>();

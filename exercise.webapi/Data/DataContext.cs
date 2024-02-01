@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Models.BaseModels;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
