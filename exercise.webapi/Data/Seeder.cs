@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Models.DatabaseModels;
 
 namespace exercise.webapi.Data
 {
@@ -79,12 +79,14 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publisher = new List<Publisher>();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
+            Random publisherRandom = new Random();
 
 
 
@@ -109,9 +111,17 @@ namespace exercise.webapi.Data
                 _books.Add(book);
             }
 
+            for (int z = 1; z < 250; z++)
+            {
+                Publisher publisher = new Publisher();
+                publisher.Id = z;
+                publisher.Name = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_firstnames[bookRandom.Next(_firstnames.Count)]}";
+                _publisher.Add(publisher);
+            }
 
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publisher { get { return _publisher; } }
     }
 }
