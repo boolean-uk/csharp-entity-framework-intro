@@ -12,6 +12,13 @@ namespace exercise.webapi.Models
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 
+    public class PublisherDTO
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
     public class PublisherAndBooksWithAuthorDTO 
     {
         public string FirstName { get; set; }

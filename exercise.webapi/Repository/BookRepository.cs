@@ -50,14 +50,48 @@ namespace exercise.webapi.Repository
             return Task.FromResult(false);
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<IEnumerable<BookDTO>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Select(b => new BookDTO
+            {
+                Title = b.Title,
+                Publisher = new PublisherDTO
+                {
+                    Id = b.Publisher.Id,
+                    FirstName = b.Publisher.FirstName,
+                    LastName = b.Publisher.LastName
+                },
+                Author = new AuthorDTO()
+                {
+                    Id = b.Author.Id,
+                    FirstName = b.Author.FirstName,
+                    LastName = b.Author.LastName,
+                    Email = b.Author.Email
+                },
+            }).ToListAsync();
         }
 
-        public async Task<Book> GetBookById(int id)
+        public async Task<BookDTO> GetBookById(int id)
         {
-            return await _db.Books.Include(b => b.Author).SingleOrDefaultAsync(b => b.Id == id); 
+            var dto = await _db.Books.Where(b => b.Id == id).Select(b => new BookDTO
+            {
+                Title = b.Title,
+                Publisher = new PublisherDTO
+                {
+                    Id = b.Publisher.Id, 
+                    FirstName = b.Publisher.FirstName, 
+                    LastName = b.Publisher.LastName
+                },
+                Author = new AuthorDTO
+                {
+                    Id = b.Author.Id,
+                    FirstName = b.Author.FirstName,
+                    LastName = b.Author.LastName,
+                    Email = b.Author.Email
+                }
+                
+            }).FirstOrDefaultAsync();
+            return dto; 
         }
 
         public async Task<Book> UpdateAuthorByBookId(int bookId, AuthorPut authorPut)

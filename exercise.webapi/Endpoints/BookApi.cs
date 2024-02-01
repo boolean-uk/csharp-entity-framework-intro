@@ -75,41 +75,13 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBookById(IBookRepository bookRepository, int id)
         {
             var result = await bookRepository.GetBookById(id);
-            BookDTO bookDTO = new BookDTO()
-            {
-                Title = result.Title,
-                Author = new AuthorDTO
-                {
-                    Id = result.Author.Id,
-                    FirstName = result.Author.FirstName,
-                    LastName = result.Author.LastName,
-                    Email = result.Author.Email,
-                }
-            };
-            return TypedResults.Ok(bookDTO);
+            return TypedResults.Ok(result);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var results = await bookRepository.GetAllBooks();
-            List<BookDTO> books = new List<BookDTO>();
-            foreach (var book in results)
-            {
-                books.Add(
-                new BookDTO
-                {
-                    Title = book.Title,
-                    Author = new AuthorDTO
-                    {
-                        Id = book.Author.Id,
-                        FirstName = book.Author.FirstName,
-                        LastName = book.Author.LastName,
-                        Email = book.Author.Email,
-                    }
-                }
-                );
-            }
-            return TypedResults.Ok(books);
+            return TypedResults.Ok(results);
         }
     }
 }
