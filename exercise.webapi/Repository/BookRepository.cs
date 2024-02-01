@@ -49,16 +49,14 @@ namespace exercise.webapi.Repository
             return null;
         }
 
-        public async Task<Book> CreateBook(BookDTO bookdto)
+        public async Task<Book> CreateBook(Book book)
         {
-            Book book = new Book();
-            book.Title = bookdto.Title;
-            book.AuthorId = bookdto.AuthorId;
-            book.Author = await GetAuthorById(book.AuthorId);
-            if (book.Author == default(Author))
-            {
-                return null;
-            }
+
+            //book.Author = await GetAuthorById(book.AuthorId);
+            //if (book.Author == default(Author))
+            //{
+            //    return null;
+            //}
 
             await _db.Books.AddAsync(book);
             await _db.SaveChangesAsync();
@@ -68,31 +66,26 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Author>> GetAllAuthors()
         { 
-            var authors = await _db.Authors.ToListAsync();
+            return await _db.Authors.Include(b => b.Books).ToListAsync();
+            //List<Author> newAuthors = new List<Author>();
+            //newAuthors.Clear();
 
-            foreach (var aut in authors)
-            {
-                var books = _db.Books.Where(x => x.AuthorId == aut.Id);
-                foreach (var bo in books)
-                {
-                    aut.Books.Add(new BookDTO() { Title = bo.Title, AuthorId = bo.AuthorId });
-                }
-            }
+            //foreach (var aut in authors)
+            //{
+                
+            //    newAuthors.Add(await GetAuthorById(aut.Id));
+            //}
+            
 
-            return authors;
+            //return newAuthors;
         }
 
         public async Task<Author> GetAuthorById(int id)
         {
-            var aut = await _db.Authors.FirstOrDefaultAsync(a => a.Id == id);
-            var books = _db.Books.Where(x => x.AuthorId == aut.Id);
-            foreach (var temp in books)
-            {
-                aut.Books.Add(new BookDTO()
-                {
-                    Title = temp.Title, AuthorId = temp.AuthorId
-                });
-            }
+            var aut = await _db.Authors.Include(b => b.Books).FirstOrDefaultAsync(a => a.Id == id);
+            var books = await _db.Books.Where(x => x.AuthorId == aut.Id).ToListAsync();
+
+            aut.Books = books;
 
             return aut;
         }

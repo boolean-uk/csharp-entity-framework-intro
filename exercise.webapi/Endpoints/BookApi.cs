@@ -45,8 +45,9 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(books);
         }
 
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookDTO book)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookDTO bookdto)
         {
+            Book book = new Book() { AuthorId = bookdto.AuthorId, Title = bookdto.Title };
             var books = await bookRepository.CreateBook(book);
             return TypedResults.Ok(books);
         }
@@ -56,14 +57,34 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> GetAuthors(IBookRepository bookRepository)
         {
-            var author = await bookRepository.GetAllAuthors();
-            return TypedResults.Ok(author);
+            var authors = await bookRepository.GetAllAuthors();
+            List<AuthorDTO> authorsDTO = new List<AuthorDTO>();
+            foreach (var aut in authors)
+            {
+                List<BookDTO> booksDTO = new List<BookDTO>();
+                foreach (var book in aut.Books)
+                {
+                    booksDTO.Add(new BookDTO(){AuthorId = book.AuthorId, Title = book.Title});
+                }
+                authorsDTO.Add(new AuthorDTO(){book = booksDTO, Email = aut.Email, FirstName = aut.FirstName, LastName = aut.LastName});
+            }
+            return TypedResults.Ok(authorsDTO);
         }
 
         private static async Task<IResult> GetAuthor(IBookRepository bookRepository, int id)
         {
             var author = await bookRepository.GetAuthorById(id);
-            return TypedResults.Ok(author);
+            AuthorDTO authorDTO = new AuthorDTO(){Email = author.Email, FirstName = author.FirstName, LastName = author.LastName};
+
+            List<BookDTO> bookDTO = new List<BookDTO>();
+            foreach (var book in author.Books)
+            {
+                bookDTO.Add(new BookDTO(){AuthorId = book.AuthorId, Title = book.Title});
+            }
+            authorDTO.book = bookDTO;
+
+
+            return TypedResults.Ok(authorDTO);
         }
 
     }

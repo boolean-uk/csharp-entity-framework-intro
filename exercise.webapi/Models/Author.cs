@@ -10,6 +10,6 @@ namespace exercise.webapi.Models
         public string Email { get; set; }
 
         //[JsonIgnore] // Todo: replace this with DTO approach
-        public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
+        public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

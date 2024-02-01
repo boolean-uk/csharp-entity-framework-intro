@@ -8,5 +8,7 @@ namespace exercise.webapi.Models
         public string LastName { get; set; }
         public string Email { get; set; }
 
+        public List<BookDTO> book { get; set; }
+
     }
 }

@@ -12,7 +12,7 @@ namespace exercise.webapi.Repository
 
         public Task<Book> DeleteBookById(int id);
 
-        public Task<Book> CreateBook(BookDTO book);
+        public Task<Book> CreateBook(Book book);
 
 
 
