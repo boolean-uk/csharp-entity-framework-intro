@@ -5,14 +5,14 @@ namespace exercise.webapi.Models.DTOs;
 public class PublisherWithBooksAndAuthorDTO
 {
     public string Name { get; set; }
-    public ICollection<BookWithAuthorDTO> Books { get; set; } = new List<BookWithAuthorDTO>();
+    public ICollection<BookWithAuthorAndPublisherDTO> Books { get; set; } = new List<BookWithAuthorAndPublisherDTO>();
 
     public static PublisherWithBooksAndAuthorDTO PublisherToDTO(Publisher publisher)
     {
-        var books = new List<BookWithAuthorDTO>();
+        var books = new List<BookWithAuthorAndPublisherDTO>();
         foreach (var book in publisher.Books)
         {
-            books.Add(BookWithAuthorDTO.bookToDTO(book));
+            books.Add(BookWithAuthorAndPublisherDTO.bookToDTO(book));
         }
         return new PublisherWithBooksAndAuthorDTO()
         {

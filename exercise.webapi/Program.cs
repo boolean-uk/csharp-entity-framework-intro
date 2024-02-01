@@ -1,5 +1,6 @@
 using exercise.webapi.Data;
 using exercise.webapi.Endpoints;
+using exercise.webapi.Models.Types;
 using exercise.webapi.Repository;
 using Microsoft.EntityFrameworkCore;
 

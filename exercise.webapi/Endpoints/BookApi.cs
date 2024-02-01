@@ -1,4 +1,5 @@
-﻿using exercise.webapi.Models.InputTypes;
+﻿using exercise.webapi.Models.DTOs;
+using exercise.webapi.Models.InputTypes;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,13 @@ public static class BookApi
     private static async Task<IResult> GetBooks(IBookRepository bookRepository)
     {
         var books = await bookRepository.GetAllBooks();
-        return TypedResults.Ok(books);
+        var returnList = new List<BookWithAuthorAndPublisherDTO>();
+        foreach (var book in books)
+        {
+            returnList.Add(BookWithAuthorAndPublisherDTO.bookToDTO(book));
+        }
+
+        return TypedResults.Ok(returnList);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -34,7 +41,7 @@ public static class BookApi
             return TypedResults.NotFound($"Id: {id} not found!");
         }
 
-        return TypedResults.Ok(book);
+        return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(book));
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -44,10 +51,10 @@ public static class BookApi
 
         if (updatedBook == null)
         {
-            return TypedResults.BadRequest();
+            return TypedResults.BadRequest("Id or AuthorId is wrong!");
         }
 
-        return TypedResults.Ok(updatedBook);
+        return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(updatedBook));
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -60,7 +67,7 @@ public static class BookApi
             return TypedResults.NotFound($"Id: {id} not found!");
         }
 
-        return TypedResults.Ok(deletedBook);
+        return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(deletedBook));
     }
     [ProducesResponseType(StatusCodes.Status201Created)]
     private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost book)
@@ -79,6 +86,6 @@ public static class BookApi
 
         int newId = await bookRepository.GetNewId();
 
-        return TypedResults.Created($"/{newId}", createdBook);
+        return TypedResults.Created($"/{newId}", BookWithAuthorAndPublisherDTO.bookToDTO(createdBook));
     }
 }

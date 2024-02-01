@@ -3,17 +3,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.webapi.Models.DTOs;
 
-public class BookWithAuthorDTO
+public class BookWithAuthorAndPublisherDTO
 {
     public string Title { get; set; }
     public AuthorDTO Author { get; set; }
-
-    public static BookWithAuthorDTO bookToDTO(Book book)
+    public PublisherDTO Publisher { get; set; }
+    public static BookWithAuthorAndPublisherDTO bookToDTO(Book book)
     {
-        return new BookWithAuthorDTO()
+        return new BookWithAuthorAndPublisherDTO()
         {
             Title = book.Title,
             Author = AuthorDTO.AuthorToDTO(book.Author),
+            Publisher = PublisherDTO.PublisherToDTO(book.Publisher)
         };
     }
 }
