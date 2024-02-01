@@ -8,5 +8,8 @@
         public int authorId { get; set; }
         public string AuthorName { get; set; }
 
+        public int PublisherId { get; set; }
+        public string PublisherName { get; set; }
+
     }
 }

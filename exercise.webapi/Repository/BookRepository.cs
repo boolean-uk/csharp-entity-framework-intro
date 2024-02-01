@@ -1,6 +1,5 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -23,7 +22,9 @@ namespace exercise.webapi.Repository
                             Id = book.Id,
                             Title = book.Title,
                             authorId = book.AuthorId,
-                            AuthorName = $"{book.Author.FirstName} {book.Author.LastName}"
+                            AuthorName = $"{book.Author.FirstName} {book.Author.LastName}",
+                            PublisherId = book.PublisherId,
+                            PublisherName = book.Publisher.Name,
                         };
             return await books.ToListAsync();
 
@@ -88,5 +89,5 @@ namespace exercise.webapi.Repository
             
 
         }
-}
+    }
 
