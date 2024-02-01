@@ -10,7 +10,9 @@ namespace exercise.webapi.Models
         [Column("title")]
         public string Title { get; set; }
         [Column("author_id")]
+        [ForeignKey("author_id")]
         public int AuthorId { get; set; }
+        
         [Column("author")]
         public Author Author { get; set; }
     }

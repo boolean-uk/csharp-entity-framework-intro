@@ -14,6 +14,7 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
+
         public async Task<IEnumerable<BookDTO>> GetAllBooks()
         {
             var books = from book in _db.Books
@@ -30,7 +31,7 @@ namespace exercise.webapi.Repository
         public async Task<BookDTO> GetBookById(int id)
         {
             var book = await _db.Books.Include(b => b.Author).Select(b => new BookDTO()
-            {
+            { 
                 Id = b.Id,
                 Title = b.Title,
                 AuthorName = $"{b.Author.FirstName} {b.Author.LastName}"
@@ -40,6 +41,34 @@ namespace exercise.webapi.Repository
                 
             }
             return book;
+        }
+
+        public async Task<Book> UpdateBook(int id, int authorId)
+        {
+            Book bookToChange = _db.Books.FirstOrDefault(b => b.Id == id);
+            Author authorToAdd = _db.Authors.FirstOrDefault(a => a.Id == authorId);
+
+            bookToChange.Author = authorToAdd;
+            bookToChange.AuthorId = authorId;
+            _db.SaveChanges();
+
+            return bookToChange;
+            
+        }
+        public async  Task<BookDTO> DeleteBook(int id)
+        {
+            var bookToDelete = _db.Books.FirstOrDefault(a => a.Id == id);
+
+            var bookDTO = await GetBookById(id);
+            _db.Books.Remove(bookToDelete);
+            _db.SaveChanges();
+
+            return bookDTO;
+        }
+
+        public async Task<Book> CreateBook(BookDTO postBookDTO)
+        {
+            throw new NotImplementedException();
         }
     }
 }
