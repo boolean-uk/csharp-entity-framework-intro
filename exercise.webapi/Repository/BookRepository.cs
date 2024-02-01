@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -14,7 +15,7 @@ namespace exercise.webapi.Repository
         }
 
         /*
-         * Get the Author by ID to correctly get the updated author object.
+         * Get the Author by ID to correctly get the updated author object. It may be kinda redundant now
          */
         public async Task<Author> GetAuthorById(int authorId)
         {
@@ -26,148 +27,78 @@ namespace exercise.webapi.Repository
          * implement the GET book and GET all books. When you return the books objects, use an appropriate DTO to return the book + author (but no nested books inside author). 
          * Make sure to include the authors when you load the data in the repository.
          */
-        public async Task<IEnumerable<BookDTO>> GetAllBooks()
+        public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            var books = await _db.Books.Include(b => b.Author).ToListAsync();
-            return books.Select(book => new BookDTO
-            {
-                Id = book.Id,
-                Title = book.Title,
-                AuthorId = book.AuthorId,
-                Author = new AuthorDTO
-                {
-                    Id = book.Author.Id,
-                    FirstName = book.Author.FirstName,
-                    LastName = book.Author.LastName,
-                    Email = book.Author.Email
-                }
-            });
-
+            return await _db.Books.Include(b => b.Author).OrderBy(b => b.Id).ToListAsync();
         }
 
-        public async Task<BookDTO> GetBookById(int id)
+        public async Task<Book> GetBookById(int id)
         {
-            var bookClass = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
-            var bookDTO = new BookDTO
-            {
-                Id = bookClass.Id,
-                Title = bookClass.Title,
-                AuthorId = bookClass.AuthorId,
-                Author = new AuthorDTO
-                {
-                    Id = bookClass.Author.Id,
-                    FirstName = bookClass.Author.FirstName,
-                    LastName = bookClass.Author.LastName,
-                    Email = bookClass.Author.Email
-                }
-            };
-            return bookDTO;
+            return await _db.Books.Include(b => b.Author).FirstAsync(b => b.Id == id); ;
         }
 
 
         /*
          * implement the UPDATE boook where you can change the author via id (you may skip updating other properties like title, etc); make sure to return the Book + Author once the update is done
          */
-        public async Task<BookDTO> UpdateBook(int bookId, int authorId)
+        public async Task<Book> UpdateBook(int bookId, int authorId)
         {
-            var bookToUpdate = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
-            bookToUpdate.AuthorId = authorId;
+            var book = await _db.Books.Include(b => b.Author).FirstAsync(b => b.Id == bookId);
+            var author = await _db.Authors.FindAsync(authorId);
 
-            await _db.SaveChangesAsync();
-            // key changed, now try to fetch the book again with updated author.
-
-            var newAuthor = await GetAuthorById(authorId);
-
-            var authorDTO = new AuthorDTO
+            if (book != null || author != null)
             {
-                Id = newAuthor.Id,
-                FirstName = newAuthor.FirstName,
-                LastName = newAuthor.LastName,
-                Email = newAuthor.Email
-            };
+                book.AuthorId = authorId;
+                book.Author = author;
+                await _db.SaveChangesAsync();
+            }
 
-            var bookUpdated = new BookDTO
-            {
-                Id = bookToUpdate.Id,
-                Title = bookToUpdate.Title,
-                AuthorId = bookToUpdate.AuthorId,
-                Author = authorDTO
-            };
-
-
-            return bookUpdated;
+            return book;
         }
-
 
         /*
          * implement the DELETE book
          */
-        public async Task<BookDTO> DeleteBook(int id)
+        public async Task<Book> DeleteBook(int id)
         {
-            var foundBook = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
-            if (foundBook == null)
+            var book = await _db.Books.Include(b => b.Author).FirstAsync(b => b.Id == id);
+            if (book != null)
             {
-                return null;
+                _db.Books.Remove(book);
+                await _db.SaveChangesAsync();
             }
-            _db.Books.Remove(foundBook);
-            await _db.SaveChangesAsync();
-
-            var deletedBookDTO = new BookDTO
-            {
-                Id = foundBook.Id,
-                Title = foundBook.Title,
-                AuthorId = foundBook.AuthorId,
-                Author = new AuthorDTO
-                {
-                    Id = foundBook.Author.Id,
-                    FirstName = foundBook.Author.FirstName,
-                    LastName = foundBook.Author.LastName,
-                    Email = foundBook.Author.Email
-                }
-            };
-            return deletedBookDTO;
+            return book;
         }
-
 
         /*
          * implement the CREATE book - it should return NotFound when author id is not valid and BadRequest when book object not valid
          */
-        public async Task<BookDTO> CreateBook(BookPost book)
+        public async Task<Book> CreateBook(BookPost book)
         {
-            int newId = _db.Books.Max(b => b.Id) + 1;
-            var newAuthor = await GetAuthorById(book.AuthorId);
+            var author = await _db.Authors.FindAsync(book.AuthorId);
 
-
-            Book newBook = new Book
+            var newBook = new Book
             {
-                Id = newId,
                 Title = book.Title,
                 AuthorId = book.AuthorId,
-                Author = newAuthor
+                Author = author
             };
 
-            _db.Books.Add(newBook);
-            _db.SaveChanges();
-
-
-            var bookDTO = new BookDTO
+            // Check if the author exists and book title is not null or default string
+            if (author != null && !string.IsNullOrWhiteSpace(book.Title) && book.Title != "string")
             {
-                Id = newBook.Id,
-                Title = newBook.Title,
-                AuthorId = newBook.AuthorId,
-                Author = new AuthorDTO
-                {
-                    Id = newBook.Author.Id,
-                    FirstName = newBook.Author.FirstName,
-                    LastName = newBook.Author.LastName,
-                    Email = newBook.Author.Email
-                }
-            };
 
+                _db.Books.Add(newBook);
+                await _db.SaveChangesAsync();
 
-            return bookDTO;
+                // Reload the book
+                await _db.Entry(newBook).Reference(b => b.Author).LoadAsync();
+
+            }
+
+            return newBook; 
         }
-
 
     }
 }
+
