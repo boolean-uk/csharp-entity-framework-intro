@@ -34,7 +34,7 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> GetBookById(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstAsync(b => b.Id == id); ;
+            return await _db.Books.Include(b => b.Author).FirstAsync(b => b.Id == id);
         }
 
 

@@ -1,4 +1,7 @@
-﻿using exercise.webapi.Repository;
+﻿using exercise.webapi.DTO;
+using exercise.webapi.Models;
+using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints
 {
@@ -6,21 +9,57 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureAuthorApi(this WebApplication app)
         {
-            var books = app.MapGroup("books");
+            var books = app.MapGroup("authors");
             books.MapGet("/", GetAllAuthors);
             books.MapGet("/{id}", GetAuthorById);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetAllAuthors(IAuthorRepository authorRepository)
         {
-            var books = await authorRepository.GetAllAuthors();
-            return TypedResults.Ok(books);
+            var authorClasses = await authorRepository.GetAllAuthors();
+
+            List<AuthorResponseDTO> authorDTOs = new List<AuthorResponseDTO>();
+
+            foreach (var authorClass in authorClasses)
+            {
+                var authorDTO = new AuthorResponseDTO
+                {
+                    Id = authorClass.Id,
+                    FirstName = authorClass.FirstName,
+                    LastName = authorClass.LastName,
+                    Email = authorClass.Email,
+                    Books = authorClass.Books.Select(b => new BookDTO
+                    {
+                        Id = b.Id,
+                        Title = b.Title
+                    }).ToList()
+                };
+                authorDTOs.Add(authorDTO);
+            }
+
+            return TypedResults.Ok(authorDTOs);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetAuthorById(IAuthorRepository authorRepository, int id)
         {
-            var book = await authorRepository.GetAuthorById(id);
-            return TypedResults.Ok(book);
+            var authorClass = await authorRepository.GetAuthorById(id);
+
+            var authorDTO = new AuthorResponseDTO
+            {
+                Id = authorClass.Id,
+                FirstName = authorClass.FirstName,
+                LastName = authorClass.LastName,
+                Email = authorClass.Email,
+                Books = authorClass.Books.Select(b => new BookDTO
+                {
+                    Id = b.Id,
+                    Title = b.Title
+                }).ToList()
+            };
+
+            return TypedResults.Ok(authorDTO);
         }
     }
 }

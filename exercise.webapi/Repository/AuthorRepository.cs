@@ -1,24 +1,28 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Data;
+using exercise.webapi.DTO;
+using exercise.webapi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
     public class AuthorRepository : IAuthorRepository
     {
-        /*
-        public async Task<Author> GetAuthorById(int authorId)
+        DataContext _db;
+
+        public AuthorRepository(DataContext db)
         {
-            var author = await _db.Authors.FindAsync(authorId);
-            return author;
-        }
-        */
-        public Task<IEnumerable<Book>> GetAllAuthors()
-        {
-            throw new NotImplementedException();
+            _db = db;
         }
 
-        public Task<Author> GetAuthorById(int id)
+        public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            throw new NotImplementedException();
+            return await _db.Authors.Include(a=>a.Books).OrderBy(a => a.Id).ToListAsync();
+        }
+
+        public async Task<Author> GetAuthorById(int id)
+        {
+            var author = await _db.Authors.Include(a => a.Books).FirstAsync(a => a.Id == id);
+            return author;
         }
     }
 }

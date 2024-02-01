@@ -15,12 +15,6 @@ builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
 var app = builder.Build();
 
-//using (var dbContext = new DataContext(new DbContextOptions<DataContext>()))
-//{
-//    dbContext.Database.EnsureCreated();
-//}
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -30,4 +24,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.ConfigureBooksApi();
+app.ConfigureAuthorApi();
 app.Run();
