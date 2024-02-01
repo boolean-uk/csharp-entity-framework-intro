@@ -9,6 +9,8 @@ namespace exercise.webapi.Models
 
         [ForeignKey("Author")]
         public int AuthorId { get; set; }
+
+        public int PublisherId { get; set; }
         public Author Author { get; set; }
     }
 }

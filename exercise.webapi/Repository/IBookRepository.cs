@@ -18,5 +18,11 @@ namespace exercise.webapi.Repository
 
         public Task<IEnumerable<Author>> GetAllAuthors();
         public Task<Author> GetAuthorById(int id);
+
+
+        
+        public Task<Publisher> GetPublisherById(int id);
+
+        public Task<IEnumerable<Publisher>> GetAllPublishers();
     }
 }

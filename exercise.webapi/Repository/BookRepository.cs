@@ -51,13 +51,6 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> CreateBook(Book book)
         {
-
-            //book.Author = await GetAuthorById(book.AuthorId);
-            //if (book.Author == default(Author))
-            //{
-            //    return null;
-            //}
-
             await _db.Books.AddAsync(book);
             await _db.SaveChangesAsync();
             return book;
@@ -67,17 +60,6 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<Author>> GetAllAuthors()
         { 
             return await _db.Authors.Include(b => b.Books).ToListAsync();
-            //List<Author> newAuthors = new List<Author>();
-            //newAuthors.Clear();
-
-            //foreach (var aut in authors)
-            //{
-                
-            //    newAuthors.Add(await GetAuthorById(aut.Id));
-            //}
-            
-
-            //return newAuthors;
         }
 
         public async Task<Author> GetAuthorById(int id)
@@ -88,6 +70,18 @@ namespace exercise.webapi.Repository
             aut.Books = books;
 
             return aut;
+        }
+
+
+        public async Task<Publisher> GetPublisherById(int id)
+        {
+            return await _db.Publisher.Include(pb=>pb.PublishedBooks).ThenInclude(b=>b.Author).FirstOrDefaultAsync(p => p.Id == id);
+
+        }
+
+        public async Task<IEnumerable<Publisher>> GetAllPublishers()
+        {
+            return await _db.Publisher.ToListAsync();
         }
     }
 }

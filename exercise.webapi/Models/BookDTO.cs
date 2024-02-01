@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Models
 {
-    [Keyless]
-    [NotMapped]
     public class BookDTO
     {
         public string Title { get; set; }
