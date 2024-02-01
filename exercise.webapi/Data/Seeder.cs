@@ -77,14 +77,39 @@ namespace exercise.webapi.Data
             "Leopards"
         };
 
+        private List<string> _publisherfirstword = new()
+        {
+            "Alpha",
+            "Beta",
+            "Charlie",
+            "Delta",
+            "Echo",
+        };
+
+        private List<string> _publisherlastword = new()
+        {
+            "pri",
+            "duo",
+            "tri",
+            "tet",
+            "pen",
+            "hex",
+            "uno",
+            "dos",
+            "tres"
+
+        };
+
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publishers = new();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
+            Random publisherRandom = new();
 
 
 
@@ -98,14 +123,28 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
+            for (int y = 1; y < 50; y++)
+            {
+                Publisher publisher = new();
+                publisher.Id = y;
+                publisher.Name = $"{_publisherfirstword[publisherRandom.Next(_publisherfirstword.Count)]}{_publisherlastword[publisherRandom.Next(_publisherlastword.Count)]}";
+                _publishers.Add(publisher);
+            }
+
 
             for (int y = 1; y < 250; y++)
             {
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.AuthorId = new();
+                for(int x = 1; x <= bookRandom.Next(3)+1; x++)
+                {
+                    book.AuthorId.Add(_authors[authorRandom.Next(_authors.Count)].Id);
+                }
+                book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
                 //book.Author = authors[book.AuthorId-1];
+                
                 _books.Add(book);
             }
 
@@ -113,5 +152,6 @@ namespace exercise.webapi.Data
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publishers { get {  return _publishers; } }
     }
 }
