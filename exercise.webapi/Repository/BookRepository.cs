@@ -22,6 +22,7 @@ namespace exercise.webapi.Repository
                         {
                             Id = book.Id,
                             Title = book.Title,
+                            authorId = book.AuthorId,
                             AuthorName = $"{book.Author.FirstName} {book.Author.LastName}"
                         };
             return await books.ToListAsync();
@@ -34,6 +35,7 @@ namespace exercise.webapi.Repository
             { 
                 Id = b.Id,
                 Title = b.Title,
+                authorId = b.AuthorId,
                 AuthorName = $"{b.Author.FirstName} {b.Author.LastName}"
             }).SingleOrDefaultAsync(b => b.Id == id);
             if (book == null)
@@ -66,9 +68,25 @@ namespace exercise.webapi.Repository
             return bookDTO;
         }
 
-        public async Task<Book> CreateBook(BookDTO postBookDTO)
+        public async Task<Book> CreateBook(PostBook book, int authorId)
         {
-            throw new NotImplementedException();
+            var author = _db.Authors.FirstOrDefault(a => a.Id == authorId);
+            var last_id = _db.Books.LastOrDefault().Id;
+            Book newBook = new Book()
+            {
+                Id = last_id + 1,
+                Title = book.Title,
+                AuthorId = authorId,
+                Author = author,
+
+            };
+            _db.Books.Add(newBook);
+            _db.SaveChanges();
+            return newBook;
+
+            } 
+            
+
         }
     }
 }

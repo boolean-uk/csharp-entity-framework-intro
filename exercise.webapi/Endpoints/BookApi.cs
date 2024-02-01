@@ -1,8 +1,6 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
 {
@@ -44,6 +42,7 @@ namespace exercise.webapi.Endpoints
             {
                 Id = id,
                 Title = book.Title,
+                authorId = book.AuthorId,
                 AuthorName = $"{book.Author.FirstName} {book.Author.LastName}"
             };
             return TypedResults.Ok(updatedBook);
@@ -61,10 +60,20 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookDTO model)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, PostBook model, int authorId)
         {
-            var book = await bookRepository.CreateBook(model);
-            return TypedResults.Ok(book);
+            var book = await bookRepository.CreateBook(model, authorId);
+ 
+            var bookDTO = new BookDTO()
+            {
+                Id = book.Id,
+                Title = book.Title,
+                authorId = book.AuthorId,
+                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}"
+            };
+            return TypedResults.Ok(bookDTO);
         }
     }
 }
