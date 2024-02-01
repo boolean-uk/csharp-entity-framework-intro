@@ -71,16 +71,16 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.NotFound($"Publisher with id {bookPut.PublisherId} does not exist.");
             }
 
-            Book inputBook = new Book() { Title = bookPut.Title, AuthorId = bookPut.AuthorId, PublisherId = bookPut.PublisherId};
+            Book inputBook = new Book() { AuthorId = bookPut.AuthorId, PublisherId = bookPut.PublisherId};
 
             // Set values of the book
             Book? dbBook = books.Where(b => b.Id == id).FirstOrDefault();
 
+            inputBook.Id = dbBook.Id;
             inputBook.Title = bookPut.Title ?? dbBook.Title;
-            inputBook.AuthorId = bookPut.AuthorId;
             Author author = authors.Where(a => a.Id == bookPut.AuthorId).FirstOrDefault();
-            inputBook.Author = author;
             Publisher publisher = publishers.Where(a => a.Id == bookPut.PublisherId).FirstOrDefault();
+            inputBook.Author = author;
             inputBook.Publisher = publisher;
 
             Book result = await repo.Update(id, inputBook);
@@ -123,14 +123,16 @@ namespace exercise.webapi.Endpoints
             // Retrieve the book update
             #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
             Author author = authors.Where(a => a.Id == bookPost.AuthorId).FirstOrDefault();
+            Publisher publisher = publishers.Where(p => p.Id == bookPost.PublisherId).FirstOrDefault();
             #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-            Book validatedBook = new Book() { Title = bookPost.Title, AuthorId = bookPost.AuthorId, Author = author };
+            Book validatedBook = new Book() { Title = bookPost.Title, AuthorId = bookPost.AuthorId, Author = author, PublisherId = publisher.Id, Publisher = publisher};
 
             // Insert the book
-            Book result = await repo.Insert(validatedBook);
-            Payload<Book> payload = new Payload<Book>(result);
+            Book insertedBook = await repo.Insert(validatedBook);
+            BookDTO bookTransfer = new BookDTO(insertedBook.Id, insertedBook.Title, insertedBook.Author, insertedBook.Publisher);
+            Payload<BookDTO> payload = new Payload<BookDTO>(bookTransfer);
 
-            return TypedResults.Created($"/books/{result.Id}", payload);
+            return TypedResults.Created($"/books/{insertedBook.Id}", payload);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -142,7 +144,8 @@ namespace exercise.webapi.Endpoints
             if (isValidId) 
             {
                 Book book = await repo.Delete(id);
-                Payload<Book> payload = new Payload<Book>(book);
+                BookDTO bookTransfer = new BookDTO(book.Id, book.Title, book.Author, book.Publisher);
+                Payload<BookDTO> payload = new Payload<BookDTO>(bookTransfer);
                 return TypedResults.Ok(payload);
             } 
             else

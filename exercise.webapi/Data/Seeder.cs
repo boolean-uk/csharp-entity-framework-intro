@@ -90,6 +90,19 @@ namespace exercise.webapi.Data
             "Enterprises"
         };
 
+        private List<string> _publisherstructure = new List<string>()
+        {
+            "LLC",
+            "Corp",
+            "Inc",
+            "Ltd",
+            "GmbH", 
+            "Co.", 
+            "LP",
+            "S.A", 
+            "PC"
+        };
+
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
         private List<Publisher> _publishers = new List<Publisher>();
@@ -117,7 +130,10 @@ namespace exercise.webapi.Data
             {
                 Publisher publisher = new Publisher();
                 publisher.Id = z;
-                publisher.Name = $"{_secondword[publisherRandom.Next(_secondword.Count)]} {_publishingword[publisherRandom.Next(_publishingword.Count)]}";
+                publisher.Name = $"" +
+                    $"{_secondword[publisherRandom.Next(_secondword.Count)]} " +
+                    $"{_publishingword[publisherRandom.Next(_publishingword.Count)]} " +
+                    $"{_publisherstructure[publisherRandom.Next(_publisherstructure.Count)]}";
                 _publishers.Add(publisher);
             }
 

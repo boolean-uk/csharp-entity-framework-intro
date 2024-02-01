@@ -73,12 +73,11 @@ namespace exercise.webapi.Repository
 
         public async Task<T> Update(int id, T entity)
         {
-            var dbEntity = _table_T.FindAsync(id);
+            var dbEntity = await _table_T.FindAsync(id);
             // Update values of the dbEntity
             _db.Entry(dbEntity).CurrentValues.SetValues(entity);
-            _db.Update(dbEntity); // entry marked as updated
             await _db.SaveChangesAsync(); // Save changes
-            return await dbEntity;
+            return dbEntity;
         }
 
         public async Task<T> Insert(T entity)
