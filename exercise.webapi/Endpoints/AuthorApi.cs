@@ -13,15 +13,36 @@ namespace exercise.webapi.Endpoints
             authorGroup.MapGet("/{id}", GetAuthor);
         }
 
-        private static async Task<IResult> GetAuthors(IRepository bookRepository)
+        private static async Task<IResult> GetAuthors(IRepository repository)
         {
-            var books = await bookRepository.GetAllAuthors();
-            return TypedResults.Ok(books);
+            var authors = await repository.GetAllAuthors();
+            List<AuthorDTO> authorsDTOs = new List<AuthorDTO>();
+            foreach (var author in authors)
+            {
+                authorsDTOs.Add(CreateAuthorDTO(author));
+            }
+            return TypedResults.Ok(authors);
         }
-        private static async Task<IResult> GetAuthor(IRepository bookRepository, int id)
+        private static async Task<IResult> GetAuthor(IRepository repository, int id)
         {
-            var book = await bookRepository.GetAuthorById(id);
-            return TypedResults.Ok(book);
+            var author = await repository.GetAuthorById(id);
+            
+            return TypedResults.Ok(CreateAuthorDTO(author));
+        }
+        private static AuthorDTO CreateAuthorDTO(Author author)
+        {
+            AuthorDTO authorDTO = new AuthorDTO();
+            authorDTO.FirstName = author.FirstName;
+            authorDTO.LastName = author.LastName;
+            authorDTO.Email = author.Email;
+            foreach (var book in author.Books)
+            {
+                BookAuthorlessDTO bookDTO = new BookAuthorlessDTO();
+                bookDTO.Title = book.Title;
+                bookDTO.Id = book.Id;
+                authorDTO.Books.Add(bookDTO);
+            }
+            return authorDTO;
         }
         
     }
