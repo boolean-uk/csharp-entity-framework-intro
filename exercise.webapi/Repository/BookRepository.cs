@@ -37,7 +37,9 @@ namespace exercise.webapi.Repository
                 Id = b.Id,
                 Title = b.Title,
                 authorId = b.AuthorId,
-                AuthorName = $"{b.Author.FirstName} {b.Author.LastName}"
+                AuthorName = $"{b.Author.FirstName} {b.Author.LastName}",
+                PublisherId = b.PublisherId,
+                PublisherName = b.Publisher.Name,
             }).SingleOrDefaultAsync(b => b.Id == id);
             if (book == null)
             {

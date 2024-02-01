@@ -28,7 +28,9 @@ namespace exercise.webapi.Endpoints
                                   Id=x.Id,
                                   Title = x.Title,
                                   authorId = x.AuthorId,
-                                  AuthorName = $"{author.FirstName} {author.LastName}"
+                                  AuthorName = $"{author.FirstName} {author.LastName}",
+                                  PublisherId = x.PublisherId,
+                                  PublisherName = x.Publisher.Name,
                               })
 
                           };
@@ -50,7 +52,9 @@ namespace exercise.webapi.Endpoints
                     Id = x.Id,
                     Title = x.Title,
                     authorId = x.AuthorId,
-                    AuthorName = $"{author.FirstName} {author.LastName}"
+                    AuthorName = $"{author.FirstName} {author.LastName}",
+                    PublisherId = x.PublisherId,
+                    PublisherName = x.Publisher.Name,
                 })
             };
             return TypedResults.Ok(authorDTO);

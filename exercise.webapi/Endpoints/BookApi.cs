@@ -43,7 +43,9 @@ namespace exercise.webapi.Endpoints
                 Id = id,
                 Title = book.Title,
                 authorId = book.AuthorId,
-                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}"
+                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}",
+                PublisherId = book.PublisherId,
+                PublisherName = book.Publisher.Name,
             };
             return TypedResults.Ok(updatedBook);
         }
