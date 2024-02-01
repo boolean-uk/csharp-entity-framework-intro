@@ -22,21 +22,24 @@ namespace exercise.webapi.Repository
             IQueryable<T> result = _table_T;
             if (typeof(T) == typeof(Book))
             {
-                result = _table_T.Include(b => (b as Book).Author);
-                    
+                result = _table_T.Include(b => (b as Book).Author).Include(b => (b as Book).Publisher);
             }
             else if (typeof(T) == typeof(Author))
             {
-                result = _table_T.Include(b => (b as Author).Books);
+                result = _table_T.Include(b => (b as Author).Books).ThenInclude(b => (b as Book).Publisher);
+            }
+            else if (typeof(T) == typeof(Publisher)) 
+            {
+                result = _table_T.Include(p => (p as Publisher).Books).ThenInclude(b => (b as Book).Author);
             }
             else
             {
-                result = null;
+                result = _table_T;
             }
 
             return await result.Where(e => EF.Property<int>(e, "Id") == id).FirstOrDefaultAsync();
 
-
+            
         }
 
         public async Task<IEnumerable<T>> GetAllT()
@@ -45,17 +48,26 @@ namespace exercise.webapi.Repository
             {
                 return await _table_T
                     .Include(b => (b as Book).Author)
+                    .Include(b => (b as Book).Publisher)
                     .ToListAsync();
             }
             else if (typeof(T) == typeof(Author))
             {
                 return await _table_T
-                    .Include(b => (b as Author).Books)
+                    .Include(a => (a as Author).Books)
+                        .ThenInclude(b => (b as Book).Publisher)
+                    .ToListAsync();
+            }
+            else if (typeof(T) == typeof(Publisher))
+            {
+                return await _table_T
+                    .Include(p => (p as Publisher).Books)
+                        .ThenInclude(b => (b as Book).Author)
                     .ToListAsync();
             }
             else 
             {
-                return null;
+                return await _table_T.ToListAsync();
             }
         }
 
