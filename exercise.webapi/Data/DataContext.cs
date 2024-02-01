@@ -12,12 +12,17 @@ namespace exercise.webapi.Data
         {
 
         }
+
+        // TODO: WHAT IS THIS?? --> I think this is basically when call configuration -> This will be runnning.
+        // So you dont have to specified: in here:
+        // builder.Services.AddDbContext<DataContext<Book/Author>>(opt => opt.UseInMemoryDatabase("Book/Author"));
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseInMemoryDatabase("Library");
         }
 
+        // Creating seeding --> This is basically calling Seeder when an instance of this db is created?
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             Seeder seeder = new Seeder();
@@ -26,6 +31,8 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Book>().HasData(seeder.Books);
 
         }
+
+        // Do the Db get-set
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
     }

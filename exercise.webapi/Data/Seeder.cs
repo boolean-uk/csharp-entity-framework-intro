@@ -96,6 +96,9 @@ namespace exercise.webapi.Data
                 author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
                 author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
                 _authors.Add(author);
+
+                //Initialize books collection
+               // author.Books = new List<Book>();
             }
 
 
@@ -107,7 +110,11 @@ namespace exercise.webapi.Data
                 book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
+
+                //Add the book to the authors books collection
+                //book.Author.Books.Add(book);
             }
+
 
 
         }

@@ -11,9 +11,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
 var app = builder.Build();
 
+// WHAT IS THIS??? : I think this is to ensure that there that database is existing either by creating a new one or...
 using (var dbContext = new DataContext(new DbContextOptions<DataContext>()))
 {
     dbContext.Database.EnsureCreated();
@@ -28,5 +30,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// Calling endpoint
 app.ConfigureBooksApi();
+app.ConfigureAuthorApi();
+
+
 app.Run();
