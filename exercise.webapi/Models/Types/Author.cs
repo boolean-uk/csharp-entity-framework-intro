@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace exercise.webapi.Models;
+namespace exercise.webapi.Models.Types;
 
 [Table("authors")]
 public class Author

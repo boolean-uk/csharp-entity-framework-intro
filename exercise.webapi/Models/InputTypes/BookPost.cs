@@ -1,4 +1,4 @@
-﻿namespace exercise.webapi.Models;
+﻿namespace exercise.webapi.Models.InputTypes;
 
 public class BookPost
 {

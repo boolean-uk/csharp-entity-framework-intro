@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Models.InputTypes;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 

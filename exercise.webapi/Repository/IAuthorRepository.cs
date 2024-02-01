@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Models.DTOs;
 
 namespace exercise.webapi.Repository;
 

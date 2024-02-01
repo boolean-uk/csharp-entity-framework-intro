@@ -1,4 +1,5 @@
-﻿using exercise.webapi.Models;
+﻿using exercise.webapi.Models.DTOs;
+using exercise.webapi.Models.InputTypes;
 
 namespace exercise.webapi.Repository
 {

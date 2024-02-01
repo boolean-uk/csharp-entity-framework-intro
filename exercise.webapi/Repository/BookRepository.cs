@@ -1,5 +1,7 @@
 ﻿using exercise.webapi.Data;
-using exercise.webapi.Models;
+using exercise.webapi.Models.DTOs;
+using exercise.webapi.Models.InputTypes;
+using exercise.webapi.Models.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -19,7 +21,7 @@ namespace exercise.webapi.Repository
             var returnList = new List<BookWithAuthorDTO>();
             foreach (var book in books)
             {
-                returnList.Add(bookToDTO(book));
+                returnList.Add(BookWithAuthorDTO.bookToDTO(book));
             }
             return returnList;
         }
@@ -30,7 +32,7 @@ namespace exercise.webapi.Repository
             if (book == null)
                 return null;
 
-            return bookToDTO(book);
+            return BookWithAuthorDTO.bookToDTO(book);
         }
 
         public async Task<BookWithAuthorDTO?> UpdateBook(int id, BookPost newBook)
@@ -42,7 +44,7 @@ namespace exercise.webapi.Repository
             newBook.Title = !string.IsNullOrEmpty(newBook.Title) ? bookToUpdate.Title = newBook.Title : null!;
             bookToUpdate.Author = author;
             await _db.SaveChangesAsync();
-            return bookToDTO(bookToUpdate);
+            return BookWithAuthorDTO.bookToDTO(bookToUpdate);
         }
 
         public async Task<BookWithAuthorDTO?> DeleteBook(int id)
@@ -51,7 +53,7 @@ namespace exercise.webapi.Repository
             if (bookToDelete == null) return null;
             _db.Books.Remove(bookToDelete);
             await _db.SaveChangesAsync();
-            return bookToDTO(bookToDelete);
+            return BookWithAuthorDTO.bookToDTO(bookToDelete);
         }
 
         public async Task<BookWithAuthorDTO?> CreateBook(BookPost newBook)
@@ -65,26 +67,12 @@ namespace exercise.webapi.Repository
             };
             _db.Books.Add(book);
             await _db.SaveChangesAsync();
-            return bookToDTO(book);
+            return BookWithAuthorDTO.bookToDTO(book);
         }
 
         public async Task<int> GetNewId()
         {
             return await _db.Books.MaxAsync(x => x.Id);
-        }
-
-        private BookWithAuthorDTO bookToDTO(Book book)
-        {
-            return new BookWithAuthorDTO()
-                {
-                    Title = book.Title,
-                    Author = new AuthorDTO()
-                    {
-                        FirstName = book.Author.FirstName,
-                        LastName = book.Author.LastName,
-                        Email = book.Author.Email
-                    }
-                };
         }
     }
 }
