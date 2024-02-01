@@ -64,10 +64,19 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, PostBook model, int authorId)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, IAuthorRepository authRepo, PostBook model, int authorId)
         {
+            var authors = await authRepo.GetAllAuthors();
+            if(!authors.Any(x => x.Id == authorId))
+            {
+                return TypedResults.NotFound();
+            }
+            if(string.IsNullOrEmpty(model.Title))
+            {
+                return TypedResults.BadRequest();
+            }
             var book = await bookRepository.CreateBook(model, authorId);
- 
+
             var bookDTO = new BookDTO()
             {
                 Id = book.Id,
