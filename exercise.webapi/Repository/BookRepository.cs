@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class BookRepository: IBookRepository
+    public class BookRepository : IBookRepository
     {
         DataContext _db;
         
@@ -16,7 +16,54 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
             return await _db.Books.Include(b => b.Author).ToListAsync();
+        }
 
+        public async Task<Book?> GetBook(int id)
+        {
+            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+        }
+
+        public async Task<Book?> UpdateBook(int bookId, int authorId)
+        {
+            var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            if (book == null)
+                return null;
+
+            book.AuthorId = authorId;
+            await _db.SaveChangesAsync();
+
+            // Reload the book to update the Author
+            await _db.Entry(book).Reference(b => b.Author).LoadAsync();
+
+            return book;
+        }
+
+        public async Task<Book?> DeleteBook(int id)
+        {
+            var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book != null)
+            {
+                _db.Books.Remove(book);
+                await _db.SaveChangesAsync();
+            }
+
+            return book;
+        }
+
+        public async Task<Book?> CreateBook(Book book)
+        {
+            var authorExists = await _db.Authors.AnyAsync(a => a.Id == book.AuthorId);
+
+            if (!authorExists)
+                return null;
+
+            _db.Books.Add(book);
+            await _db.SaveChangesAsync();
+
+            var createdBook = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == book.Id);
+
+            return createdBook;
         }
     }
 }
