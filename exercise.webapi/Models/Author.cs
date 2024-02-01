@@ -40,7 +40,7 @@ namespace exercise.webapi.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public ICollection<SimpleBookDTO> Books { get; set; } = new List<SimpleBookDTO>();
+        public ICollection<BookAndPublisherDTO> Books { get; set; } = new List<BookAndPublisherDTO>();
     }
 
 

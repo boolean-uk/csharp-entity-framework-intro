@@ -31,4 +31,10 @@ namespace exercise.webapi.Models
     {
         public string Title { get; set; }
     }
+
+    public class BookAndPublisherDTO
+    {
+        public string Title { get; set; }
+        public string PublisherName { get; set; }
+    }
 }
