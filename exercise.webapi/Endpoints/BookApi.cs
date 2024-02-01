@@ -27,6 +27,7 @@ namespace exercise.webapi.Endpoints
             var publishers = app.MapGroup("/publisher");
 
             publishers.MapGet("/", GetPublishers);
+            publishers.MapGet("/{id}", GetPublisher);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -100,6 +101,15 @@ namespace exercise.webapi.Endpoints
             List<APublisherDto> result = PublisherConversion.toPublisher(publishers);
 
             return TypedResults.Ok(result);
+        }
+
+        private static async Task<IResult> GetPublisher(IBookRepository bookRepository, int id)
+        {
+            var publisher = await bookRepository.GetPublisher(id);
+
+            APublisherDto publisherDto = PublisherConversion.toPublisher(publisher);
+
+            return TypedResults.Ok(publisherDto);
         }
     }
 }

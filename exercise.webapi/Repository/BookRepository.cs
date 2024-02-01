@@ -79,6 +79,13 @@ namespace exercise.webapi.Repository
                 FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<Publisher> GetPublisher(int id)
+        {
+            return await
+                _db.Publishers.Include(p => p.Books).ThenInclude(b => b.Author).
+                    FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<List<Publisher>> GetPublishers()
         {
             return await 
