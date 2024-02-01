@@ -19,9 +19,9 @@ namespace exercise.webapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetAuthors(IRepository<Author, Book> repo)
+        private static async Task<IResult> GetAuthors(IRepository<Author> repo)
         {
-            var authors = await repo.GetAllT();
+            var authors = await repo.GetAll();
             IEnumerable<AuthorDTO> results = authors.ToList().Select(a => new AuthorDTO(a.Id, a.FirstName, a.LastName, a.Email, a.Books)).ToList();
             Payload<IEnumerable<AuthorDTO>> payload = new Payload<IEnumerable<AuthorDTO>>(results);
             return TypedResults.Ok(payload);
@@ -29,7 +29,7 @@ namespace exercise.webapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetSpecificAuthor(IRepository<Author, Book> repo, int id)
+        private static async Task<IResult> GetSpecificAuthor(IRepository<Author> repo, int id)
         {
             var author = await repo.Get(id);
             if (author == null)

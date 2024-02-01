@@ -11,9 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
-builder.Services.AddScoped<IRepository<Book, Author>, Repository<Book, Author>>();
-builder.Services.AddScoped<IRepository<Author, Book>, Repository<Author, Book>>();
-builder.Services.AddScoped<IRepository<Publisher, Book>, Repository<Publisher, Book>>();
+builder.Services.AddScoped<IRepository<Book>, Repository<Book>>();
+builder.Services.AddScoped<IRepository<Author>, Repository<Author>>();
+builder.Services.AddScoped<IRepository<Publisher>, Repository<Publisher>>();
 
 var app = builder.Build();
 

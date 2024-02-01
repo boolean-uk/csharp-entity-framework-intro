@@ -4,17 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class Repository<T, S> : IRepository<T, S> where T : class where S: class
+    public class Repository<T> : IRepository<T> where T : class
     {
         DataContext _db;
         private DbSet<T> _table_T = null;
-        private DbSet<S> _table_S = null;
 
         public Repository(DataContext db)
         {
             _db = db;
             _table_T = _db.Set<T>();
-            _table_S = _db.Set<S>();
         }
 
         public async Task<T?> Get(int id) 
@@ -42,7 +40,7 @@ namespace exercise.webapi.Repository
             
         }
 
-        public async Task<IEnumerable<T>> GetAllT()
+        public async Task<IEnumerable<T>> GetAll()
         {
             if (typeof(T) == typeof(Book))
             {
@@ -85,11 +83,6 @@ namespace exercise.webapi.Repository
             var addedEntity = _table_T.Add(entity);
             await _db.SaveChangesAsync();
             return addedEntity.Entity;
-        }
-
-        public async Task<IEnumerable<S>> GetAllS()
-        {
-            return await _table_S.ToListAsync();
         }
 
         public async Task<T> Delete(int id)

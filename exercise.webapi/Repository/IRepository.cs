@@ -2,17 +2,15 @@
 
 namespace exercise.webapi.Repository
 {
-    public interface IRepository<T,S> where T : class where S: class
+    public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllT();
+        Task<IEnumerable<T>> GetAll();
 
         Task<T?> Get(int id);
 
         Task<T> Update(int id, T entity);
 
         Task<T> Insert(T entity);
-
-        Task<IEnumerable<S>> GetAllS();
 
         Task<T> Delete(int id);
     }

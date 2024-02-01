@@ -18,9 +18,9 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> GetPublishers(IRepository<Publisher, Book> repo) 
+        private static async Task<IResult> GetPublishers(IRepository<Publisher> repo) 
         {
-            var publishers = await repo.GetAllT();
+            var publishers = await repo.GetAll();
             IEnumerable<PublisherDTO> results = publishers
                 .ToList()
                 .Select(p => new PublisherDTO(p.Id, p.Name)
@@ -34,7 +34,7 @@ namespace exercise.webapi.Endpoints
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> GetSpecificPublisher(IRepository<Publisher, Book> repo, int id) 
+        private static async Task<IResult> GetSpecificPublisher(IRepository<Publisher> repo, int id) 
         {
             var publishers = await repo.Get(id);
             if (publishers == null) 
