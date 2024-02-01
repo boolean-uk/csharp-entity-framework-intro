@@ -13,5 +13,9 @@ namespace exercise.webapi.Models
         [ForeignKey("Author")]
         public int AuthorId { get; set; }
         public Author Author { get; set; }
+
+        [ForeignKey("Publisher")]
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
     }
 }

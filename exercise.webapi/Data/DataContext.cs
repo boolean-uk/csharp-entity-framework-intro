@@ -25,10 +25,17 @@ namespace exercise.webapi.Data
         {
             Seeder seeder = new Seeder();
 
+            modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<Author>().HasData(seeder.Authors);
+            modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
+
+            modelBuilder.Entity<Book>().HasOne(b => b.Author).WithMany(a => a.Books).HasForeignKey(b => b.AuthorId);
             modelBuilder.Entity<Author>().HasMany(a => a.Books).WithOne(b => b.Author).HasForeignKey(b => b.AuthorId);
+            modelBuilder.Entity<Publisher>().HasMany(p => p.Books).WithOne(b => b.Publisher).HasForeignKey(b => b.PublisherId);
         }
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
     }
 }

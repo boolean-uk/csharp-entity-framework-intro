@@ -1,6 +1,7 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace exercise.webapi.Repository
 {
@@ -15,17 +16,24 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .ToListAsync();
         }
 
         public async Task<Book?> GetBook(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _db.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book?> UpdateBook(int bookId, int authorId)
         {
-            var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            Book? book = GetBook(bookId).Result;
+
             if (book == null)
                 return null;
 
@@ -40,13 +48,13 @@ namespace exercise.webapi.Repository
 
         public async Task<Book?> DeleteBook(int id)
         {
-            var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            Book? book = GetBook(id).Result;
 
-            if (book != null)
-            {
-                _db.Books.Remove(book);
-                await _db.SaveChangesAsync();
-            }
+            if (book == null)
+                return null;
+
+            _db.Books.Remove(book);
+            await _db.SaveChangesAsync();
 
             return book;
         }
@@ -61,7 +69,7 @@ namespace exercise.webapi.Repository
             _db.Books.Add(book);
             await _db.SaveChangesAsync();
 
-            var createdBook = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == book.Id);
+            Book? createdBook = GetBook(book.Id).Result;
 
             return createdBook;
         }

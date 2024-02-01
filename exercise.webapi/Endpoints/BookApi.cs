@@ -69,12 +69,12 @@ namespace exercise.webapi.Endpoints
                 AuthorId = book.AuthorId
             };
             
-            Book? test = await bookRepository.CreateBook(newBook);
+            Book? result = await bookRepository.CreateBook(newBook);
 
-            if (test == null)
+            if (result == null)
                 return Results.BadRequest();
 
-            OutputBook outputBook = Services.DtoManager.Convert(test);
+            OutputBook outputBook = Services.DtoManager.Convert(result);
             return TypedResults.Ok(outputBook);
         }
     }
