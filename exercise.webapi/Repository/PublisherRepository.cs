@@ -18,6 +18,7 @@ namespace exercise.webapi.Repository
             return await _db.Publishers
                 .Include(p => p.PublishedBooks)
                 .ThenInclude(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
                 .ToListAsync();
         }
 
@@ -26,6 +27,7 @@ namespace exercise.webapi.Repository
             return await _db.Publishers.
                 Include(p => p.PublishedBooks)
                 .ThenInclude(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
                 .FirstAsync(p => p.Id == id);
         }
     }

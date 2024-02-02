@@ -80,25 +80,25 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int bookId, int newAuthorId)
+        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int bookId, BookPut model)
         {
-            var bookClass = await bookRepository.UpdateBook(bookId, newAuthorId);
+            var updatedBook = await bookRepository.UpdateBook(bookId, model);
 
-            if (bookClass == null)
+            if (updatedBook == null)
             {
                 return TypedResults.NotFound();
             }
 
             var bookDTO = new BookResponseDTO
             {
-                Id = bookClass.Id,
-                Title = bookClass.Title,
-                PublisherId = bookClass.PublisherId,
+                Id = updatedBook.Id,
+                Title = updatedBook.Title,
+                PublisherId = updatedBook.PublisherId,
                 Publisher = new PublisherDTO
                 {
-                    Name = bookClass.Publisher.Name
+                    Name = updatedBook.Publisher.Name
                 },
-                Authors = bookClass.BookAuthors.Select(ba => new AuthorDTO
+                Authors = updatedBook.BookAuthors.Select(ba => new AuthorDTO
                 {
                     FirstName = ba.Author.FirstName,
                     LastName = ba.Author.LastName,
@@ -108,6 +108,7 @@ namespace exercise.webapi.Endpoints
 
             return TypedResults.Ok(bookDTO);
         }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int bookId)
@@ -142,13 +143,24 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost model)
         {
-            var book = await bookRepository.CreateBook(model);
+            // Validate author ids
+            var areAuthorsValid = await bookRepository.AreAuthorsValid(model.AuthorIds);
 
-            if (book == null)
+            if (!areAuthorsValid)
             {
-                return TypedResults.NotFound("Author or Publisher not found, or book title is not valid.");
+                return TypedResults.NotFound("One or more authors not found.");
             }
 
+            // Create book using the repository
+            var book = await bookRepository.CreateBook(model);
+
+            // Check if the book object is not valid
+            if (book == null)
+            {
+                return TypedResults.BadRequest("Invalid book data.");
+            }
+
+            // Create the BookResponseDTO
             var bookDTO = new BookResponseDTO
             {
                 Id = book.Id,
@@ -166,6 +178,7 @@ namespace exercise.webapi.Endpoints
                 }).ToList()
             };
 
+            // Return the Ok result with the bookDTO
             return TypedResults.Ok(bookDTO);
         }
     }

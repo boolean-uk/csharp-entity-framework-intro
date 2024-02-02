@@ -120,16 +120,26 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
-
             for (int y = 1; y < 250; y++)
             {
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                //book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
                 book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
                 _books.Add(book);
+
+                Author author = _authors[authorRandom.Next(_authors.Count)];
+
+                // Create BookAuthor instance and establish relationships
+                BookAuthor bookAuthor = new BookAuthor
+                {
+                    Id = y,
+                    BookId = book.Id,
+                    AuthorId = _authors[authorRandom.Next(_authors.Count)].Id,
+                };
+
+                // Add BookAuthor to the list
+                _bookAuthors.Add(bookAuthor);
             }
         }
         public List<Author> Authors { get { return _authors; } }

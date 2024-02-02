@@ -41,7 +41,7 @@ namespace exercise.webapi.Repository
         /*
          * implement the UPDATE boook where you can change the author via id (you may skip updating other properties like title, etc); make sure to return the Book + Author once the update is done
          */
-        public async Task<Book> UpdateBook(int bookId, int authorId)
+        public async Task<Book> UpdateBook(int bookId, BookPut model)
         {
             var book = await _db.Books
                 .Include(b => b.Publisher)
@@ -49,22 +49,49 @@ namespace exercise.webapi.Repository
                 .ThenInclude(ba => ba.Author)
                 .FirstOrDefaultAsync(b => b.Id == bookId);
 
-            var author = await _db.Authors.FindAsync(authorId);
-
-            if (book != null && author != null)
+            if (book != null)
             {
-                var bookAuthor = new BookAuthor
+                // Update PublisherId if provided
+                if (model.PublisherId > 0)
                 {
-                    Book = book,
-                    Author = author
-                };
+                    var publisher = await _db.Publishers.FindAsync(model.PublisherId);
+                    if (publisher != null)
+                    {
+                        book.PublisherId = model.PublisherId;
+                        book.Publisher = publisher;
+                    }
+                }
 
-                _db.BookAuthors.Add(bookAuthor);
+                // Update Authors if provided
+                if (model.AuthorIds != null && model.AuthorIds.Any())
+                {
+                    // Remove existing book authors
+                    _db.BookAuthors.RemoveRange(book.BookAuthors);
+
+                    // Add new book authors
+                    foreach (var authorId in model.AuthorIds)
+                    {
+                        var author = await _db.Authors.FindAsync(authorId);
+
+                        if (author != null)
+                        {
+                            var bookAuthor = new BookAuthor
+                            {
+                                Book = book,
+                                Author = author
+                            };
+
+                            _db.BookAuthors.Add(bookAuthor);
+                        }
+                    }
+                }
+
                 await _db.SaveChangesAsync();
             }
 
             return book;
         }
+
 
         /*
          * implement the DELETE book
@@ -92,9 +119,9 @@ namespace exercise.webapi.Repository
         public async Task<Book> CreateBook(BookPost model)
         {
             var publisher = await _db.Publishers.FindAsync(model.PublisherId);
-            var author = await _db.Authors.FindAsync(model.AuthorId);
+            var authors = await _db.Authors.ToListAsync();
 
-            if (author == null || publisher == null || string.IsNullOrWhiteSpace(model.Title) || model.Title == "string")
+            if (publisher == null || string.IsNullOrWhiteSpace(model.Title) || model.Title == "string")
             {
                 return null; // Return null to indicate a failure in creating the book
             }
@@ -106,20 +133,42 @@ namespace exercise.webapi.Repository
                 Publisher = publisher
             };
 
-            var bookAuthor = new BookAuthor
+            foreach (var authorId in model.AuthorIds)
             {
-                Book = newBook,
-                Author = author
-            };
+                var author = await _db.Authors.FindAsync(authorId);
 
-            _db.BookAuthors.Add(bookAuthor);
+                if (author == null)
+                {
+                    return null; // Return null to indicate a failure in creating the book
+                }
+
+                var bookAuthor = new BookAuthor
+                {
+                    Book = newBook,
+                    Author = author
+                };
+
+                _db.BookAuthors.Add(bookAuthor);
+            }
+
             await _db.SaveChangesAsync();
 
             // Reload the book to get the updated relationships
-            await _db.Entry(newBook).Reference(b => b.BookAuthors).LoadAsync();
+            await _db.Entry(newBook).Collection(b => b.BookAuthors).LoadAsync(); // Use Collection instead of Reference
 
             return newBook;
         }
+
+        public async Task<bool> AreAuthorsValid(List<int> authorIds)
+        {
+            var existingAuthors = await _db.Authors
+                .Where(a => authorIds.Contains(a.Id))
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            return existingAuthors.Count == authorIds.Count;
+        }
+
 
     }
 }
