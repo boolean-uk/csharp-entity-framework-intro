@@ -75,7 +75,7 @@ namespace exercise.webapi.Repository
 
         public async Task<Publisher> GetPublisherById(int id)
         {
-            return await _db.Publisher.Include(pb=>pb.PublishedBooks).ThenInclude(b=>b.Author).FirstOrDefaultAsync(p => p.Id == id);
+            return await _db.Publisher.FirstOrDefaultAsync(p => p.Id == id);
 
         }
 

@@ -7,6 +7,8 @@
 
         public int PublisherId { get; set; }
 
+        public PublisherDTO? Publisher { get; set; }
+
         public AuthorDTO AuthorObj { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.SignalR;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -29,13 +30,26 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAllBooks();
+
+
             List<BookAuthorDTO> newBooks = new List<BookAuthorDTO>();
             foreach (var bo in books)
             {
-                newBooks.Add(new BookAuthorDTO(){AuthorId = 
-                    bo.AuthorId, Title = bo.Title, PublisherId = bo.PublisherId,
+                var publisher = await bookRepository.GetPublisherById(bo.PublisherId);
+
+                newBooks.Add(new BookAuthorDTO(){AuthorId = bo.AuthorId, Title = bo.Title, PublisherId = bo.PublisherId, 
+                    Publisher = new PublisherDTO()
+                    {
+                        Id = publisher.Id,
+                        Name = publisher.Name
+                    },
                     AuthorObj = new AuthorDTO()
-                        {Email = bo.Author.Email, FirstName = bo.Author.FirstName, LastName = bo.Author.LastName}}
+                    {
+                        Email = bo.Author.Email, FirstName = bo.Author.FirstName, LastName = bo.Author.LastName,
+
+                    }
+
+                    }
                 );
             }
 
@@ -45,10 +59,19 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBook(IBookRepository bookRepository, int id)
         {
             var books = await bookRepository.GetBookById(id);
+            var publisher = await bookRepository.GetPublisherById(books.PublisherId);
             BookAuthorDTO newBook = new BookAuthorDTO()
             {
                 AuthorId = books.AuthorId, PublisherId = books.PublisherId, Title = books.Title,
-                AuthorObj = new AuthorDTO(){Email = books.Author.Email, FirstName = books.Author.FirstName, LastName = books.Author.LastName}
+                AuthorObj = new AuthorDTO()
+                {
+                    Email = books.Author.Email, FirstName = books.Author.FirstName, LastName = books.Author.LastName, 
+                },
+                Publisher = new PublisherDTO()
+                {
+                    Name = publisher.Name,
+                    Id = publisher.Id
+                }
             };
             return TypedResults.Ok(newBook);
         }
@@ -84,7 +107,16 @@ namespace exercise.webapi.Endpoints
                 List<BookDTO> booksDTO = new List<BookDTO>();
                 foreach (var book in aut.Books)
                 {
-                    booksDTO.Add(new BookDTO(){AuthorId = book.AuthorId, Title = book.Title});
+                    var pub = await bookRepository.GetPublisherById(book.PublisherId);
+
+                    booksDTO.Add(new BookDTO()
+                    {
+                        AuthorId = book.AuthorId, Title = book.Title, 
+                        Publisher = new PublisherDTO()
+                        {
+                            Id = pub.Id, Name = pub.Name
+                        }
+                    });
                 }
                 authorsDTO.Add(new AuthorDTO(){book = booksDTO, Email = aut.Email, FirstName = aut.FirstName, LastName = aut.LastName});
             }
@@ -94,14 +126,23 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetAuthor(IBookRepository bookRepository, int id)
         {
             var author = await bookRepository.GetAuthorById(id);
+
             AuthorDTO authorDTO = new AuthorDTO(){Email = author.Email, FirstName = author.FirstName, LastName = author.LastName};
 
-            List<BookDTO> bookDTO = new List<BookDTO>();
+            List<BookDTO> booksDTO = new List<BookDTO>();
             foreach (var book in author.Books)
             {
-                bookDTO.Add(new BookDTO(){AuthorId = book.AuthorId, Title = book.Title});
+                var pub = await bookRepository.GetPublisherById(book.PublisherId);
+
+                booksDTO.Add(new BookDTO(){AuthorId = book.AuthorId, Title = book.Title, 
+                    Publisher = new PublisherDTO()
+                    {
+                        Id = pub.Id, Name = pub.Name
+                    }
+
+                });
             }
-            authorDTO.book = bookDTO;
+            authorDTO.book = booksDTO;
 
 
             return TypedResults.Ok(authorDTO);
@@ -117,7 +158,9 @@ namespace exercise.webapi.Endpoints
             PubDTO.Id = pub.Id;
             PubDTO.Name = pub.Name;
 
-            foreach (var pubBook in pub.PublishedBooks)
+            var books = bookRepository.GetAllBooks().Result.Where(b => b.PublisherId == PubDTO.Id).ToList();
+
+            foreach (var pubBook in books)
             {
                 PubDTO.PublishedBooks.Add(new BookAuthorDTO()
                 {
@@ -132,11 +175,37 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> GetPublishers(IBookRepository bookRepository)
         {
-            //var author = await bookRepository.GetAuthorById(id);
+            var pubs = await bookRepository.GetAllPublishers();
+            List<PublisherDTO> PubsDTO = new List<PublisherDTO>();
 
+            foreach (var pub in pubs)
+            {
 
-            //return TypedResults.Ok(authorDTO);
-            throw new NotImplementedException();
+                PublisherDTO PubDTO = new PublisherDTO();
+                PubDTO.Id = pub.Id;
+                PubDTO.Name = pub.Name;
+
+                var books = bookRepository.GetAllBooks().Result.Where(b => b.PublisherId == PubDTO.Id).ToList();
+
+                foreach (var pubBook in books)
+                {
+                    PubDTO.PublishedBooks.Add(new BookAuthorDTO()
+                    {
+                        AuthorId = pubBook.AuthorId,
+                        PublisherId = pubBook.PublisherId,
+                        Title = pubBook.Title,
+                        AuthorObj = new AuthorDTO()
+                        {
+                            Email = pubBook.Author.Email, FirstName = pubBook.Author.FirstName,
+                            LastName = pubBook.Author.LastName
+                        }
+                    });
+
+                }
+                PubsDTO.Add(PubDTO);
+            }
+
+            return TypedResults.Ok(PubsDTO);
         }
 
     }
