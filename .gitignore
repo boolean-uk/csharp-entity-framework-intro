@@ -367,7 +367,7 @@ FodyWeavers.xsd
 /workshop.wwwapi/appsettings.json
 /workshop.wwwapi/appsettings.Development.json
 
-#Migratrions
+#Migrations
 /workshop.wwwapi/Migrations
 
 
