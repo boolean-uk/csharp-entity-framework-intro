@@ -33,13 +33,18 @@ namespace exercise.webapi.Endpoints
                     Id = book.Id,
                     Title = book.Title,
                     AuthorId = book.AuthorId,
-                    Author = new AuthorDto()
+                    Author = new AuthorPlainDto()
                     {
                         Id = book.Author.Id,
                         FirstName = book.Author.FirstName,
                         LastName = book.Author.LastName,
                         Email = book.Author.Email
 
+                    },
+                    Publisher = new PublisherPlainDto()
+                    {
+                        Id=book.Publisher.Id,
+                        Name = book.Publisher.Name,
                     }
                 };
                 booksDto.Add(bookdto);
@@ -64,13 +69,18 @@ namespace exercise.webapi.Endpoints
                 Id = book.Id,
                 Title = book.Title,
                 AuthorId = book.AuthorId,
-                Author = new AuthorDto()
+                Author = new AuthorPlainDto()
                 {
                     Id = book.Author.Id,
                     FirstName = book.Author.FirstName,
                     LastName = book.Author.LastName,
                     Email = book.Author.Email
 
+                },
+                Publisher = new PublisherPlainDto()
+                {
+                    Id = book.Publisher.Id,
+                    Name = book.Publisher.Name,
                 }
             };
 

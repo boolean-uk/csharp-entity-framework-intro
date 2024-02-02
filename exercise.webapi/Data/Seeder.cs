@@ -100,18 +100,7 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
-
-            for (int y = 1; y < 250; y++)
-            {
-                Book book = new Book();
-                book.Id = y;
-                book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
-                _books.Add(book);
-            }
-
-            for (int z = 1; z < 250; z++)
+            for (int z = 1; z < 50; z++)
             {
                 Publisher publisher = new Publisher();
                 publisher.Id = z;
@@ -119,6 +108,16 @@ namespace exercise.webapi.Data
                 _publisher.Add(publisher);
             }
 
+            for (int y = 1; y < 250; y++)
+            {
+                Book book = new Book();
+                book.Id = y;
+                book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
+                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.PublisherId = _publisher[authorRandom.Next(_publisher.Count)].Id;
+                //book.Author = authors[book.AuthorId-1];
+                _books.Add(book);
+            }
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }

@@ -31,16 +31,21 @@ namespace exercise.webapi.Endpoints
                     FirstName = author.FirstName,
                     LastName = author.LastName,
                     Email = author.Email,
-                    Books = new List<BookNoAuthorDto>()
+                    Books = new List<BookPublisherDto>()
                     
                 };
                 foreach (var book in author.Books)
                 {
-                    var bookDto = new BookNoAuthorDto()
+                    var bookDto = new BookPublisherDto()
                     {
                         Id = book.Id,
                         Title = book.Title,
                         AuthorId = author.Id,
+                        Publisher = new PublisherPlainDto()
+                        {
+                            Id = book.PublisherId,
+                            Name = book.Publisher.Name
+                        }
                     };
                     auhtorDto.Books.Add(bookDto);
                 }
@@ -67,15 +72,20 @@ namespace exercise.webapi.Endpoints
                 FirstName = author.FirstName,
                 LastName = author.LastName,
                 Email = author.Email,
-                Books = new List<BookNoAuthorDto>()
+                Books = new List<BookPublisherDto>()
             };
             foreach (var book in author.Books)
             {
-                var bookDto = new BookNoAuthorDto()
+                var bookDto = new BookPublisherDto()
                 {
                     Id = book.Id,
                     Title = book.Title,
                     AuthorId = author.Id,
+                    Publisher = new PublisherPlainDto()
+                    {
+                        Id = book.PublisherId,
+                        Name = book.Publisher.Name
+                    }
                 };
                 auhtorDto.Books.Add(bookDto);
             }

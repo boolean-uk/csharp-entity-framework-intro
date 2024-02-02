@@ -7,6 +7,7 @@ namespace exercise.webapi.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public int AuthorId { get; set; }
-        public AuthorDto Author { get; set; }
+        public AuthorPlainDto Author { get; set; }
+        public PublisherPlainDto Publisher { get; set; }
     }
 }
