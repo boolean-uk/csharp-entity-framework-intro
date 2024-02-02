@@ -8,13 +8,16 @@ namespace exercise.webapi.Models
     {
         [Column("id")]
         public int Id { get; set; }
+
         [Column("first_name")]
         public string FirstName { get; set; }
+
         [Column("last_name")]
         public string LastName { get; set; }
+
         [Column("email")]
-        public string Email { get; set; } 
-        //[JsonIgnore] // Todo: replace this with DTO approach
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public string Email { get; set; }
+
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
     }
 }

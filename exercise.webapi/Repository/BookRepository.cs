@@ -22,7 +22,8 @@ namespace exercise.webapi.Repository
         {
             return await _db.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.Author)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
                 .OrderBy(b => b.Id)
                 .ToListAsync();
         }
@@ -31,7 +32,8 @@ namespace exercise.webapi.Repository
         {
             return await _db.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.Author)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)   
                 .FirstAsync(b => b.Id == id);
         }
 
@@ -41,13 +43,23 @@ namespace exercise.webapi.Repository
          */
         public async Task<Book> UpdateBook(int bookId, int authorId)
         {
-            var book = await _db.Books.Include(b=>b.Publisher).Include(b => b.Author).FirstAsync(b => b.Id == bookId);
+            var book = await _db.Books
+                .Include(b => b.Publisher)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
             var author = await _db.Authors.FindAsync(authorId);
 
-            if (book != null || author != null)
+            if (book != null && author != null)
             {
-                book.AuthorId = authorId;
-                book.Author = author;
+                var bookAuthor = new BookAuthor
+                {
+                    Book = book,
+                    Author = author
+                };
+
+                _db.BookAuthors.Add(bookAuthor);
                 await _db.SaveChangesAsync();
             }
 
@@ -59,41 +71,52 @@ namespace exercise.webapi.Repository
          */
         public async Task<Book> DeleteBook(int id)
         {
-            var book = await _db.Books.Include(b=>b.Publisher).Include(b => b.Author).FirstAsync(b => b.Id == id);
+            var book = await _db.Books
+                .Include(b => b.Publisher)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
             if (book != null)
             {
                 _db.Books.Remove(book);
                 await _db.SaveChangesAsync();
             }
+
             return book;
         }
 
         /*
          * implement the CREATE book - it should return NotFound when author id is not valid and BadRequest when book object not valid
          */
-        public async Task<Book> CreateBook(BookPost book)
+        public async Task<Book> CreateBook(BookPost model)
         {
-            var publisher = await _db.Publishers.FindAsync(book.PublisherId);
-            var author = await _db.Authors.FindAsync(book.AuthorId);
+            var publisher = await _db.Publishers.FindAsync(model.PublisherId);
+            var author = await _db.Authors.FindAsync(model.AuthorId);
+
+            if (author == null || publisher == null || string.IsNullOrWhiteSpace(model.Title) || model.Title == "string")
+            {
+                return null; // Return null to indicate a failure in creating the book
+            }
 
             var newBook = new Book
             {
-                Title = book.Title,
-                PublisherId = book.PublisherId,
-                Publisher = publisher,
-                AuthorId = book.AuthorId,
+                Title = model.Title,
+                PublisherId = model.PublisherId,
+                Publisher = publisher
+            };
+
+            var bookAuthor = new BookAuthor
+            {
+                Book = newBook,
                 Author = author
             };
 
-            // Check if the author and publisher exists and book title is not null or default string
-            if (author != null && publisher != null && !string.IsNullOrWhiteSpace(book.Title) && book.Title != "string")
-            { 
-                _db.Books.Add(newBook);
-                await _db.SaveChangesAsync();
+            _db.BookAuthors.Add(bookAuthor);
+            await _db.SaveChangesAsync();
 
-                // Reload the book
-                await _db.Entry(newBook).Reference(b => b.Author).LoadAsync();
-            }
+            // Reload the book to get the updated relationships
+            await _db.Entry(newBook).Reference(b => b.BookAuthors).LoadAsync();
 
             return newBook;
         }

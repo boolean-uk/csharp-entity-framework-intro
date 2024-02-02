@@ -29,12 +29,12 @@ namespace exercise.webapi.Endpoints
                     FirstName = authorClass.FirstName,
                     LastName = authorClass.LastName,
                     Email = authorClass.Email,
-                    Books = authorClass.Books.Select(b => new BookDTO
+                    Books = authorClass.BookAuthors.Select(ba => new BookDTO
                     {
-                        Title = b.Title,
+                        Title = ba.Book.Title,
                         Publisher = new PublisherDTO
                         {
-                            Name = b.Publisher.Name
+                            Name = ba.Book.Publisher.Name
                         }
                     }).ToList()
                 };
@@ -55,12 +55,12 @@ namespace exercise.webapi.Endpoints
                 FirstName = authorClass.FirstName,
                 LastName = authorClass.LastName,
                 Email = authorClass.Email,
-                Books = authorClass.Books.Select(b => new BookDTO
+                Books = authorClass.BookAuthors.Select(ba => new BookDTO
                 {
-                    Title = b.Title,
+                    Title = ba.Book.Title,
                     Publisher = new PublisherDTO
                     {
-                        Name = b.Publisher.Name
+                        Name = ba.Book.Publisher.Name
                     }
                 }).ToList()
             };

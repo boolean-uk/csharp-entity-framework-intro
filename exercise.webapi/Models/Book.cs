@@ -7,6 +7,7 @@ namespace exercise.webapi.Models
     {
         [Column("id")]
         public int Id { get; set; }
+
         [Column("title")]
         public string Title { get; set; }
 
@@ -15,11 +16,6 @@ namespace exercise.webapi.Models
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
 
-        [Column("author_id")]
-        [ForeignKey("Author")]
-        public int AuthorId { get; set; }
-        public Author Author { get; set; }
-
-
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
     }
 }

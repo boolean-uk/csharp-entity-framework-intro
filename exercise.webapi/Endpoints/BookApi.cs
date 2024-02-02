@@ -36,13 +36,12 @@ namespace exercise.webapi.Endpoints
                     {
                         Name = bookClass.Publisher.Name
                     },
-                    AuthorId = bookClass.AuthorId,
-                    Author = new AuthorDTO
+                    Authors = bookClass.BookAuthors.Select(ba => new AuthorDTO
                     {
-                        FirstName = bookClass.Author.FirstName,
-                        LastName = bookClass.Author.LastName,
-                        Email = bookClass.Author.Email
-                    }
+                        FirstName = ba.Author.FirstName,
+                        LastName = ba.Author.LastName,
+                        Email = ba.Author.Email
+                    }).ToList()
                 };
                 bookDTOs.Add(bookDTO);
             }
@@ -55,35 +54,8 @@ namespace exercise.webapi.Endpoints
         {
             var bookClass = await bookRepository.GetBookById(id);
 
-            var bookDTO = new BookResponseDTO
-            {
-                Id = bookClass.Id,
-                Title = bookClass.Title,
-                PublisherId = bookClass.PublisherId,
-                Publisher = new PublisherDTO
-                {
-                    Name = bookClass.Publisher.Name
-                },
-                AuthorId = bookClass.AuthorId,
-                Author = new AuthorDTO
-                {
-                    FirstName = bookClass.Author.FirstName,
-                    LastName = bookClass.Author.LastName,
-                    Email = bookClass.Author.Email
-                }
-            };
-
-            return TypedResults.Ok(bookDTO);
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int bookId, int newAuthorId)
-        {
-            var bookClass = await bookRepository.UpdateBook(bookId, newAuthorId);
-
             if (bookClass == null)
             {
-                // Handle the case where the book or author is not found, e.g., return a 404 Not Found response.
                 return TypedResults.NotFound();
             }
 
@@ -96,13 +68,42 @@ namespace exercise.webapi.Endpoints
                 {
                     Name = bookClass.Publisher.Name
                 },
-                AuthorId = bookClass.AuthorId,
-                Author = new AuthorDTO
+                Authors = bookClass.BookAuthors.Select(ba => new AuthorDTO
                 {
-                    FirstName = bookClass.Author.FirstName,
-                    LastName = bookClass.Author.LastName,
-                    Email = bookClass.Author.Email
-                }
+                    FirstName = ba.Author.FirstName,
+                    LastName = ba.Author.LastName,
+                    Email = ba.Author.Email
+                }).ToList()
+            };
+
+            return TypedResults.Ok(bookDTO);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int bookId, int newAuthorId)
+        {
+            var bookClass = await bookRepository.UpdateBook(bookId, newAuthorId);
+
+            if (bookClass == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var bookDTO = new BookResponseDTO
+            {
+                Id = bookClass.Id,
+                Title = bookClass.Title,
+                PublisherId = bookClass.PublisherId,
+                Publisher = new PublisherDTO
+                {
+                    Name = bookClass.Publisher.Name
+                },
+                Authors = bookClass.BookAuthors.Select(ba => new AuthorDTO
+                {
+                    FirstName = ba.Author.FirstName,
+                    LastName = ba.Author.LastName,
+                    Email = ba.Author.Email
+                }).ToList()
             };
 
             return TypedResults.Ok(bookDTO);
@@ -127,61 +128,45 @@ namespace exercise.webapi.Endpoints
                 {
                     Name = foundBookClass.Publisher.Name
                 },
-                AuthorId = foundBookClass.AuthorId,
-                Author = new AuthorDTO
+                Authors = foundBookClass.BookAuthors.Select(ba => new AuthorDTO
                 {
-                    FirstName = foundBookClass.Author.FirstName,
-                    LastName = foundBookClass.Author.LastName,
-                    Email = foundBookClass.Author.Email
-                }
+                    FirstName = ba.Author.FirstName,
+                    LastName = ba.Author.LastName,
+                    Email = ba.Author.Email
+                }).ToList()
             };
 
             return TypedResults.Ok(deletedBookDTO);
         }
 
-
-
-        /*
-         * implement the CREATE book - it should return NotFound when author id is not valid and BadRequest when book object not valid
-         */
         [ProducesResponseType(StatusCodes.Status201Created)]
         private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost model)
         {
             var book = await bookRepository.CreateBook(model);
 
-            if (book.Publisher == null)
+            if (book == null)
             {
-                return TypedResults.NotFound("Publisher not found");
+                return TypedResults.NotFound("Author or Publisher not found, or book title is not valid.");
             }
-            if (book.Author == null)
+
+            var bookDTO = new BookResponseDTO
             {
-                return TypedResults.NotFound("Author not found");
-            }
-            else if (string.IsNullOrWhiteSpace(book.Title) || book.Title == "string") //"string" as in no changes made to the default string of "string" in swagger.)
-            {
-                return TypedResults.BadRequest("Book title is not valid");
-            }
-            else
-            {
-                var bookDTO = new BookResponseDTO
+                Id = book.Id,
+                Title = book.Title,
+                PublisherId = book.PublisherId,
+                Publisher = new PublisherDTO
                 {
-                    Id = book.Id,  // Assuming Id is generated by the database upon creation
-                    Title = book.Title,
-                    PublisherId = book.PublisherId,
-                    Publisher = new PublisherDTO
-                    {
-                        Name = book.Publisher.Name
-                    },
-                    AuthorId = book.AuthorId,
-                    Author = new AuthorDTO
-                    {
-                        FirstName = book.Author.FirstName,
-                        LastName = book.Author.LastName,
-                        Email = book.Author.Email
-                    }
-                };
-                return TypedResults.Ok(bookDTO);
-            }
+                    Name = book.Publisher.Name
+                },
+                Authors = book.BookAuthors.Select(ba => new AuthorDTO
+                {
+                    FirstName = ba.Author.FirstName,
+                    LastName = ba.Author.LastName,
+                    Email = ba.Author.Email
+                }).ToList()
+            };
+
+            return TypedResults.Ok(bookDTO);
         }
     }
 }
