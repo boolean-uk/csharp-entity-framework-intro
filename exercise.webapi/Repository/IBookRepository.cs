@@ -14,13 +14,5 @@ namespace exercise.webapi.Repository
         public Task<Book> DeleteBook(int id);
 
         public Task<Book> CreateBook(Book book);
-
-        public Task<Author> GetAuthor(int id);
-
-        public Task<List<Author>> GetAuthors();
-
-        public Task<List<Publisher>> GetPublishers();
-
-        public Task<Publisher> GetPublisher(int id);
     }
 }

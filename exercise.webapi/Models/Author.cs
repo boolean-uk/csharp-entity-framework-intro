@@ -15,8 +15,7 @@ namespace exercise.webapi.Models
         [Column("email")]
         public string Email { get; set; }
 
-        //[JsonIgnore] // Todo: replace this with DTO approach
-        public ICollection<Book> Books { get; internal set; } = new List<Book>();
+        public ICollection<BookAuthor> Books { get; internal set; } = new List<BookAuthor>();
 
     }
 }

@@ -26,7 +26,7 @@ namespace exercise.webapi.Conversions
                 Books = new List<AMBookDto>()
             };
 
-            foreach (var entity in author.Books)
+            foreach (var entity in author.Books.Select(x => x.Book))
             {
                 authorDto.Books.Add(new AMBookDto() 
                 { 

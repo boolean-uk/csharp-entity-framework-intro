@@ -22,15 +22,22 @@ namespace exercise.webapi.Conversions
             var member = new ABookDto()
             {
                 Title = book.Title,
-                Author = new PAuthorDto()
-                {
-                    FirstName = book.Author.FirstName,
-                    LastName = book.Author.LastName,
-                    Email = book.Author.Email
-                },
+                Authors = new List<PAuthorDto>(),
                 Publisher = new PPublisherDto() { Name = book.Publisher.Name,
                     ContactDetails = book.Publisher.ContactDetails }
             };
+
+            foreach( var author in book.Authors.Select(x => x.Author))
+            {
+                var Author = new PAuthorDto()
+                {
+                    FirstName = author.FirstName,
+                    LastName = author.LastName,
+                    Email = author.Email
+                };
+                member.Authors.Add(Author);
+                
+            }
 
             return member;
 
@@ -41,8 +48,7 @@ namespace exercise.webapi.Conversions
 
             Book book = new Book()
             {
-                Title = postBook.Title,
-                AuthorId = postBook.AuthorId, 
+                Title = postBook.Title, 
                 PublisherId = postBook.PublisherId
             };
 

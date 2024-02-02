@@ -9,14 +9,13 @@ namespace exercise.webapi.Models
         public int Id { get; set; }
         [Column("title")]
         public string Title { get; set; }
-        [Column("author_id")]
-       [ForeignKey("Author")]
-        public int AuthorId { get; set; }
+
         [Column("publisher_id")]
         [ForeignKey("Publisher")]
         public int PublisherId { get; set; }
 
-        public Author Author { get; set; }
         public Publisher Publisher { get; set; }
+
+        public ICollection<BookAuthor> Authors { get; set; } = new List<BookAuthor>();
     }
 }

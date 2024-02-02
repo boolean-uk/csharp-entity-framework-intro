@@ -29,13 +29,17 @@ namespace exercise.webapi.Conversions
                 PMBookDto bookDto = new PMBookDto()
                 {
                     Title = book.Title,
-                    Author = new PAuthorDto()
-                    {
-                        FirstName = book.Author.FirstName,
-                        LastName = book.Author.LastName,
-                        Email = book.Author.Email
-                    }
+                    Authors = new List<PAuthorDto>()
                 };
+                foreach ( var author in book.Authors.Select(x => x.Author))
+                {
+                    bookDto.Authors.Add(new PAuthorDto()
+                    {
+                        FirstName = author.FirstName,
+                        LastName = author.LastName,
+                        Email = author.Email
+                    });
+                }
                 result.Books.Add(bookDto);
             }
 

@@ -3,6 +3,6 @@
     public class PMBookDto
     {
         public string Title { get; set; }
-        public PAuthorDto Author { get; set; }
+        public List<PAuthorDto> Authors { get; set; }
     }
 }
