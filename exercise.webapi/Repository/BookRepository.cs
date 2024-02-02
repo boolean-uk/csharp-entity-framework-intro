@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class BookRepository: IBookRepository
+    public class BookRepository: IRepository<Book>
     {
         DataContext _db;
         
@@ -13,14 +13,29 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<Book> Get(int id)
+        public Task<Book> Delete(object id)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            Book entity = _db.Books.FindAsync(id).Result;
+            _db.Remove(entity);
+            _db.SaveChangesAsync();
+            return Task.FromResult(entity);
+        }
+
+        public async Task<Book> Get(object id)
+        {
+            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.ID == (int)id);
         }
 
         public async Task<IEnumerable<Book>> GetAll()
         {
             return await _db.Books.Include(b => b.Author).ToListAsync();
+        }
+
+        public Task<Book> Insert(Book book)
+        {
+            _db.AddAsync(book);
+            _db.SaveChangesAsync();
+            return Task.FromResult(book);
         }
 
         public async Task<Book> Update(Book book)
@@ -31,6 +46,11 @@ namespace exercise.webapi.Repository
             return book;
         }
 
+        public async Task<bool> IsAnExistingID(object id)
+        {
+            var book = await _db.Books.FindAsync(id);
+            return book != null;
+        }
 
     }
 }

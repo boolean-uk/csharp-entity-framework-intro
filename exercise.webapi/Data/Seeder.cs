@@ -141,7 +141,7 @@ namespace exercise.webapi.Data
             for (int x = 1; x < 250; x++)
             {
                 Author author = new Author();
-                author.Id = x;
+                author.ID = x;
                 author.FirstName = _firstnames[authorRandom.Next(_firstnames.Count)];
                 author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
                 author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
@@ -152,9 +152,9 @@ namespace exercise.webapi.Data
             for (int y = 1; y < 250; y++)
             {
                 Book book = new Book();
-                book.Id = y;
+                book.ID = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.AuthorID = _authors[authorRandom.Next(_authors.Count)].ID;
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }

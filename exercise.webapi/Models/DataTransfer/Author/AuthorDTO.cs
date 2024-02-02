@@ -1,4 +1,4 @@
-﻿namespace exercise.webapi.Models.DataTransfer
+﻿namespace exercise.webapi.Models.DataTransfer.Author
 {
     public class AuthorDTO
     {
@@ -6,7 +6,7 @@
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public AuthorDTO (string firstName, string lastName, string email)
+        public AuthorDTO(string firstName, string lastName, string email)
         {
             FirstName = firstName;
             LastName = lastName;
