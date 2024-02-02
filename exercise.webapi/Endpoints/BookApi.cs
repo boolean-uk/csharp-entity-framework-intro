@@ -25,10 +25,10 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetAll(IRepository<Book> bookRepository)
         {
             var books = await bookRepository.GetAll();
-            List<BookWithAuthorDTO> results = new List<BookWithAuthorDTO>();
+            List<BookDetailedDTO> results = new List<BookDetailedDTO>();
             foreach (var book in books)
             {
-                results.Add(new BookWithAuthorDTO(book));
+                results.Add(new BookDetailedDTO(book));
             }
             return TypedResults.Ok(results);
         }
@@ -37,7 +37,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> Get(IRepository<Book> bookRepository, int id)
         {
             var book = await bookRepository.Get(id);
-            return TypedResults.Ok(new BookWithAuthorDTO(book));
+            return TypedResults.Ok(new BookDetailedDTO(book));
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -50,7 +50,7 @@ namespace exercise.webapi.Endpoints
             book.Title = inputData.Title;
             book.AuthorID = inputData.AuthorID;
             var result = bookRepository.Update(book);
-            return TypedResults.Created(id.ToString(), new BookWithAuthorDTO(book));
+            return TypedResults.Created(id.ToString(), new BookDetailedDTO(book));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -69,7 +69,7 @@ namespace exercise.webapi.Endpoints
             if (!(bookData.Title.Length > 0)) return TypedResults.BadRequest("Data input does not meet requirements");
             Book newBook = new Book(){ Title = bookData.Title, AuthorID = bookData.AuthorID };
             var result = await bookRepository.Insert(newBook);
-            return TypedResults.Created(newBook.ID.ToString(), new BookWithAuthorDTO(result));
+            return TypedResults.Created(newBook.ID.ToString(), new BookDetailedDTO(result));
         }
 
 

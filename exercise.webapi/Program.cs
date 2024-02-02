@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
 builder.Services.AddScoped<IRepository<Book>, BookRepository>();
 builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
+builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
 
 var app = builder.Build();
 
@@ -32,4 +33,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.ConfigureBooksApi();
 app.ConfigureAuthorsApi();
+app.ConfigurePublisherApi();
 app.Run();

@@ -6,13 +6,11 @@ namespace exercise.webapi.Models.DataTransfer.Book
     {
         public int ID { get; set; }
         public string Title { get; set; }
-        public int AuthorID { get; set; }
 
         public BookDTO(BaseModels.Book book)
         {
             ID = book.ID;
             Title = book.Title;
-            AuthorID = book.AuthorID;
         }
     }
 }

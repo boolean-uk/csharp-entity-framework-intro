@@ -2,9 +2,9 @@
 
 namespace exercise.webapi.Models.DataTransfer.Author
 {
-    public class AuthorWithBooksDTO
+    public class AuthorDetailedDTO
     {
-        public AuthorWithBooksDTO(BaseModels.Author author)
+        public AuthorDetailedDTO(BaseModels.Author author)
         {
             ID = author.ID;
             FirstName = author.FirstName;
@@ -12,7 +12,7 @@ namespace exercise.webapi.Models.DataTransfer.Author
             Email = author.Email;
             foreach (var book in author.Books)
             {
-                this.Books.Add(new BookDTO(book));
+                this.Books.Add(new BookWithPublisherDTO(book));
             }
         }
 
@@ -20,8 +20,6 @@ namespace exercise.webapi.Models.DataTransfer.Author
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
-
-
+        public ICollection<BookWithPublisherDTO> Books { get; set; } = new List<BookWithPublisherDTO>();
     }
 }

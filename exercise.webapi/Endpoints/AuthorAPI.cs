@@ -18,10 +18,10 @@ namespace exercise.webapi.Endpoints
         public static async Task<IResult> GetAll(IRepository<Author> authorRespository)
         {
             var authors = await authorRespository.GetAll();
-            List<AuthorWithBooksDTO> results = new List<AuthorWithBooksDTO>();
+            List<AuthorDetailedDTO> results = new List<AuthorDetailedDTO>();
             foreach (var author in authors)
             {
-                results.Add(new AuthorWithBooksDTO(author));
+                results.Add(new AuthorDetailedDTO(author));
             }
             return TypedResults.Ok(results);
         }
@@ -30,7 +30,7 @@ namespace exercise.webapi.Endpoints
         public static async Task<IResult> Get(IRepository<Author> authorRespository, int id)
         {
             var author = await authorRespository.Get(id);
-            return TypedResults.Ok(new AuthorWithBooksDTO(author));
+            return TypedResults.Ok(new AuthorDetailedDTO(author));
         }
     }
 }
