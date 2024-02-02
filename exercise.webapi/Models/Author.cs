@@ -12,4 +12,38 @@ namespace exercise.webapi.Models
         [JsonIgnore] // Todo: replace this with DTO approach
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
+
+    public class AuthorPut
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
+    public class AuthorDTO
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+
+    }
+
+    public class SimpleAuthorDTO
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+    }
+
+    public class AuthorAndBooksDTO
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public ICollection<BookAndPublisherDTO> Books { get; set; } = new List<BookAndPublisherDTO>();
+    }
+
+
+
+
 }
