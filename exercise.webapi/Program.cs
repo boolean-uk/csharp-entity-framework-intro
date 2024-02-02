@@ -13,6 +13,7 @@ builder.Services.AddDbContext<DataContext>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IBookAuthorRepository, BookAuthorRepository>();
 
 var app = builder.Build();
 

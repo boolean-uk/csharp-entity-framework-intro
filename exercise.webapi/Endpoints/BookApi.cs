@@ -16,9 +16,9 @@ namespace exercise.webapi.Endpoints
 
             books.MapGet("/", GetBooks);
             books.MapGet("/{id}", GetBook);
-            books.MapPut("/{id}", UpdateBook);
+            //books.MapPut("/{id}", UpdateBook);
             books.MapDelete("/{id}", DeleteBook);
-            books.MapPost("/", CreateBook);
+            //books.MapPost("/", CreateBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -38,7 +38,8 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(member);
         }
 
-        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, int authorId)
+        // Created during single Author era
+/*        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, int authorId)
         {
             var book = await bookRepository.GetBook(id);
 //            book.AuthorId = authorId;
@@ -47,7 +48,7 @@ namespace exercise.webapi.Endpoints
             var member = BookConversion.toBook(book);
 
             return TypedResults.Ok(member);
-        }
+        }*/
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,19 +62,20 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(member);
         }
 
+        // Created under Single Author Era
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, 
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository,
             IPublisherRepository publisherRepository, PostBook postBook)
         {
             // check if elements exist
             Book temporaryBook = BookConversion.toCreate(postBook);
             Publisher publisher = await publisherRepository.GetPublisher(temporaryBook.PublisherId);
-//            Author author = await bookRepository.GetAuthor(temporaryBook.AuthorId);
+            //            Author author = await bookRepository.GetAuthor(temporaryBook.AuthorId);
 
             // if not throw fault
-            if (publisher == null) 
+            if (publisher == null)
                 return TypedResults.NotFound("Wrong ID inputted");
             if (!postBook.Title.Any())
                 return TypedResults.BadRequest("Bad title");
