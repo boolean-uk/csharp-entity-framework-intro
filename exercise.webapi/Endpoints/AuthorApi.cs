@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.DTO;
+using exercise.webapi.Models;
 using exercise.webapi.Repository;
 
 namespace exercise.webapi.Endpoints
@@ -15,29 +16,50 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> GetAuthor(IAuthorRepository authorRepository)
         {
-            var authors = await authorRepository.GetAllAuthors();
-
-            List<AuthorDTO> results = new List<AuthorDTO>();
-
-            foreach (var author in authors)
-            {
-                var AuthorDTO = new AuthorDTO()
-                { 
+            var authors = from author in await authorRepository.GetAllAuthors()
+                select new AuthorDTO()
+                {
                     Id = author.Id,
-                    FirstName = author.FirstName, LastName = author.LastName, Email = author.Email
+                    FirstName = author.FirstName,
+                    LastName = author.LastName,
+                    Email = author.Email,
+                    Books = author.Books.Select(book => new BookDTO()
+                    {
+                        Id = book.Id,
+                        Title = book.Title,
+                        AuthorId = book.AuthorId,
+                        Author = $"{book.Author.FirstName} {book.Author.LastName}",
+                        PublisherId = book.PublisherId,
+                        Publisher = book.Publisher.Name
+                    })
                 };
-                results.Add(AuthorDTO);
-            }
 
-            return TypedResults.Ok(results);
+            return TypedResults.Ok(authors);
         }
 
 
         private static async Task<IResult> GetAuthorById(int id, IAuthorRepository authorRepository)
         {
-            var book = await authorRepository.GetAuthor(id);
+            var author = await authorRepository.GetAuthor(id);
 
-            return book != null ? TypedResults.Ok(book) : TypedResults.NotFound();
+            var AuthorDTO = new AuthorDTO()
+            {
+                Id = author.Id,
+                FirstName = author.FirstName,
+                LastName = author.LastName,
+                Email = author.Email,
+                Books = author.Books.Select(book => new BookDTO()
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    AuthorId = book.AuthorId,
+                    Author = $"{book.Author.FirstName} {book.Author.LastName}",
+                    PublisherId = book.PublisherId,
+                    Publisher = book.Publisher.Name
+                })
+            };
+
+            return author != null ? TypedResults.Ok(AuthorDTO) : TypedResults.NotFound();
         }
 
     }

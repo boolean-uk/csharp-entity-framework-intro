@@ -30,23 +30,8 @@ namespace exercise.webapi.Endpoints
         {
             // Retrieve all books using the bookRepository
             var books = await bookRepository.GetAllBooks();
-
-            List<BookDTO> results = new List<BookDTO>();
-
-            foreach (var book in books) 
-            { 
-                var bookDTO = new BookDTO() 
-                {
-                    Title = book.Title,
-                    AuthorID = book.AuthorId,
-                    Author = new AuthorDTO() { FirstName = book.Author.FirstName, LastName = book.Author.LastName, Email = book.Author.Email
-                    }
-                };
-                results.Add(bookDTO);
-            }
-
             // Return Ok with the list of books
-            return TypedResults.Ok(results);
+            return TypedResults.Ok(books);
         }
 
 
@@ -68,19 +53,14 @@ namespace exercise.webapi.Endpoints
                 {
                     Id = createdBook.Id,
                     Title = createdBook.Title,
-                    AuthorID = createdBook.Author.Id,
-                    Author = new AuthorDTO()
-                    {
-                        LastName = createdBook.Author.LastName,
-                        FirstName = createdBook.Author.FirstName,
-                        Email = createdBook.Author.Email,
-                        Id = createdBook.Author.Id
-                    }
+                    AuthorId = createdBook.Author.Id,
+                    Author = $"{createdBook.Author.FirstName} {createdBook.Author.LastName}",
+                    PublisherId = createdBook.PublisherId,
+                    Publisher = createdBook.Publisher.Name
                 };
                 return TypedResults.Ok(bookDTO);
             }
 
-            //return TypedResults.Ok(bookDTO);
             return TypedResults.NotFound("Author does not exist");
 
         }

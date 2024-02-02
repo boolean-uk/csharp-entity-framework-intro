@@ -7,21 +7,13 @@ namespace exercise.webapi.DTO
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public int AuthorID { get; set; }
+        public int AuthorId { get; set; }
 
-        // Include AuthorDTO to represent the author
-        public AuthorDTO Author { get; set; }
+        public string Author { get; set; }
 
-        /*
-        public BookDTO(Book book)
-        {
-            Id = book.Id;
-            Title = book.Title;
+        public int PublisherId { get; set; }
 
-            // Map the Author to AuthorDTO
-            Author = new AuthorDTO(book.Author);
-        }
-        */
+        public string Publisher { get; set; }
 
     }
 }

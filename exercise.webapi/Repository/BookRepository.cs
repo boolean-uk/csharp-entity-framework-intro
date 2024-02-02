@@ -22,19 +22,39 @@ namespace exercise.webapi.Repository
 
         }
         */
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<IEnumerable<BookDTO>> GetAllBooks()
         {
             // Retrieve all books including their authors
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            var books = from book in _db.Books
+                select new BookDTO()
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    AuthorId = book.AuthorId,
+                    Author = $"{book.Author.FirstName} {book.Author.LastName}",
+                    PublisherId = book.Publisher.Id,
+                    Publisher = book.Publisher.Name
+                };
+            return await books.ToListAsync();
 
             // Map each book to a BookDTO
             //return books.Select(book => new BookDTO(book));
         }
 
-        public async Task<Book> GetBook(int bookId)
+        public async Task<BookDTO> GetBook(int bookId)
         {
             // Retrieve a single book including its author based on the bookId
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            var book = await _db.Books.Include(b => b.Author).Select(b => new BookDTO()
+            {
+                Id = b.Id,
+                Title = b.Title,
+                AuthorId = b.AuthorId,
+                Author = $"{b.Author.FirstName} {b.Author.LastName}",
+                PublisherId = b.Publisher.Id,
+                Publisher = b.Publisher.Name
+            }).FirstOrDefaultAsync(b => b.Id == bookId);
+
+            return book;
 
             // If the book is found, map it to a BookDTO, otherwise return null
             //return book != null ? new BookDTO(book) : null;
