@@ -31,8 +31,11 @@ namespace exercise.webapi.Endpoints
                     Email = authorClass.Email,
                     Books = authorClass.Books.Select(b => new BookDTO
                     {
-                        Id = b.Id,
-                        Title = b.Title
+                        Title = b.Title,
+                        Publisher = new PublisherDTO
+                        {
+                            Name = b.Publisher.Name
+                        }
                     }).ToList()
                 };
                 authorDTOs.Add(authorDTO);
@@ -54,8 +57,11 @@ namespace exercise.webapi.Endpoints
                 Email = authorClass.Email,
                 Books = authorClass.Books.Select(b => new BookDTO
                 {
-                    Id = b.Id,
-                    Title = b.Title
+                    Title = b.Title,
+                    Publisher = new PublisherDTO
+                    {
+                        Name = b.Publisher.Name
+                    }
                 }).ToList()
             };
 
