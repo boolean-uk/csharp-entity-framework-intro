@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using System.Security.Cryptography;
 
 namespace exercise.webapi.Data
 {
@@ -24,9 +25,16 @@ namespace exercise.webapi.Data
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
+            modelBuilder.Entity<Author>().HasMany(x => x.Books).WithOne(x => x.Author).HasForeignKey(x => x.AuthorId);
+            modelBuilder.Entity<Publisher>().HasMany(x => x.Books).WithOne(x => x.Publisher).HasForeignKey(x => x.PublisherId);
+
+            // Many to many class needs composite key, like primary key but composed of two properties instead of one
+            modelBuilder.Entity<Author>().HasMany(x => x.Books).WithOne(x => x.Author).HasForeignKey(x => x.AuthorId);
 
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
     }
 }
