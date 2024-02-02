@@ -1,16 +1,20 @@
-﻿namespace exercise.webapi.Models.DataTransfer.Author
+﻿using exercise.webapi.Models.BaseModels;
+
+namespace exercise.webapi.Models.DataTransfer.Author
 {
     public class AuthorDTO
     {
+        public int ID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public AuthorDTO(string firstName, string lastName, string email)
+        public AuthorDTO(BaseModels.Author author)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Email = email;
+            ID = author.ID;
+            FirstName = author.FirstName;
+            LastName = author.LastName;
+            Email = author.Email;
         }
     }
 }

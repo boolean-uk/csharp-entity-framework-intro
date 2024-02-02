@@ -14,69 +14,62 @@ namespace exercise.webapi.Endpoints
         public static void ConfigureBooksApi(this WebApplication app)
         {
             var group = app.MapGroup("books");
-            group.MapGet("/", GetBooks);
-            group.MapGet("/{id}", GetBook);
-            group.MapPut("/{id}", UpdateBook);
-            group.MapDelete("/{id}", DeleteBook);
-            group.MapPost("/", CreateBook);
+            group.MapGet("/", GetAll);
+            group.MapGet("/{id}", Get);
+            group.MapPut("/{id}", Update);
+            group.MapDelete("/{id}", Delete);
+            group.MapPost("/", Create);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> GetBooks(IRepository<Book> bookRepository)
+        private static async Task<IResult> GetAll(IRepository<Book> bookRepository)
         {
             var books = await bookRepository.GetAll();
-            List<BookOutputDTO> results = new List<BookOutputDTO>();
+            List<BookWithAuthorDTO> results = new List<BookWithAuthorDTO>();
             foreach (var book in books)
             {
-                AuthorDTO authorData = new AuthorDTO(book.Author.FirstName, book.Author.LastName, book.Author.Email);
-                BookOutputDTO bookData = new BookOutputDTO(book.Title, authorData);
-                results.Add(bookData);
+                results.Add(new BookWithAuthorDTO(book));
             }
             return TypedResults.Ok(results);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> GetBook(IRepository<Book> bookRepository, int id)
+        private static async Task<IResult> Get(IRepository<Book> bookRepository, int id)
         {
             var book = await bookRepository.Get(id);
-            AuthorDTO authorData = new AuthorDTO(book.Author.FirstName, book.Author.LastName, book.Author.Email);
-            BookOutputDTO result = new BookOutputDTO(book.Title, authorData);
-            return TypedResults.Ok(result);
+            return TypedResults.Ok(new BookWithAuthorDTO(book));
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        private static async Task<IResult> UpdateBook([FromServices] IRepository<Book> bookRepository, [FromServices] IRepository<Author> authorRepository, [FromRoute] int id, [FromBody] BookInputDTO bookData)
+        private static async Task<IResult> Update([FromServices] IRepository<Book> bookRepository, [FromServices] IRepository<Author> authorRepository, [FromRoute] int id, [FromBody] BookCreateDTO inputData)
         {
-            if (!authorRepository.IsAnExistingID(bookData.AuthorID).Result)
-            {
-                return TypedResults.NotFound($"Could not find author with ID {bookData.AuthorID}");
-            }
+            if (!authorRepository.IsAnExistingID(inputData.AuthorID).Result) return TypedResults.NotFound($"Could not find author with ID {inputData.AuthorID}");
             Book book = await bookRepository.Get(id);
             if (book == null) return TypedResults.NotFound($"Could not find book with ID {id}");
-            book.Title = bookData.Title;
-            book.AuthorID = bookData.AuthorID;
+            book.Title = inputData.Title;
+            book.AuthorID = inputData.AuthorID;
             var result = bookRepository.Update(book);
-            return TypedResults.Created(id.ToString(), new BookResultDTO(book));
+            return TypedResults.Created(id.ToString(), new BookWithAuthorDTO(book));
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> DeleteBook(IRepository<Book> bookRepository, int id)
+        private static async Task<IResult> Delete(IRepository<Book> bookRepository, int id)
         {
             var result = await bookRepository.Delete(id);
-            return TypedResults.Ok(result);
+            return TypedResults.Ok(new BookDTO(result));
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreateBook([FromServices] IRepository<Book> bookRepository, [FromServices] IRepository<Author> authorRepository, [FromBody] BookInputDTO bookData)
+        private static async Task<IResult> Create([FromServices] IRepository<Book> bookRepository, [FromServices] IRepository<Author> authorRepository, [FromBody] BookCreateDTO bookData)
         {
             if (!authorRepository.IsAnExistingID(bookData.AuthorID).Result) return TypedResults.NotFound($"Could not find author with ID {bookData.AuthorID}");
             if (!(bookData.Title.Length > 0)) return TypedResults.BadRequest("Data input does not meet requirements");
             Book newBook = new Book(){ Title = bookData.Title, AuthorID = bookData.AuthorID };
             var result = await bookRepository.Insert(newBook);
-            return TypedResults.Created(newBook.ID.ToString(), new BookResultDTO(newBook));
+            return TypedResults.Created(newBook.ID.ToString(), new BookWithAuthorDTO(result));
         }
 
 
