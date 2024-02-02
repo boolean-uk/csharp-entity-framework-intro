@@ -28,6 +28,8 @@ namespace exercise.webapi.Endpoints
                                   Title = x.Title,
                                   AuthorId = x.AuthorId,
                                   AuthorName = $"{author.FirstName} {author.LastName}",
+                                  PublisherId = x.PublisherId,
+                                  PublisherName = x.Publisher.PublisherName
                               })
                           };
             return TypedResults.Ok(authors);
@@ -56,6 +58,8 @@ namespace exercise.webapi.Endpoints
                     Title = b.Title,
                     AuthorId = b.AuthorId,
                     AuthorName = $"{b.Author.FirstName} {b.Author.LastName}",
+                    PublisherId = b.PublisherId,
+                    PublisherName = b.Publisher.PublisherName
                 })
             };
             return TypedResults.Ok(authorDto);
