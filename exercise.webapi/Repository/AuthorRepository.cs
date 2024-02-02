@@ -15,12 +15,12 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task<IEnumerable<Author>> GetAllAuthors()
     {
-        return await _db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).ToListAsync();
+        return await _db.Authors.Include(a => a.AuthorBooks).ThenInclude(ab => ab.Book).ThenInclude(b => b.Publisher).ToListAsync();
     }
 
     public async Task<Author?> GetAuthorById(int id)
     {
-        var author = await _db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).FirstOrDefaultAsync(x => x.Id == id);
+        var author = await _db.Authors.Include(a => a.AuthorBooks).ThenInclude(ab => ab.Book).ThenInclude(b => b.Publisher).FirstOrDefaultAsync(x => x.Id == id);
         if (author == null) return null;
         return author;
     }

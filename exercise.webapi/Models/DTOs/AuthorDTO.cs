@@ -1,6 +1,4 @@
 ﻿using exercise.webapi.Models.Types;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace exercise.webapi.Models.DTOs;
 

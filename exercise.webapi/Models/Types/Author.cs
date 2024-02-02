@@ -14,5 +14,5 @@ public class Author
     public string LastName { get; set; }
     [Column("email")]
     public string Email { get; set; }
-    public ICollection<Book> Books { get; set; } = new List<Book>();
+    public ICollection<AuthorBook> AuthorBooks { get; set; } = new List<AuthorBook>();
 }

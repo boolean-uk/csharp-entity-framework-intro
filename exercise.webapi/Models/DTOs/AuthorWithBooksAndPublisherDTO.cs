@@ -12,9 +12,9 @@ public class AuthorWithBooksAndPublisherDTO
     public static AuthorWithBooksAndPublisherDTO AuthorToDTO(Author author)
     {
         var books = new List<BookWithPublisherDTO>();
-        foreach (var book in author.Books)
+        foreach (var authorBook in author.AuthorBooks)
         {
-            books.Add(BookWithPublisherDTO.BookToDTO(book));
+            books.Add(BookWithPublisherDTO.BookToDTO(authorBook.Book));
         }
         return new AuthorWithBooksAndPublisherDTO()
         {

@@ -16,6 +16,8 @@ public static class BookApi
         group.MapPut("/{id}", UpdateBook);
         group.MapDelete("/{id}", DeleteBook);
         group.MapPost("/", CreateBook);
+        group.MapPut("/addAuthor/{id}", AddAuthorToBook);
+        group.MapPut("/removeAuthor/{id}", RemoveAuthorFromBook);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -45,13 +47,18 @@ public static class BookApi
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
-    private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, BookPost book)
+    private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, BookPut book)
     {
+        if (string.IsNullOrEmpty(book.Title))
+        {
+            return TypedResults.BadRequest($"Title can not be empty!");
+        }
+
         var updatedBook = await bookRepository.UpdateBook(id, book);
 
         if (updatedBook == null)
         {
-            return TypedResults.BadRequest("Id or AuthorId is wrong!");
+            return TypedResults.NotFound($"Id: {id} not found!");
         }
 
         return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(updatedBook));
@@ -69,6 +76,7 @@ public static class BookApi
 
         return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(deletedBook));
     }
+
     [ProducesResponseType(StatusCodes.Status201Created)]
     private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost book)
     {
@@ -81,11 +89,57 @@ public static class BookApi
 
         if (createdBook == null)
         {
-            return TypedResults.NotFound($"Author-Id: {book.AuthorId} not found!");
+            return TypedResults.NotFound($"Publisher Id: {book.PublisherId} not found!");
+        }
+
+        foreach (var id in book.AuthorIds)
+        {
+            createdBook = await bookRepository.AddAuthorToBook(createdBook, id);
+            if (createdBook == null) return TypedResults.NotFound($"AuthorId: {id} not found!");
         }
 
         int newId = await bookRepository.GetNewId();
 
         return TypedResults.Created($"/{newId}", BookWithAuthorAndPublisherDTO.bookToDTO(createdBook));
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    private static async Task<IResult> AddAuthorToBook(IBookRepository bookRepository, int id, int AuthorId)
+    {
+        var book = await bookRepository.GetBookById(id);
+
+        if (book == null)
+        {
+            return TypedResults.NotFound($"Book Id: {id} not found!");
+        }
+
+        book = await bookRepository.AddAuthorToBook(book, AuthorId);
+
+        if (book == null)
+        {
+            return TypedResults.NotFound($"Author Id: {AuthorId} not found!");
+        }
+
+        return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(book));
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    private static async Task<IResult> RemoveAuthorFromBook(IBookRepository bookRepository, int id, int AuthorId)
+    {
+        var book = await bookRepository.GetBookById(id);
+
+        if (book == null)
+        {
+            return TypedResults.NotFound($"Book Id: {id} not found!");
+        }
+
+        book = await bookRepository.RemoveAuthorFromBook(book, AuthorId);
+
+        if (book == null)
+        {
+            return TypedResults.NotFound($"Author Id: {AuthorId} not found!");
+        }
+
+        return TypedResults.Ok(BookWithAuthorAndPublisherDTO.bookToDTO(book));
     }
 }

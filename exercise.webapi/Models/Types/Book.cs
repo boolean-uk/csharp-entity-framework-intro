@@ -9,10 +9,7 @@ public class Book
     public int Id { get; set; }
     [Column("title")]
     public string Title { get; set; }
-    [Column("fk_author_id")]
-    [ForeignKey("Author")]
-    public int AuthorId { get; set; }
-    public Author Author { get; set; }
+    public ICollection<AuthorBook> AuthorBooks { get; set; } = new List<AuthorBook>();
     [Column("fk_publisher_id")]
     [ForeignKey("Publisher")]
     public int PublisherId { get; set; }

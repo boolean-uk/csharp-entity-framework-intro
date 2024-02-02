@@ -1,19 +1,23 @@
 ﻿using exercise.webapi.Models.Types;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.webapi.Models.DTOs;
 
 public class BookWithAuthorAndPublisherDTO
 {
     public string Title { get; set; }
-    public AuthorDTO Author { get; set; }
+    public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>();
     public PublisherDTO Publisher { get; set; }
     public static BookWithAuthorAndPublisherDTO bookToDTO(Book book)
     {
+        var authors =  new List<AuthorDTO>();
+        foreach (var authorBook in book.AuthorBooks)
+        {
+            authors.Add(AuthorDTO.AuthorToDTO(authorBook.Author));
+        }
         return new BookWithAuthorAndPublisherDTO()
         {
             Title = book.Title,
-            Author = AuthorDTO.AuthorToDTO(book.Author),
+            Authors = authors,
             Publisher = PublisherDTO.PublisherToDTO(book.Publisher)
         };
     }
