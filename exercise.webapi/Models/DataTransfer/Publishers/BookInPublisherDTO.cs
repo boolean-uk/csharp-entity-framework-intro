@@ -7,6 +7,6 @@ namespace exercise.webapi.Models.DataTransfer.Publishers
     {
         public int Id { get; set; } = Id;
         public string Title { get; set; } = Title;
-        public IEnumerable<AuthorInBookDTO> author { get; set; } = Authors.Select(a => new AuthorInBookDTO(a.Id, a.FirstName, a.LastName, a.Email));
+        public IEnumerable<AuthorInBookDTO> author { get; set; } = Authors.Select(a => new AuthorInBookDTO(a.AuthorId, a.FirstName, a.LastName, a.Email));
     }
 }

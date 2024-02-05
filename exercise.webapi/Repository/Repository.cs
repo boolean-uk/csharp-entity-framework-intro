@@ -24,31 +24,35 @@ namespace exercise.webapi.Repository
                 result = _table_T
                     .Include(b => (b as Book).BookAuthors)
                         .ThenInclude(ba => ba.Author)
-                    .Include(b => (b as Book).Publisher);
+                    .Include(b => (b as Book).Publisher)
+                    .Where(e => EF.Property<int>(e, "BookId") == id);
             }
             else if (typeof(T) == typeof(Author))
             {
                 result = _table_T
                     .Include(b => (b as Author).BookAuthors)
                         .ThenInclude(ba => (ba as BookAuthor).Book)
-                            .ThenInclude(b => b.Publisher);
+                            .ThenInclude(b => b.Publisher)
+                    .Where(e => EF.Property<int>(e, "AuthorId") == id);
             }
             else if (typeof(T) == typeof(Publisher)) 
             {
                 result = _table_T
                     .Include(p => (p as Publisher).Books)
-                        .ThenInclude(ba => (ba as BookAuthor).Author);
+                        .ThenInclude(ba => (ba as BookAuthor).Author)
+                    .Where(e => EF.Property<int>(e, "Id") == id);
             }
             else
             {
                 result = _table_T;
             }
 
-            return await result.Where(e => EF.Property<int>(e, "Id") == id).FirstOrDefaultAsync();
+            return await result.FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
+            IQueryable<T> query = _table_T;
             if (typeof(T) == typeof(Book))
             {
                 return await _table_T
@@ -69,7 +73,8 @@ namespace exercise.webapi.Repository
             {
                 return await _table_T
                     .Include(p => (p as Publisher).Books)
-                        .ThenInclude(ba => (ba as BookAuthor).Author)
+                        .ThenInclude(b => (b as Book).BookAuthors)
+                            .ThenInclude(ba => (ba as BookAuthor).Author)
                     .ToListAsync();
             }
             else 

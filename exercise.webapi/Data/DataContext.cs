@@ -26,6 +26,7 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
             modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
+            modelBuilder.Entity<BookAuthor>().HasData(seeder.Bookauthors);
 
             // Register BookAuthor junction class
             modelBuilder.Entity<BookAuthor>()

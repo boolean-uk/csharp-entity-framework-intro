@@ -25,8 +25,8 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBooks(IRepository<Book> repo)
         {
             var books = await repo.GetAll();
-            // .Select(b => new BookDTO(b.Id, b.Title, b.AuthorId, b.Author) // Cast from Book object to BookDTO);
-            IEnumerable<BookDTO> results = books.ToList().Select(b => new BookDTO(b.Id, b.Title, b.GetAuthors(), b.Publisher)).ToList();
+            // .Select(b => new BookDTO(b.BookId, b.Title, b.AuthorId, b.Author) // Cast from Book object to BookDTO);
+            IEnumerable<BookDTO> results = books.ToList().Select(b => new BookDTO(b.BookId, b.Title, b.GetAuthors(), b.Publisher)).ToList();
             Payload<IEnumerable<BookDTO>> payload = new Payload<IEnumerable<BookDTO>>(results);
             return TypedResults.Ok(payload); 
         }
@@ -35,13 +35,13 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetSpecificBook(IRepository<Book> repo, int id)
         {
-            //.Select(b => new BookDTO(b.Id, b.Title, b.AuthorId, b.Author)) // Cast from Book object to BookDTO
+            //.Select(b => new BookDTO(b.BookId, b.Title, b.AuthorId, b.Author)) // Cast from Book object to BookDTO
             var book = await repo.Get(id);
             if (book == null) 
             {
-                return TypedResults.NotFound("No book of provided Id could be found.");
+                return TypedResults.NotFound("No book of provided BookId could be found.");
             }
-            BookDTO bookOut = new BookDTO(book.Id, book.Title, book.GetAuthors(), book.Publisher);
+            BookDTO bookOut = new BookDTO(book.BookId, book.Title, book.GetAuthors(), book.Publisher);
 
             Payload<BookDTO> payload = new Payload<BookDTO>(bookOut);
             return TypedResults.Ok(payload);
@@ -56,12 +56,12 @@ namespace exercise.webapi.Endpoints
             IEnumerable<Author> authors = authorRepo.GetAll().Result;
             IEnumerable<Publisher> publishers = publisherRepo.GetAll().Result;
 
-            bool validId = books.Any(b => b.Id == id);
+            bool validId = books.Any(b => b.BookId == id);
             if (!validId)
             {
                 return TypedResults.NotFound($"Book with id {id} does not exist.");
             }
-            bool validAuthorId = bookPut.AuthorId.All(ai => authors.Any(a => a.Id == ai));
+            bool validAuthorId = bookPut.AuthorId.All(ai => authors.Any(a => a.AuthorId == ai));
             if (!validAuthorId)
             {
                 return TypedResults.NotFound($"Author with id {bookPut.AuthorId} does not exist.");
@@ -75,28 +75,28 @@ namespace exercise.webapi.Endpoints
             ICollection<BookAuthor> bookAuthors = bookPut.AuthorId
                 .Select(a => new BookAuthor() { 
                     AuthorId = a, 
-                    Author = authors.Where(b => b.Id == a).FirstOrDefault(),
+                    Author = authors.Where(b => b.AuthorId == a).FirstOrDefault(),
                 })
                 .ToList();
             Book inputBook = new Book() { BookAuthors = bookAuthors, PublisherId = bookPut.PublisherId};
 
             // Set values of the book
-            Book? dbBook = books.Where(b => b.Id == id).FirstOrDefault();
+            Book? dbBook = books.Where(b => b.BookId == id).FirstOrDefault();
 
-            inputBook.Id = dbBook.Id;
+            inputBook.BookId = dbBook.BookId;
             inputBook.Title = bookPut.Title ?? dbBook.Title;
             Publisher publisher = publishers.Where(a => a.Id == bookPut.PublisherId).FirstOrDefault();
             inputBook.Publisher = publisher;
 
             foreach (BookAuthor ba in bookAuthors)
             {
-                ba.BookId = inputBook.Id;
+                ba.BookId = inputBook.BookId;
                 ba.Book = inputBook;
             }
 
             Book result = await bookRepo.Update(id, inputBook);
 
-            BookDTO bookTransfer = new BookDTO(result.Id, result.Title, result.GetAuthors(), result.Publisher);
+            BookDTO bookTransfer = new BookDTO(result.BookId, result.Title, result.GetAuthors(), result.Publisher);
             Payload<BookDTO> payload = new Payload<BookDTO>(bookTransfer);
             return TypedResults.Created($"/books/{id}", payload);
         }
@@ -112,10 +112,10 @@ namespace exercise.webapi.Endpoints
             IEnumerable<Publisher> publishers = publisherRepo.GetAll().Result;
 
             // Validate input
-            bool validAuthorId = bookPost.AuthorId.All(ai => authors.Any(a => a.Id == ai));
+            bool validAuthorId = bookPost.AuthorId.All(ai => authors.Any(a => a.AuthorId == ai));
             if (!validAuthorId) 
             {
-                return TypedResults.NotFound($"Author Id {bookPost.AuthorId} was not found.");
+                return TypedResults.NotFound($"Author BookId {bookPost.AuthorId} was not found.");
             }
             bool validPublisherId = publishers.Any(a => a.Id == bookPost.PublisherId);
             if (!validPublisherId)
@@ -133,7 +133,7 @@ namespace exercise.webapi.Endpoints
 
             // Retrieve the book update
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-            IEnumerable<Author> foundAuthors = authors.Where(a => bookPost.AuthorId.Contains(a.Id)).ToList();
+            IEnumerable<Author> foundAuthors = authors.Where(a => bookPost.AuthorId.Contains(a.AuthorId)).ToList();
             Publisher publisher = publishers.Where(p => p.Id == bookPost.PublisherId).FirstOrDefault();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
@@ -141,7 +141,7 @@ namespace exercise.webapi.Endpoints
                 .Select(a => new BookAuthor()
                 {
                     AuthorId = a,
-                    Author = authors.Where(b => b.Id == a).FirstOrDefault(),
+                    Author = authors.Where(b => b.AuthorId == a).FirstOrDefault(),
                 })
                 .ToList();
 
@@ -152,14 +152,14 @@ namespace exercise.webapi.Endpoints
 
             foreach (BookAuthor ba in bookAuthors)
             {
-                ba.BookId = insertedBook.Id;
+                ba.BookId = insertedBook.BookId;
                 ba.Book = insertedBook;
             }
 
-            BookDTO bookTransfer = new BookDTO(insertedBook.Id, insertedBook.Title, insertedBook.GetAuthors(), insertedBook.Publisher);
+            BookDTO bookTransfer = new BookDTO(insertedBook.BookId, insertedBook.Title, insertedBook.GetAuthors(), insertedBook.Publisher);
             Payload<BookDTO> payload = new Payload<BookDTO>(bookTransfer);
 
-            return TypedResults.Created($"/books/{insertedBook.Id}", payload);
+            return TypedResults.Created($"/books/{insertedBook.BookId}", payload);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -167,11 +167,11 @@ namespace exercise.webapi.Endpoints
         public static async Task<IResult> DeleteBook(IRepository<Book> repo, int id) 
         {
             IEnumerable<Book> books = repo.GetAll().Result;
-            bool isValidId = books.Any(b => b.Id == id);
+            bool isValidId = books.Any(b => b.BookId == id);
             if (isValidId) 
             {
                 Book book = await repo.Delete(id);
-                BookDTO bookTransfer = new BookDTO(book.Id, book.Title, book.GetAuthors(), book.Publisher);
+                BookDTO bookTransfer = new BookDTO(book.BookId, book.Title, book.GetAuthors(), book.Publisher);
                 Payload<BookDTO> payload = new Payload<BookDTO>(bookTransfer);
                 return TypedResults.Ok(payload);
             } 

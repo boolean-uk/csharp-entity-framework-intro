@@ -5,7 +5,7 @@ namespace exercise.webapi.Models.DatabaseModels
 {
     public class Book
     {
-        public int Id { get; set; }
+        public int BookId { get; set; }
         public string Title { get; set; }
 
         [ForeignKey("Author")]
