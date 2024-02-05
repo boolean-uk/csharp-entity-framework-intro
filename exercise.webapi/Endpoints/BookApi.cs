@@ -4,6 +4,7 @@ using exercise.webapi.Models.DataTransfer.Books;
 using exercise.webapi.Models.JunctionModels;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace exercise.webapi.Endpoints
 {
@@ -18,6 +19,7 @@ namespace exercise.webapi.Endpoints
             mapGroup.MapPut("/{id}", PutBook);
             mapGroup.MapPost("/", PostBook);
             mapGroup.MapDelete("/", DeleteBook);
+
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -180,5 +182,7 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.NotFound($"No entry with the id {id} could be found.");
             }
         }
+
+
     }
 }
