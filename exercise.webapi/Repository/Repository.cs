@@ -39,7 +39,8 @@ namespace exercise.webapi.Repository
             {
                 result = _table_T
                     .Include(p => (p as Publisher).Books)
-                        .ThenInclude(ba => (ba as BookAuthor).Author)
+                        .ThenInclude(b => (b as Book).BookAuthors)
+                            .ThenInclude(ba => (ba as BookAuthor).Author)
                     .Where(e => EF.Property<int>(e, "Id") == id);
             }
             else
@@ -102,6 +103,13 @@ namespace exercise.webapi.Repository
         public async Task<T> Delete(int id)
         {
             T? entity = _table_T.Find(id);
+            _table_T.Remove(entity);
+            await _db.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<T> Delete(T entity)
+        {
             _table_T.Remove(entity);
             await _db.SaveChangesAsync();
             return entity;

@@ -13,5 +13,7 @@ namespace exercise.webapi.Repository
         Task<T> Insert(T entity);
 
         Task<T> Delete(int id);
+
+        Task<T> Delete(T entity);
     }
 }
