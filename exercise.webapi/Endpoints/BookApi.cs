@@ -47,10 +47,10 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> CreateBook(CreateBookDTO createDTO, IBookRepository bookRepository)
         {
-            var books = await bookRepository.CreateBook(createDTO);
-            if (books == -1) { return TypedResults.BadRequest("Book object invalid"); }
-            if (books == -2) { return TypedResults.NotFound("Author Id invalid"); }
-            if (books == -3) { return TypedResults.NotFound("Publisher Id invalid"); }
+            var result = await bookRepository.CreateBook(createDTO);
+            if (result == -1) { return TypedResults.BadRequest("Book object invalid"); }
+            if (result == -2) { return TypedResults.NotFound("Author Id invalid"); }
+            if (result == -3) { return TypedResults.NotFound("Publisher Id invalid"); }
             return TypedResults.Ok();
         }
     }
