@@ -15,7 +15,7 @@ namespace exercise.webapi.Models.DataTransfer.Authors
             Email = email;
             foreach (Book book in books) 
             {
-                Books.Add(new BookInAuthorDTO(book.Id, book.Title, book.Publisher));
+                Books.Add(new BookInAuthorDTO(book.BookId, book.Title, book.Publisher));
             }
         }
 

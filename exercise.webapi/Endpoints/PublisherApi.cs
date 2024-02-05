@@ -25,7 +25,7 @@ namespace exercise.webapi.Endpoints
                 .ToList()
                 .Select(p => new PublisherDTO(p.Id, p.Name)
                 {
-                    Books = p.Books.Select(b => new BookInPublisherDTO(b.Id, b.Title, b.Author))
+                    Books = p.Books.Select(b => new BookInPublisherDTO(b.BookId, b.Title, b.GetAuthors()))
                     .ToList()
                 });
             Payload<IEnumerable<PublisherDTO>> payload = new Payload<IEnumerable<PublisherDTO>>(results);
@@ -41,7 +41,7 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound($"Could not find any publisher with the provided id {id}");
             }
-            IEnumerable<BookInPublisherDTO> booksOut = publishers.Books.Select(b => new BookInPublisherDTO(b.Id, b.Title, b.Author));
+            IEnumerable<BookInPublisherDTO> booksOut = publishers.Books.Select(b => new BookInPublisherDTO(b.BookId, b.Title, b.GetAuthors()));
             PublisherDTO publisherOut = new PublisherDTO(publishers.Id, publishers.Name) { Books = booksOut};
 
             Payload<PublisherDTO> payload = new Payload<PublisherDTO>(publisherOut);

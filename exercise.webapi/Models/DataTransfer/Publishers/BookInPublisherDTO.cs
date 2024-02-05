@@ -3,10 +3,10 @@ using exercise.webapi.Models.DataTransfer.Books;
 
 namespace exercise.webapi.Models.DataTransfer.Publishers
 {
-    public class BookInPublisherDTO(int Id, string Title, Author Author)
+    public class BookInPublisherDTO(int Id, string Title, IEnumerable<Author> Authors)
     {
         public int Id { get; set; } = Id;
         public string Title { get; set; } = Title;
-        public AuthorInBookDTO author { get; set; } = new AuthorInBookDTO(Author.Id, Author.FirstName, Author.LastName, Author.Email);
+        public IEnumerable<AuthorInBookDTO> author { get; set; } = Authors.Select(a => new AuthorInBookDTO(a.AuthorId, a.FirstName, a.LastName, a.Email));
     }
 }

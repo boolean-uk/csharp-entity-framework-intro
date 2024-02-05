@@ -2,12 +2,12 @@
 
 namespace exercise.webapi.Models.DataTransfer.Books
 {
-    public class BookDTO(int Id, string Title, Author Author, Publisher publisher)
+    public class BookDTO(int Id, string Title, IEnumerable<Author> Authors, Publisher publisher)
     {
         public int Id { get; set; } = Id;
         public string Title { get; set; } = Title;
 
-        public AuthorInBookDTO Author { get; set; } = new AuthorInBookDTO(Author.Id, Author.FirstName, Author.LastName, Author.Email);
+        public IEnumerable<AuthorInBookDTO> Author { get; set; } = Authors.Select(a => new AuthorInBookDTO(a.AuthorId, a.FirstName, a.LastName, a.Email));
 
         public PublisherInBookDTO publisher { get; set; } = new PublisherInBookDTO(publisher.Id, publisher.Name);
     }

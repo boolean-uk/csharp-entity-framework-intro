@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models.DatabaseModels;
+using exercise.webapi.Models.JunctionModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -20,47 +21,60 @@ namespace exercise.webapi.Repository
             IQueryable<T> result = _table_T;
             if (typeof(T) == typeof(Book))
             {
-                result = _table_T.Include(b => (b as Book).Author).Include(b => (b as Book).Publisher);
+                result = _table_T
+                    .Include(b => (b as Book).BookAuthors)
+                        .ThenInclude(ba => ba.Author)
+                    .Include(b => (b as Book).Publisher)
+                    .Where(e => EF.Property<int>(e, "BookId") == id);
             }
             else if (typeof(T) == typeof(Author))
             {
-                result = _table_T.Include(b => (b as Author).Books).ThenInclude(b => (b as Book).Publisher);
+                result = _table_T
+                    .Include(b => (b as Author).BookAuthors)
+                        .ThenInclude(ba => (ba as BookAuthor).Book)
+                            .ThenInclude(b => b.Publisher)
+                    .Where(e => EF.Property<int>(e, "AuthorId") == id);
             }
             else if (typeof(T) == typeof(Publisher)) 
             {
-                result = _table_T.Include(p => (p as Publisher).Books).ThenInclude(b => (b as Book).Author);
+                result = _table_T
+                    .Include(p => (p as Publisher).Books)
+                        .ThenInclude(ba => (ba as BookAuthor).Author)
+                    .Where(e => EF.Property<int>(e, "Id") == id);
             }
             else
             {
                 result = _table_T;
             }
 
-            return await result.Where(e => EF.Property<int>(e, "Id") == id).FirstOrDefaultAsync();
-
-            
+            return await result.FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<T>> GetAll()
         {
+            IQueryable<T> query = _table_T;
             if (typeof(T) == typeof(Book))
             {
                 return await _table_T
-                    .Include(b => (b as Book).Author)
+                    .Include(b => (b as Book).BookAuthors)
+                        .ThenInclude(ba => ba.Author)
                     .Include(b => (b as Book).Publisher)
                     .ToListAsync();
             }
             else if (typeof(T) == typeof(Author))
             {
                 return await _table_T
-                    .Include(a => (a as Author).Books)
-                        .ThenInclude(b => (b as Book).Publisher)
+                    .Include(b => (b as Author).BookAuthors)
+                        .ThenInclude(ba => (ba as BookAuthor).Book)
+                            .ThenInclude(b => b.Publisher)
                     .ToListAsync();
             }
             else if (typeof(T) == typeof(Publisher))
             {
                 return await _table_T
                     .Include(p => (p as Publisher).Books)
-                        .ThenInclude(b => (b as Book).Author)
+                        .ThenInclude(b => (b as Book).BookAuthors)
+                            .ThenInclude(ba => (ba as BookAuthor).Author)
                     .ToListAsync();
             }
             else 

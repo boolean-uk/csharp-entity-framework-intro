@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using exercise.webapi.Models.DataTransfer.Books;
 using exercise.webapi.Models.DataTransfer.Authors;
 using exercise.webapi.Models.DataTransfer;
+using exercise.webapi.Models.JunctionModels;
 using System.Net;
 
 namespace exercise.webapi.Endpoints
@@ -25,7 +26,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetAuthors(IRepository<Author> repo)
         {
             var authors = await repo.GetAll();
-            IEnumerable<AuthorDTO> results = authors.ToList().Select(a => new AuthorDTO(a.Id, a.FirstName, a.LastName, a.Email, a.Books)).ToList();
+            IEnumerable<AuthorDTO> results = authors.ToList().Select(a => new AuthorDTO(a.AuthorId, a.FirstName, a.LastName, a.Email, a.GetBooks())).ToList();
             Payload<IEnumerable<AuthorDTO>> payload = new Payload<IEnumerable<AuthorDTO>>(results);
             return TypedResults.Ok(payload);
         }
@@ -37,9 +38,10 @@ namespace exercise.webapi.Endpoints
             var author = await repo.Get(id);
             if (author == null)
             {
-                return TypedResults.NotFound("No author of provided Id could be found.");
+                return TypedResults.NotFound("No author of provided BookId could be found.");
             }
-            AuthorDTO authorOut = new AuthorDTO(author.Id, author.FirstName, author.LastName, author.Email, author.Books);
+
+            AuthorDTO authorOut = new AuthorDTO(author.AuthorId, author.FirstName, author.LastName, author.Email, author.GetBooks());
 
             Payload<AuthorDTO> payload = new Payload<AuthorDTO>(authorOut);
             return TypedResults.Ok(payload);
