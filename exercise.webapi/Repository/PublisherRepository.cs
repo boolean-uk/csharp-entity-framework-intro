@@ -22,13 +22,13 @@ namespace exercise.webapi.Repository
                 BookAuthorInfo = x.Books.Select(y => new BookAuthorDTO()
                 {
                     Title = y.Title,
-                    AuthorInfo = y.Authors.Select(z => new AuthorInfoDTO()
+                    AuthorInfo = y.BookAuthors.Join(_db.Authors, bookauthor => bookauthor.AuthorId, author => author.Id, (bookauthor, author) => new AuthorInfoDTO()
                     {
-                        AuthorEmail = z.Email,
-                        AuthorFirstName = z.FirstName,
-                        AuthorId = z.Id,
-                        AuthorLastName = z.LastName,
-                    }).ToList()
+                        AuthorId = author.Id,
+                        AuthorEmail = author.Email,
+                        AuthorFirstName = author.FirstName,
+                        AuthorLastName = author.LastName,
+                    }).ToList(),
                 }).ToList(),
             }).ToListAsync();
         }
@@ -42,13 +42,13 @@ namespace exercise.webapi.Repository
                 BookAuthorInfo = x.Books.Select(y => new BookAuthorDTO()
                 {
                     Title = y.Title,
-                    AuthorInfo = y.Authors.Select(z => new AuthorInfoDTO()
+                    AuthorInfo = y.BookAuthors.Join(_db.Authors, bookauthor => bookauthor.AuthorId, author => author.Id, (bookauthor, author) => new AuthorInfoDTO()
                     {
-                        AuthorEmail = z.Email,
-                        AuthorFirstName = z.FirstName,
-                        AuthorId = z.Id,
-                        AuthorLastName = z.LastName,
-                    }).ToList()
+                        AuthorId = author.Id,
+                        AuthorEmail = author.Email,
+                        AuthorFirstName = author.FirstName,
+                        AuthorLastName = author.LastName,
+                    }).ToList(),
                 }).ToList(),
             }).FirstOrDefaultAsync();
         }

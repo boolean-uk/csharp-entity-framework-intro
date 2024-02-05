@@ -4,8 +4,7 @@
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public IList<int> AuthorIds { get; set; } = new List<int>();
-        public IList<Author> Authors { get; set; } = new List<Author>();
+        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
     }
