@@ -22,11 +22,13 @@ namespace exercise.webapi.Data
         {
             Seeder seeder = new Seeder();
 
+            modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
 
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
     }
 }

@@ -13,8 +13,12 @@ namespace exercise.webapi.Models.DatabaseModels
 
         [Column("fk_author_id")]
         [ForeignKey("Author")]
-        [JsonIgnore]
         public int AuthorId { get; set; }
         public Author Author { get; set; }
+
+        [Column("fk_publisher_id")]
+        [ForeignKey("Publisher")]
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
     }
 }

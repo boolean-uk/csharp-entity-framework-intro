@@ -17,5 +17,8 @@ namespace exercise.webapi.Models.DatabaseModels
 
         [JsonIgnore]
         public IEnumerable<Book> Books { get; set; }
+
+        [JsonIgnore]
+        public IEnumerable<Publisher> Publishers { get; set; }
     }
 }

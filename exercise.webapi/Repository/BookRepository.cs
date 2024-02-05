@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Endpoints;
+using exercise.webapi.Models;
 using exercise.webapi.Models.DatabaseModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,13 +18,13 @@ namespace exercise.webapi.Repository
         //Book Repository
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(p => p.Publisher).ToListAsync();
 
         }
 
         public async Task<Book> GetBook(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstAsync(b => b.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(p => p.Publisher).FirstAsync(b => b.Id == id);
         }
 
         public async Task<Book> UpdateBookAuthor (int id, Book book)
@@ -53,12 +54,20 @@ namespace exercise.webapi.Repository
         //Author repository
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            return await _db.Authors.Include(author => author.Books).ToListAsync();
+            
+            return await _db.Authors.Include(author => author.Books).Include(author => author.Publishers).ToListAsync();
+
+            
         }
 
         public async Task<Author> GetAuthor(int id)
         {
-            return await _db.Authors.Include(author => author.Books).FirstAsync(a => a.Id == id);
+            return await _db.Authors.Include(author => author.Books).Include(author => author.Publishers).FirstAsync(a => a.Id == id);
+        }
+
+        public async Task<IEnumerable<Publisher>> GetAllPublishers()
+        {
+            return await _db.Publishers.Include(p => p.Books).Include(p => p.Authors).ToListAsync();
         }
 
     }

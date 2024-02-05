@@ -75,6 +75,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> CreateBook(IBookRepository bookRepository, Book book)
         {
             var authorEntries = await bookRepository.GetAllAuthors();
+            var publisherEntries = await bookRepository.GetAllPublishers();
             if (!authorEntries.Any(a => a.Id == book.AuthorId))
             {
                 return TypedResults.NotFound("Author not found");
@@ -86,6 +87,9 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.BadRequest("Book already exists");
             }
 
+            book.Author = authorEntries.FirstOrDefault(a => a.Id == book.AuthorId);
+            book.Publisher = publisherEntries.FirstOrDefault(p => p.Id == book.PublisherId);
+
             await bookRepository.CreateBook(book);
             return TypedResults.Ok(book);
         }
@@ -96,6 +100,8 @@ namespace exercise.webapi.Endpoints
         {
             var authors = await bookRepository.GetAllAuthors();
             return TypedResults.Ok(authors);
+
+
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
