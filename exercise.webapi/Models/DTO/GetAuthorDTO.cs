@@ -1,11 +1,11 @@
-﻿namespace exercise.webapi.Models
+﻿namespace exercise.webapi.Models.DTO
 {
-    public class Author
+    public class GetAuthorDTO
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
+        public IEnumerable<BookPublisherDTO> BookInfo { get; set; }
     }
 }

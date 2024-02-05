@@ -78,15 +78,16 @@ namespace exercise.webapi.Data
         };
 
         private List<Author> _authors = new List<Author>();
+        private List<Publisher> _publishers = new();
         private List<Book> _books = new List<Book>();
+        private List<BookAuthor> _bookAuthors = new();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
-
-
+            Random publisherRandom = new Random();
 
             for (int x = 1; x < 250; x++)
             {
@@ -98,20 +99,40 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
+            for (int z = 1; z < 250; z++)
+            {
+                Publisher publisher = new();
+                publisher.Id = z;
+                publisher.Name = _firstnames[publisherRandom.Next(_firstnames.Count)];
+                _publishers.Add(publisher);
+            }
 
             for (int y = 1; y < 250; y++)
             {
-                Book book = new Book();
+                Book book = new();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+                book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
                 _books.Add(book);
             }
 
-
+            _books.ForEach(b =>
+            {
+                List<Author> hasBeenSelected = new();
+                for (int j = 0; j < bookRandom.Next(3); j++)
+                {
+                    BookAuthor ba = new() { BookId = b.Id };
+                    Author a = _authors[authorRandom.Next(_authors.Count)];
+                    if (hasBeenSelected.Contains(a)) continue;
+                    hasBeenSelected.Add(a);
+                    ba.AuthorId = a.Id;
+                    _bookAuthors.Add(ba);
+                }
+            });
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publisher { get { return _publishers; } }
+        public List<BookAuthor> BookAuthor { get { return _bookAuthors; } }
     }
 }
