@@ -4,7 +4,7 @@ using exercise.webapi.Models.DataTransfer.Books;
 using exercise.webapi.Models.JunctionModels;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
+using System.Linq;
 
 namespace exercise.webapi.Endpoints
 {
@@ -52,50 +52,61 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> PutBook(IRepository<Book> bookRepo, IRepository<Author> authorRepo, IRepository<Publisher> publisherRepo, IRepository<BookAuthor> baRepo, int id, BookInputDTO bookPut)
         {
-            IEnumerable<BookAuthor> ba = await baRepo.GetAll();
 
-            if (await bookRepo.Get(id) == null)
+            Book? dbBook = await bookRepo.Get(id);
+
+            if (dbBook == null)
             {
                 return TypedResults.NotFound($"Book with id {id} does not exist.");
             }
-            if (await authorRepo.Get(id) == null)
+
+            List<Author?> authorsInList = new List<Author?>();
+            foreach (int val in bookPut.AuthorId) 
             {
-                return TypedResults.NotFound($"Author with id {bookPut.AuthorId} does not exist.");
+                Author? author = await authorRepo.Get(val);
+                authorsInList.Add(author);
             }
-            if (await publisherRepo.Get(id) == null) 
+
+            if (authorsInList.Any(a => a == null))
+            {
+                return TypedResults.NotFound($"Authors with ids {bookPut.AuthorId} does not exist. One or several might be invalid.");
+            }
+
+            Publisher? publisher = await publisherRepo.Get(bookPut.PublisherId);
+
+            if (publisher == null) 
             {
                 return TypedResults.NotFound($"Publisher with id {bookPut.PublisherId} does not exist.");
             }
 
-            Author auth = await authorRepo.Get(id);
+            IEnumerable<BookAuthor> ba = await baRepo.GetAll();
 
-            ICollection<BookAuthor> bookAuthors = bookPut.AuthorId
-                .Select(a => new BookAuthor() { 
-                    AuthorId = a, 
-                    Author = auth,
-                })
-                .ToList();
+            ICollection<BookAuthor> bookAuthors = new List<BookAuthor>();
+            foreach (int value in bookPut.AuthorId) 
+            {
+                Author? auth = await authorRepo.Get(value);
+                new BookAuthor() { AuthorId = value, Author = auth };
+            }
+
             Book inputBook = new Book() { BookAuthors = bookAuthors, PublisherId = bookPut.PublisherId};
 
             // Set values of the book
-            Book? dbBook = await bookRepo.Get(id);
-
             inputBook.BookId = dbBook.BookId;
             inputBook.Title = bookPut.Title ?? dbBook.Title;
-            Publisher publisher = await publisherRepo.Get(id);
             inputBook.Publisher = publisher;
 
-            IEnumerable<BookAuthor> bookAuthorsOld = ba.Where(ba => ba.BookId == id && bookPut.AuthorId.Any(a => a == ba.AuthorId)).ToList();
+            IEnumerable<BookAuthor> bookAuthorsOld = ba.Where(ba => ba.BookId == id && !(bookPut.AuthorId.Any(a => a == ba.AuthorId))).ToList();
             foreach (BookAuthor bookAuthor in bookAuthorsOld) 
             {
                 await baRepo.Delete(bookAuthor);
             }
 
             Book result = await bookRepo.Update(id, inputBook);
+            List<int> authorsToAdd = bookPut.AuthorId.Except(dbBook.GetAuthors().Select(a => a.AuthorId)).ToList();
 
-            foreach (int val in bookPut.AuthorId)
+            foreach (int val in authorsToAdd)
             {
-                Author putAuthor = await authorRepo.Get(id);
+                Author putAuthor = await authorRepo.Get(val);
                 BookAuthor newJunction = new BookAuthor()
                 {
                     AuthorId = val,
@@ -103,7 +114,7 @@ namespace exercise.webapi.Endpoints
                     BookId = result.BookId,
                     Book = result
                 };
-                baRepo.Insert(newJunction);
+                await baRepo.Insert(newJunction);
             }
 
             BookDTO bookTransfer = new BookDTO(result.BookId, result.Title, result.GetAuthors(), result.Publisher);
