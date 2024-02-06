@@ -3,7 +3,7 @@
 namespace exercise.webapi.Models
 {
     [Table("books")]
-    public class Book:Item
+    public class Book
     {
         [Column("id")]
         public int Id { get; set; }
