@@ -16,26 +16,31 @@ namespace exercise.webapi.Endpoints
             groupMembers.MapGet("/{id}", GetAuthorById);
         }
 
-        private static async Task<IResult> GetAuthors(IRepository<Author> authorRepository)
+        private static async Task<IResult> GetAuthors(IRepository<Author> authorRepository, IRepository<Book> bookRepository)
         {
             var authorDtos = new List<AuthorApiAuthorDto>();
             var authors = await authorRepository.Get();
+            var books = await bookRepository.Get();
 
             foreach (var author in authors)
             {
                 
+                var pairs = author.BookAuthorPairs;
                 var bookDtos = new List<AuthorApiBookDto>();
-                var books = author.Books;
-                
-                foreach (var book in books)
-                {
-                    var bookDto = new AuthorApiBookDto()
-                    {
-                        Id = book.Id,
-                        Title = book.Title,
-                    };
 
-                    bookDtos.Add(bookDto);
+                foreach (var pair in pairs)
+                {
+                    var book = books.FirstOrDefault(b => b.Id == pair.BookId);
+                    if (book != null)
+                    {
+                        var bookDto = new AuthorApiBookDto()
+                        {
+                            Id = book.Id,
+                            Title = book.Title
+                        };
+
+                        bookDtos.Add(bookDto);
+                    }
                 }
 
                 var authorDto = new AuthorApiAuthorDto()
@@ -44,30 +49,34 @@ namespace exercise.webapi.Endpoints
                     FirstName = author.FirstName,
                     LastName = author.LastName,
                     Email = author.Email,
-                    BookDtos = bookDtos
+                    Books = bookDtos
                 };
 
                 authorDtos.Add(authorDto);
             }
             return TypedResults.Ok(authorDtos);
-
         }
 
-        private static async Task<IResult> GetAuthorById(IRepository<Author> authorRepository, int id)
+        private static async Task<IResult> GetAuthorById(IRepository<Author> authorRepository, IRepository<Book> bookRepository, int id)
         {
             var author = await authorRepository.GetById(id);
-            var books = author.Books;
+            var books = await bookRepository.Get();
+            var pairs = author.BookAuthorPairs;
             var bookDtos = new List<AuthorApiBookDto>();
 
-            foreach (var book in books)
+            foreach (var pair in pairs)
             {
-                var bookDto = new AuthorApiBookDto()
+                var book = books.FirstOrDefault(b => b.Id == pair.BookId);
+                if (book != null)
                 {
-                    Id = book.Id,
-                    Title = book.Title,
-                };
+                    var bookDto = new AuthorApiBookDto()
+                    {
+                        Id = book.Id,
+                        Title = book.Title
+                    };
 
-                bookDtos.Add(bookDto);
+                    bookDtos.Add(bookDto);
+                }
             }
 
             var authorDto = new AuthorApiAuthorDto()
@@ -76,7 +85,7 @@ namespace exercise.webapi.Endpoints
                 FirstName = author.FirstName,
                 LastName = author.LastName,
                 Email = author.Email,
-                BookDtos = bookDtos
+                Books = bookDtos
             };
 
             return TypedResults.Ok(authorDto);

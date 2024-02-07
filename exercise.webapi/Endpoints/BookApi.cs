@@ -2,7 +2,6 @@
 using exercise.webapi.Models.ModelsBookAPI;
 using exercise.webapi.Repository.GenericRepository;
 using Microsoft.AspNetCore.Mvc;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
 {
@@ -18,144 +17,169 @@ namespace exercise.webapi.Endpoints
             groupMembers.MapPost("/", CreateBook);
         }
 
-        private static async Task<IResult> GetBooks(IRepository<Book> bookRepository)
+        private static async Task<IResult> GetBooks(IRepository<Book> bookRepository, IRepository<Author> authorRepository)
         {
-            List<BookDto> bookDtos = new List<BookDto>();
             var books = await bookRepository.Get();
-            foreach (var book in books)
+            var bookDtos = books.Select(book => new BookDto
             {
-                var Author = book.Author;
-
-                var authorDto = new AuthorDto()
+                Id = book.Id,
+                Title = book.Title,
+                Authors = book.BookAuthorPairs.Select(pair => new AuthorDto
                 {
-                    Id = Author.Id,
-                    Email = Author.Email,
-                    FirstName = Author.FirstName,
-                    LastName = Author.LastName
-                };
-                var bookDto = new BookDto()
-                {
-                    Id = book.Id,
-                    Title = book.Title,
-                    Author = authorDto
-                };
+                    Id = pair.Author.Id,
+                    Email = pair.Author.Email,
+                    FirstName = pair.Author.FirstName,
+                    LastName = pair.Author.LastName
+                }).ToList()
+            }).ToList();
 
-                bookDtos.Add(bookDto);
-
-            }
             return TypedResults.Ok(bookDtos);
         }
 
-        private static async Task<IResult> GetBookById(IRepository<Book> bookRepository, int id)
+        private static async Task<IResult> GetBookById(IRepository<Book> bookRepository, IRepository<Author> authorRepository, int id)
         {
             var book = await bookRepository.GetById(id);
-            var Author = book.Author;
-
-            var authorDto = new AuthorDto()
+            if (book == null)
             {
-                Id = Author.Id,
-                Email = Author.Email,
-                FirstName = Author.FirstName,
-                LastName = Author.LastName
-            };
-            var bookDto = new BookDto()
+                return TypedResults.NotFound();
+            }
+
+            var bookDto = new BookDto
             {
                 Id = book.Id,
                 Title = book.Title,
-                Author = authorDto
+                Authors = book.BookAuthorPairs.Select(pair => new AuthorDto
+                {
+                    Id = pair.Author.Id,
+                    Email = pair.Author.Email,
+                    FirstName = pair.Author.FirstName,
+                    LastName = pair.Author.LastName
+                }).ToList()
             };
+
             return TypedResults.Ok(bookDto);
         }
 
-        private static async Task<IResult> UpdateBook(IRepository<Book> bookRepository, int id, AuthorInput authorPut)
+        private static async Task<IResult> UpdateBook(
+                IRepository<Book> bookRepository,
+                IRepository<Author> authorRepository,
+                IRepository<BookAuthor> bookAuthorRepository,
+                BookInput bookInput, int id)
         {
             var book = await bookRepository.GetById(id);
-            book.Author.FirstName = authorPut.FirstName;
-            book.Author.LastName = authorPut.LastName;
-            book.Author.Email = authorPut.Email;
+            if (book == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            book.Title = bookInput.Title;
+
+            var existingAssociations = book.BookAuthorPairs.ToList();
+            foreach (var association in existingAssociations)
+            {
+                await bookAuthorRepository.Delete(association);
+            }
+
+            foreach (var authorId in bookInput.AuthorIds)
+            {
+                var author = await authorRepository.GetById(authorId);
+                if (author == null)
+                {
+                    return Results.BadRequest($"Author with ID {authorId} not found.");
+                }
+
+                var newAssociation = new BookAuthor
+                {
+                    BookId = id,
+                    AuthorId = authorId
+                };
+                await bookAuthorRepository.Insert(newAssociation);
+            }
 
             await bookRepository.Update(book);
 
-            var authorDto = new AuthorDto()
-            {
-                Id = book.Author.Id,
-                Email = book.Author.Email,
-                FirstName = book.Author.FirstName,
-                LastName = book.Author.LastName
-            };
-            var bookDto = new BookDto()
+            book = await bookRepository.GetById(id);
+
+            var updatedBookDto = new BookDto
             {
                 Id = book.Id,
                 Title = book.Title,
-                Author = authorDto
+                Authors = ConstructAuthorDtosFromBook(book)
             };
-            return TypedResults.Ok(bookDto);
+
+            return TypedResults.Ok(updatedBookDto);
         }
 
+
+
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> DeleteBook(IRepository<Book> bookRepository, int id)
         {
             var book = await bookRepository.GetById(id);
-            var Author = book.Author;
-
-            var authorDto = new AuthorDto()
+            if (book == null)
             {
-                Id = Author.Id,
-                Email = Author.Email,
-                FirstName = Author.FirstName,
-                LastName = Author.LastName
-            };
-            var bookDto = new BookDto()
-            {
-                Id = book.Id,
-                Title = book.Title,
-                Author = authorDto
-            };
+                return TypedResults.NotFound();
+            }
 
             await bookRepository.Delete(id);
-            return TypedResults.Ok(bookDto);
+            return TypedResults.Ok($"Book with ID {id} deleted successfully.");
         }
 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        private static async Task<IResult> CreateBook(IRepository<Book> bookRepository, IRepository<Author> authorRepository, BookInput bookInput)
+        private static async Task<IResult> CreateBook(
+                             IRepository<Book> bookRepository,
+                             IRepository<Author> authorRepository,
+                             IRepository<BookAuthor> bookAuthorRepository,
+                             BookInput bookInput)
         {
-            int authorId = bookInput.AuthorId;
-            Author author = await authorRepository.GetById(authorId);
-
-            if (author == null)
+            var newBook = new Book
             {
-                return Results.NotFound(new { Message = $"Author with ID {authorId} not found." });
+                Title = bookInput.Title,
+                BookAuthorPairs = new List<BookAuthor>()
+            };
+
+            var insertedBook = await bookRepository.Insert(newBook);
+
+            foreach (var authorId in bookInput.AuthorIds)
+            {
+                var author = await authorRepository.GetById(authorId);
+                if (author == null)
+                {
+                    return Results.BadRequest($"Author with ID {authorId} not found.");
+                }
+
+                var bookAuthor = new BookAuthor
+                {
+                    AuthorId = authorId,
+                    BookId = insertedBook.Id
+                };
+
+                await bookAuthorRepository.Insert(bookAuthor);
             }
 
-            IEnumerable<Book> books = await bookRepository.Get();
-
-            if (books.Any(b => b.Title.Equals(bookInput.Title, StringComparison.OrdinalIgnoreCase)))
+            var bookDto = new BookDto
             {
-                return Results.BadRequest(new { Message = $"A book with the title '{bookInput.Title}' already exists." });
-            }
-
-            var book = new Book();
-            book.Id = books.Any() ? books.Max(b => b.Id) + 1 : 1;
-            book.Title = bookInput.Title;
-            book.Author = author;
-           
-            await bookRepository.Insert(book);
-
-            var authorDto = new AuthorDto()
-            {
-                Id = book.Author.Id,
-                Email = book.Author.Email,
-                FirstName = book.Author.FirstName,
-                LastName = book.Author.LastName
+                Id = insertedBook.Id,
+                Title = insertedBook.Title,
+                Authors = ConstructAuthorDtosFromBook(insertedBook)
             };
-            var bookDto = new BookDto()
+
+            return Results.Created($"/books/{insertedBook.Id}", bookDto);
+        }
+
+
+        private static List<AuthorDto> ConstructAuthorDtosFromBook(Book book)
+        {
+            return book.BookAuthorPairs.Select(pair => new AuthorDto
             {
-                Id = book.Id,
-                Title = book.Title,
-                Author = authorDto
-            };
-            return Results.Created($"/books/{book.Id}", bookDto);
+                Id = pair.Author.Id,
+                Email = pair.Author.Email,
+                FirstName = pair.Author.FirstName,
+                LastName = pair.Author.LastName
+            }).ToList();
         }
     }
 }

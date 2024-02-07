@@ -79,39 +79,51 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<BookAuthor> _bookAuthorPairs = new List<BookAuthor>();
 
         public Seeder()
         {
-
-            Random authorRandom = new Random();
-            Random bookRandom = new Random();
-
-
-
-            for (int x = 1; x < 250; x++)
+            Random random = new Random();
+            for (int x = 1; x <= 250; x++)
             {
-                Author author = new Author();
-                author.Id = x;
-                author.FirstName = _firstnames[authorRandom.Next(_firstnames.Count)];
-                author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
-                author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
+                Author author = new Author
+                {
+                    Id = x,
+                    FirstName = _firstnames[random.Next(_firstnames.Count)],
+                    LastName = _lastnames[random.Next(_lastnames.Count)],
+                    Email = $"{_firstnames[random.Next(_firstnames.Count)]}.{_lastnames[random.Next(_lastnames.Count)]}@{_domain[random.Next(_domain.Count)]}".ToLower()
+                };
                 _authors.Add(author);
             }
 
-
-            for (int y = 1; y < 250; y++)
+            for (int y = 1; y <= 250; y++)
             {
-                Book book = new Book();
-                book.Id = y;
-                book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+                Book book = new Book
+                {
+                    Id = y,
+                    Title = $"{_firstword[random.Next(_firstword.Count)]} {_secondword[random.Next(_secondword.Count)]} {_thirdword[random.Next(_thirdword.Count)]}"
+                };
                 _books.Add(book);
             }
 
+            foreach (var book in _books)
+            {
+                int numberOfAuthorsForThisBook = random.Next(1, 4);
+                for (int i = 0; i < numberOfAuthorsForThisBook; i++)
+                {
+                    var author = _authors[random.Next(_authors.Count)];
+                    var pair = new BookAuthor { BookId = book.Id, AuthorId = author.Id };
 
+                    if (!_bookAuthorPairs.Any(ba => ba.BookId == pair.BookId && ba.AuthorId == pair.AuthorId))
+                    {
+                        _bookAuthorPairs.Add(pair);
+                    }
+                }
+            }
         }
+
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<BookAuthor> BookAuthorPairs { get { return _bookAuthorPairs; } }
     }
 }

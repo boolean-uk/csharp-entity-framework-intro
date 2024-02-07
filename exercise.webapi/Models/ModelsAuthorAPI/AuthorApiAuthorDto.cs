@@ -7,6 +7,6 @@
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<AuthorApiBookDto> BookDtos { get; set; } = new List<AuthorApiBookDto>();
+        public ICollection<AuthorApiBookDto> Books { get; set; } = new List<AuthorApiBookDto>();
     }
 }

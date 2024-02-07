@@ -24,9 +24,12 @@ namespace exercise.webapi.Data
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<BookAuthor>().HasData(seeder.BookAuthorPairs);
+            modelBuilder.Entity<BookAuthor>().HasKey(i => new { i.BookId, i.AuthorId });
 
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<BookAuthor> BookAuthorPairs { get; set; }
     }
 }

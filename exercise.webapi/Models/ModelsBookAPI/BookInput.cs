@@ -3,7 +3,7 @@
     public class BookInput
     {
         public string Title { get; set; }
-        public int AuthorId { get; set; }
+        public IEnumerable<int> AuthorIds { get; set; }
 
     }
 }
