@@ -1,27 +1,29 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
+using exercise.webapi.Repository.GenericRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class BookRepository : IBookRepository
+    public class BookRepository : Repository<Book>
     {
         DataContext _db;
         
-        public BookRepository(DataContext db)
+        public BookRepository(DataContext db) : base(db)
         {
             _db = db;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public override async Task<IEnumerable<Book>> Get()
         {
             return await _db.Books.Include(b => b.Author).ToListAsync();
 
         }
 
-        public async Task<Book> GetBook(int Id)
+        public override async Task<Book> GetById(object id)
         {
-            return await _db.Books.Where(b => b.Id == Id).Include(b => b.Author).FirstAsync();
+            IEnumerable<Book> books = await _db.Books.Include(b => b.Author).ToListAsync();
+            return books.FirstOrDefault(b => b.Id == (int)id);
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace exercise.webapi.Models
+﻿namespace exercise.webapi.Models.ModelsBookAPI
 {
-    public class AuthorDto
+    public class AuthorInput
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
