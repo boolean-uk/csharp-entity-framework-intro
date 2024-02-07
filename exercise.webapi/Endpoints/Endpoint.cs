@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Models.DatabaseModels;
+using exercise.webapi.Models.GenericDto;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -22,20 +23,70 @@ namespace exercise.webapi.Endpoints
 
             authorsGroup.MapGet("/", GetAuthors);
             authorsGroup.MapGet("/{id}", GetAuthor);
+
+            var publisherGroup = app.MapGroup("publishers");
+
+            publisherGroup.MapGet("/", GetAllPublishers);
+            publisherGroup.MapGet("/{id}", GetPublisher);
         }
 
         //Book API
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
-            var books = await bookRepository.GetAllBooks();
-            return TypedResults.Ok(books);
+            var entities = await bookRepository.GetAllBooks();
+
+            List<BookDto> books = new List<BookDto>();
+
+            foreach(var entity in entities)
+            {
+                var book = new BookDto()
+                {
+                    Title = entity.Title,
+                    Author = new AuthorDto()
+                    {
+                        FirstName = entity.Author.FirstName,
+                        LastName = entity.Author.LastName,
+                        Email = entity.Author.Email
+                    },
+                    Publisher = new PublisherDto()
+                    {
+                        Name = entity.Publisher.Name,
+                    }
+                };
+                books.Add(book);
+            }
+
+            Payload<List<BookDto>> result = new Payload<List<BookDto>>();
+            result.data = books;
+
+
+            return TypedResults.Ok(result);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetBook(IBookRepository bookRepository, int id) { 
-            var book = await bookRepository.GetBook(id);
-            return TypedResults.Ok(book);
+            
+            var entity = await bookRepository.GetBook(id);
+
+            BookDto book = new BookDto()
+            {
+                Title = entity.Title,
+                Author = new AuthorDto()
+                {
+                    FirstName = entity.Author.FirstName,
+                    LastName = entity.Author.LastName,
+                    Email = entity.Author.Email
+                },
+                Publisher = new PublisherDto()
+                {
+                    Name = entity.Publisher.Name,
+                }
+            };
+            Payload<BookDto> result = new Payload<BookDto>();
+            result.data = book;
+
+            return TypedResults.Ok(result);
 
         }
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -47,13 +98,30 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound("Book not found");
             }
-            var book = await bookRepository.GetBook(id);
+            var entity = await bookRepository.GetBook(id);
 
-            book.AuthorId = model.AuthorId != null ? model.AuthorId : book.AuthorId;
+            entity.AuthorId = model.AuthorId != null ? model.AuthorId : entity.AuthorId;
 
-            bookRepository.UpdateBookAuthor(id, book);
+            BookDto Book = new BookDto()
+            {
+                Title = entity.Title,
+                Author = new AuthorDto()
+                {
+                    FirstName = entity.Author.FirstName,
+                    LastName = entity.Author.LastName,
+                    Email = entity.Author.Email
+                },
+                Publisher = new PublisherDto()
+                {
+                    Name = entity.Publisher.Name,
+                }
+            };
 
-            return TypedResults.Created($"/{book.Id}", book);
+            bookRepository.UpdateBookAuthor(id, entity);
+            Payload<BookDto> result = new Payload<BookDto>();
+            result.data = Book;
+
+            return TypedResults.Created($"/{entity.Id}", result);
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -65,21 +133,43 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.NotFound("Book not found");
             }
 
-            var book = await bookRepository.DeleteBook(id);
-            return TypedResults.Ok(book);
+            var entity = await bookRepository.GetBook(id);
+
+            BookDto Book = new BookDto()
+            {
+                Title = entity.Title,
+                Author = new AuthorDto()
+                {
+                    FirstName = entity.Author.FirstName,
+                    LastName = entity.Author.LastName,
+                    Email = entity.Author.Email
+                },
+                Publisher = new PublisherDto()
+                {
+                    Name = entity.Publisher.Name,
+                }
+            };
+
+            Payload<BookDto> result = new Payload<BookDto>();
+            result.data = Book;
+
+            return TypedResults.Ok(result);
         }
+
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, Book book)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost book)
         {
+
             var authorEntries = await bookRepository.GetAllAuthors();
             var publisherEntries = await bookRepository.GetAllPublishers();
             if (!authorEntries.Any(a => a.Id == book.AuthorId))
             {
                 return TypedResults.NotFound("Author not found");
             }
+           
 
             var bookEntries = await bookRepository.GetAllBooks();
             if (authorEntries.Any(a => a.Id == book.Id))
@@ -87,30 +177,122 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.BadRequest("Book already exists");
             }
 
-            book.Author = authorEntries.FirstOrDefault(a => a.Id == book.AuthorId);
-            book.Publisher = publisherEntries.FirstOrDefault(p => p.Id == book.PublisherId);
+            Book entity = new Book();
 
-            await bookRepository.CreateBook(book);
-            return TypedResults.Ok(book);
+            entity.Id = book.Id;
+            entity.Title = book.Title;
+            entity.Author = authorEntries.FirstOrDefault(a => a.Id == book.AuthorId);
+            entity.Publisher = publisherEntries.FirstOrDefault(p => p.Id == book.PublisherId);
+
+            BookDto bookDto = new BookDto()
+            {
+                Title = book.Title,
+                Author = new AuthorDto()
+                {
+                    FirstName = entity.Author.FirstName,
+                    LastName = entity.Author.LastName,
+                    Email = entity.Author.Email
+                },
+                Publisher = new PublisherDto()
+                {
+                    Name = entity.Publisher.Name,
+                }
+            };
+            Payload<BookDto> result= new Payload<BookDto>();
+            result.data = bookDto;
+
+            await bookRepository.CreateBook(entity);
+            return TypedResults.Ok(result);
         }
 
         //Author API
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetAuthors(IBookRepository bookRepository)
         {
-            var authors = await bookRepository.GetAllAuthors();
-            return TypedResults.Ok(authors);
+            var entities = await bookRepository.GetAllAuthors();
 
 
+            List<AuthorDto> authors = new List<AuthorDto>();
+
+            foreach(var entity in entities)
+            {
+                var author = new AuthorDto()
+                {
+                    FirstName = entity.FirstName,
+                    LastName = entity.LastName,
+                    Email = entity.Email,
+                    Books = entity.Books.Select(x => new BookDto() { Title = x.Title }).ToList(),
+                };
+                authors.Add(author);
+            }
+
+            Payload<List<AuthorDto>> result = new Payload<List<AuthorDto>>();
+            result.data = authors;
+
+            return TypedResults.Ok(result);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetAuthor(IBookRepository bookRepository, int id)
         {
-            var author = await bookRepository.GetAuthor(id);
-            return TypedResults.Ok(author);
+            var entity = await bookRepository.GetAuthor(id);
+
+            AuthorDto author = new AuthorDto()
+            {
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                Books = entity.Books.Select(x => new BookDto() { Title = x.Title}).ToList(),
+            };
+
+            Payload<AuthorDto> result = new Payload<AuthorDto>();
+            result.data = author;
+
+            return TypedResults.Ok(result);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> GetAllPublishers(IBookRepository bookRepository)
+        {
+            var entities = await bookRepository.GetAllPublishers();
+
+            List<PublisherDto> publishers = new List<PublisherDto>();
+
+            foreach(var entity in entities)
+            {
+                var publisher = new PublisherDto()
+                {
+                    Name = entity.Name,
+                    Books = entity.Books.Select(x => new BookDto() { Title = x.Title }).ToList(),
+                };
+                publishers.Add(publisher);
+            }
+
+            Payload<List<PublisherDto>> result = new Payload<List<PublisherDto>>();
+            result.data = publishers;
+
+            return TypedResults.Ok(result);
+
 
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> GetPublisher(IBookRepository bookRepository, int id)
+        {
+            var entity = await bookRepository.GetPublisher(id);
+
+            PublisherDto publisher = new PublisherDto()
+            {
+                Name = entity.Name,
+                Books = entity.Books.Select(x => new BookDto() { Title = x.Title }).ToList(),
+            };
+
+            Payload<PublisherDto> result = new Payload<PublisherDto>();
+            result.data = publisher;
+
+            return TypedResults.Ok(result);
+        }
+
 
     }
 }

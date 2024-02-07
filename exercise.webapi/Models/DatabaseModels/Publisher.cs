@@ -11,10 +11,10 @@ namespace exercise.webapi.Models.DatabaseModels
         [Column("name")]
         public string Name { get; set; }
 
-        [JsonIgnore]
+        [Column("books")]
         public IEnumerable<Book> Books { get; set; }
 
-        [JsonIgnore]
+        [Column("authors")]
         public IEnumerable<Author> Authors { get; set; }
 
 

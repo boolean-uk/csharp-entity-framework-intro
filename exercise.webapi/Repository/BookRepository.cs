@@ -32,7 +32,7 @@ namespace exercise.webapi.Repository
 
             var result = _db.Books.Update(book);
             await _db.SaveChangesAsync();
-            return await _db.Books.FirstAsync(b => b.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstAsync(b => b.Id == id);
             
         }
             
@@ -55,19 +55,24 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
             
-            return await _db.Authors.Include(author => author.Books).Include(author => author.Publishers).ToListAsync();
+            return await _db.Authors.Include(author => author.Books).ToListAsync();
 
             
         }
 
         public async Task<Author> GetAuthor(int id)
         {
-            return await _db.Authors.Include(author => author.Books).Include(author => author.Publishers).FirstAsync(a => a.Id == id);
+            return await _db.Authors.Include(author => author.Books).FirstAsync(a => a.Id == id);
         }
 
         public async Task<IEnumerable<Publisher>> GetAllPublishers()
         {
             return await _db.Publishers.Include(p => p.Books).Include(p => p.Authors).ToListAsync();
+        }
+
+        public async Task<Publisher> GetPublisher(int id)
+        {
+            return await _db.Publishers.Include(p => p.Books).Include(p => p.Authors).FirstAsync(a => a.Id == id);
         }
 
     }

@@ -15,10 +15,8 @@ namespace exercise.webapi.Models.DatabaseModels
         [Column("email")]
         public string Email { get; set; }
 
-        [JsonIgnore]
+        [Column("books")]
         public IEnumerable<Book> Books { get; set; }
 
-        [JsonIgnore]
-        public IEnumerable<Publisher> Publishers { get; set; }
     }
 }

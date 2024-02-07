@@ -79,11 +79,11 @@ namespace exercise.webapi.Data
 
         private List<string> _publishernames = new List<string>()
         {
-            "Publisher1",
-            "Publisher2",
-            "Publisher3",
-            "Publisher4",
-            "Publisher1"
+            "Gyldendal",
+            "Cappelen Damm",
+            "Vigmostad & Bjørke",
+            "H. Aschehoug & Co",
+            "Kagge"
         };
 
         private List<Author> _authors = new List<Author>();
@@ -97,11 +97,11 @@ namespace exercise.webapi.Data
             Random bookRandom = new Random();
             Random publisherRandom = new Random();
 
-            for (int z = 1; z < 250; z++)
+            for (int z = 0; z < 5; z++)
             {
                 Publisher publisher = new Publisher();
                 publisher.Id = z;
-                publisher.Name = _publishernames[publisherRandom.Next(_publishernames.Count)];
+                publisher.Name = _publishernames[z];
                 _publishers.Add(publisher);
             }
 

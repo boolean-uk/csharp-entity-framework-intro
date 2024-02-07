@@ -11,13 +11,13 @@ namespace exercise.webapi.Models.DatabaseModels
         [Column("title")]
         public string Title { get; set; }
 
-        [Column("fk_author_id")]
         [ForeignKey("Author")]
+        [Column("fk_author_id")]
         public int AuthorId { get; set; }
         public Author Author { get; set; }
 
-        [Column("fk_publisher_id")]
         [ForeignKey("Publisher")]
+        [Column("fk_publisher_id")]
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
     }
