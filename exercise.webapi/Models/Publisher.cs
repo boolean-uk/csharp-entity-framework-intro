@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Serialization;
-
-namespace exercise.webapi.Models
+﻿namespace exercise.webapi.Models
 {
-    public class Author
+    public class Publisher
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -10,20 +8,20 @@ namespace exercise.webapi.Models
         public string Email { get; set; }
         public ICollection<Book> Books { get; set; } = new List<Book>();
 
-        public AuthorDto ToDto()
+        public PublisherDto ToDto()
         {
-            return new AuthorDto
+            return new PublisherDto
             {
                 FirstName = FirstName,
                 LastName = LastName,
                 Email = Email,
-                Books = Books.Select(b => b.ToPublisherDto()).ToList()
+                Books = Books.Select(b => b.ToAuthorDto()).ToList()
             };
         }
 
-        public AuthorData ToData()
+        public PublisherData ToData()
         {
-            return new AuthorData
+            return new PublisherData
             {
                 FirstName = FirstName,
                 LastName = LastName,
@@ -31,22 +29,16 @@ namespace exercise.webapi.Models
             };
         }
     }
-    public struct AuthorDto
+
+    public struct PublisherDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public List<BookPublisherDto> Books { get; set; }
+        public List<BookAuthorDto> Books { get; set; }
     }
 
-    public struct AuthorData
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-    } 
-
-    public struct AuthorParams
+    public struct PublisherData
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
