@@ -9,14 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
+builder.Services.AddDbContext<DataContext>(
+    opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 var app = builder.Build();
 
 using (var dbContext = new DataContext(new DbContextOptions<DataContext>()))
 {
-    dbContext.Database.EnsureCreated();
+    
 }
 
 
