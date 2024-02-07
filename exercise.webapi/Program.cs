@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 
+
 var app = builder.Build();
 
 using (var dbContext = new DataContext(new DbContextOptions<DataContext>()))
@@ -28,5 +29,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.ConfigureBooksApi();
+app.ConfigureEndpoint();
 app.Run();
