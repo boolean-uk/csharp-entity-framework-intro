@@ -10,6 +10,9 @@ namespace exercise.webapi.Models
         public string Title { get; set; }
         public int AuthorId { get; set; }
         public Author Author { get; set; }
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
+
         public Book Update(Author newAuthor)
         {
             AuthorId = newAuthor.Id;
@@ -23,7 +26,29 @@ namespace exercise.webapi.Models
             {
                 Title = Title,
                 AuthorId = AuthorId,
-                Author = Author.ToDto()
+                Author = Author.ToData(),
+                PublisherId = PublisherId,
+                Publisher = Publisher.ToData()
+            };
+        }
+
+        public BookAuthorDto ToAuthorDto()
+        {
+            return new BookAuthorDto
+            {
+                Title = Title,
+                AuthorId = AuthorId,
+                Author = Author.ToData()
+            };
+        }
+
+        public BookPublisherDto ToPublisherDto()
+        {
+            return new BookPublisherDto
+            {
+                Title = Title,
+                PublisherId = PublisherId,
+                Publisher = Publisher.ToData()
             };
         }
     }
@@ -32,12 +57,31 @@ namespace exercise.webapi.Models
     {
         public string Title { get; set; }
         public int AuthorId { get; set; }
-        public AuthorDto Author { get; set; }
+        public AuthorData Author { get; set; }
+        public int PublisherId { get; set; }
+        public PublisherData Publisher { get; set; }
     }
 
     public struct BookParams
     {
         public string Title { get; set; }
         public int AuthorId { get; set; }
+        public int PublisherId { get; set; }
+    }
+
+    public struct BookAuthorDto
+    {
+        public string Title { get; set; }
+        public int AuthorId { get; set; }
+        public int PublisherId { get; set; }
+        public AuthorData Author { get; set; } 
+    }
+
+    public struct BookPublisherDto
+    {
+        public string Title { get; set; }
+        public int AuthorId { get; set; }
+        public int PublisherId { get; set; }
+        public PublisherData Publisher { get; set; }
     }
 }
