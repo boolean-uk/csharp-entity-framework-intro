@@ -15,6 +15,8 @@ namespace exercise.webapi.Endpoints
         public int authorID {  get; set; } 
         public string AuthorFirstName { get; set; }
         public string AuthorLastName { get; set; }
+        public int PublisherId { get; set; }
+        public string PublisherName { get; set; }
         public BookResponseDTO(Book book)
         {
             Id = book.Id;
@@ -22,6 +24,8 @@ namespace exercise.webapi.Endpoints
             authorID = book.AuthorId;
             AuthorFirstName = book.Author.FirstName;
             AuthorLastName = book.Author.LastName;
+            PublisherId = book.PublisherId;
+            PublisherName = book.Publisher.Name;
         }
 
 
@@ -85,7 +89,7 @@ namespace exercise.webapi.Endpoints
             return TypedResults.BadRequest("/bad request");
         }
         //Create new book
-        private static async Task<IResult> CreateNewBook(IBookRepository bookRepository, string title, int authorID)
+        private static async Task<IResult> CreateNewBook(IBookRepository bookRepository, string title, int authorID, int publisherID)
         {
             if (title == null)
             {
@@ -94,14 +98,15 @@ namespace exercise.webapi.Endpoints
 
             var books = await bookRepository.GetAllBooks();
             var bookAuthor = books.FirstOrDefault(a => a.AuthorId == authorID);
+            var bookPublisher = books.FirstOrDefault(a => a.PublisherId == publisherID);
 
-            if (bookAuthor != null)
+            if (bookAuthor != null && bookPublisher != null)
             {
-                var book = await bookRepository.CreateNewBook(title, authorID);
+                var book = await bookRepository.CreateNewBook(title, authorID, publisherID);
                 BookResponseDTO bookToReturn = new BookResponseDTO(book); 
                 return TypedResults.Created("newBook", bookToReturn);
             }
-            return TypedResults.NotFound("invalid authorID");
+            return TypedResults.NotFound("invalid authorID/publisherID");
         }
     }
 }

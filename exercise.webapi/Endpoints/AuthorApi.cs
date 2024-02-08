@@ -12,11 +12,20 @@ namespace exercise.webapi.Endpoints
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
+        public List<BookResponseDTO> books { get; set; } = new List<BookResponseDTO>();
+
         public AuthorResponseDTO(Author author)
         {
             Id = author.Id;
             FirstName = author.FirstName;
             LastName = author.LastName;
+
+            //add DTO:s for all books related to the Author
+            foreach (var book in author.Books)
+            {
+                BookResponseDTO bookToReturn = new BookResponseDTO(book);
+                books.Add(bookToReturn);
+            }
         }
     }
 
@@ -41,7 +50,6 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(results);
         }
 
-        
         //Get one author by ID 
         private static async Task<IResult> GetAuthorByID(IAuthorRepository authorRepository, int id)
         {

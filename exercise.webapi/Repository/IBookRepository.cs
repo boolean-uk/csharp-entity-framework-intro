@@ -12,6 +12,6 @@ namespace exercise.webapi.Repository
 
         public Task<Book> DeleteBookByID(int bookID);
 
-        public Task<Book> CreateNewBook(string title, int authorID);
+        public Task<Book> CreateNewBook(string title, int authorID, int publisherID);
     }
 }
