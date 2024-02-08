@@ -17,33 +17,61 @@ namespace exercise.webapi.Repository
             }
 
         
-            public async Task<IEnumerable<Author>> GetAuthorsAsync()
+            public async Task<IEnumerable<Author>> GetAuthors()
             {
-                return await _db.Authors.Include(a => a.Books).ToListAsync();
+                return await _db.Authors.Include(a => a.BookAuthors).ThenInclude(b => b.Book).ToListAsync();
             }
 
             public async Task<Author?> GetAuthor(int authorId)
             {
-                return await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == authorId);
+                return await _db.Authors.Include(a => a.BookAuthors).ThenInclude(b => b.Book).FirstOrDefaultAsync(a => a.Id == authorId);
             }
-        
 
-        /*
-        public async Task<IEnumerable<Author>> GetAuthorsAsync()
-        {
-            return await _db.Authors.Include(a => a.BookAuthors).ThenInclude(ba => ba.Book).ToListAsync();
-        }
 
-        public async Task<Author?> GetAuthor(int authorId)
-        {
-            return await _db.Authors.Include(a => a.BookAuthors).ThenInclude(ba => ba.Book).FirstOrDefaultAsync(a => a.Id == authorId);
-        }
-        */
 
-        public void SaveChanges()
+            public async Task<Author?> DeleteAuthor(int authorID)
             {
-                _db.SaveChanges();
+                Author author = await GetAuthor(authorID);
+                if (author != null)
+                {
+                    _db.Authors.Remove(author);
+                    await _db.SaveChangesAsync();
+                    return author;
+                }
+
+            return null;
             }
+
+            public async Task<Author?> CreateAuthor(string FirstName, string LastName, string Email)
+            {
+                if (FirstName == ""||LastName == ""||Email=="") return null;
+                Author author = new Author { FirstName = FirstName, LastName = LastName, Email = Email };
+                await _db.Authors.AddAsync(author);
+                await _db.SaveChangesAsync();
+                return author;
+            }
+
+
+
+
+            public async Task<Author?> UpdateAuthor(int authorId, string newFirstName, string newLastName, string newEmail )
+            {
+                Author author = await GetAuthor(authorId);
+                if (author != null)
+                {
+                    author.FirstName = newFirstName ?? author.FirstName;
+                    author.LastName = newLastName ?? author.LastName;
+                    author.Email = newEmail ?? author.Email;
+                    await _db.SaveChangesAsync();
+
+                    return author;
+                }
+
+                return null;
+            }
+
+
+
         }
 }
 

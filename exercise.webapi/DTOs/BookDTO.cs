@@ -9,20 +9,11 @@ namespace exercise.webapi.DTOs
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public int AuthorID { get; set; }
-
-        public ICollection<AuthorDTO> Authors { get; set; } = new List<AuthorDTO>(); 
 
         public BookDTO(Book book)
         {
             Id = book.Id;
             Title = book.Title;
-            AuthorID = book.AuthorId;
-
-            /*foreach (var bookAuthor in book.BookAuthors)
-            {
-                Authors.Add(new AuthorDTO(bookAuthor.Author));
-            }*/
 
         }
     }

@@ -9,7 +9,7 @@ namespace exercise.webapi.DTOs
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
+        public List<AuthorBookDTO> AuthorsBooks { get; set; } = new List<AuthorBookDTO>();
 
         public AuthorResponseDTO(Author author)
         {
@@ -18,19 +18,13 @@ namespace exercise.webapi.DTOs
             FirstName = author.FirstName;
             LastName = author.LastName;
 
-            //Books = author.BookAuthors.Select(ba => new BookDTO(ba.Book)).ToList();
-        }
-
-        public static List<AuthorResponseDTO> FromRepository(IEnumerable<Author> authors)
-        {
-            var results = new List<AuthorResponseDTO>();
-            foreach (var author in authors)
+            foreach (BookAuthor bookAuthor in author.BookAuthors)
             {
-                results.Add(new AuthorResponseDTO(author));
-
+                AuthorsBooks.Add(new AuthorBookDTO(bookAuthor));
             }
-            return results;
+
         }
+
 
     }
 }

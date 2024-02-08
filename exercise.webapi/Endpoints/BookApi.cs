@@ -4,145 +4,105 @@ using exercise.webapi.DTOs;
 using static System.Reflection.Metadata.BlobBuilder;
 using Microsoft.Extensions.Hosting;
 using static exercise.webapi.Repository.IAuthorRepository;
+using Microsoft.AspNetCore.Mvc;
+using static exercise.webapi.DTOs.payloads;
 
 namespace exercise.webapi.Endpoints
 {
     public static class BookApi
     {
-        public record UpdateBookAuthorRequestDTO(int authorId);
-        /*
-        public record CreateBookRequestDTO
-        {
-            public int? AuthorId { get; init; }
-            public Book? Book { get; init; }
-        }*/
 
         public static void ConfigureBooksApi(this WebApplication app)
         {
-            app.MapGet("/books", GetBooks);
-            app.MapGet("/books/{Id}", GetABook);
-            app.MapPut("/books/{bookId}/author/", UpdateBookAuthor);
-            app.MapDelete("books/{Id}", DeleteBook);
-            app.MapPost("/books/{newBook.Id}", CreateBook);
+            var books = app.MapGroup("books");
+            books.MapGet("/", GetBooks);
+            books.MapGet("/{Id}", GetABook);
+            books.MapPut("/{bookId}/", UpdateBook);
+            books.MapDelete("/{Id}", DeleteBook);
+            books.MapPost("/{Id}", CreateBook);
         }
 
-        /*
-        private static async Task<IResult> GetBooks(IBookRepository bookRepository)
+      
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public static async Task<IResult> GetBooks(IBookRepository repository)
         {
-            var books = await bookRepository.GetAllBooks();
-            return TypedResults.Ok(BookResponseDTO.FromRepository(books));
+            var books = await repository.GetAllBooks();
+            var bookDto = new List<BookResponseDTO>();
+            foreach (Book book in books)
+            {
+                bookDto.Add(new BookResponseDTO(book));
+            }
+            return TypedResults.Ok(bookDto);
         }
 
 
-       
         private static async Task<IResult> GetABook(int bookId, IBookRepository bookRepository)
         {
             var book = await bookRepository.GetBook(bookId);
             if (book == null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound("Book not found");
             }
 
             return TypedResults.Ok(new BookResponseDTO(book));
-        }
-        */
-        private static async Task<IResult> GetBooks(IBookRepository bookRepository)
-        {
-            var books = await bookRepository.GetAllBooks();
-            return TypedResults.Ok(BookResponseDTO.FromRepository(books));
+
         }
 
 
-        private static async Task<IResult> GetABook(int bookId, bool includeAuthors, IBookRepository bookRepository)
-        {
-            var book = await bookRepository.GetBook(bookId);
-            if (book == null)
-            {
-                return TypedResults.NotFound();
-            }
-
-            if (includeAuthors)
-            {
-                return TypedResults.Ok(new BookResponseDTO(book));
-            }
-            else
-            {
-                return TypedResults.Ok(new BookResponseDTO(book) { Author = null });
-            }
-        }
-
-        public static async Task<IResult> UpdateBookAuthor(int bookId, UpdateBookAuthorRequestDTO payload, IBookRepository booksRepository, IAuthorRepository authorsRepository)
-        {
-            // get the post
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> UpdateBook(int bookId, UpdateBookPayload payload, IBookRepository booksRepository)
+        { 
             Book? book = await booksRepository.GetBook(bookId);
             if (book == null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound("Book was not found");
             }
-            Author? author = await authorsRepository.GetAuthor(payload.authorId);
-            if (author == null)
+            Book? bookUpdated = await booksRepository.UpdateBook(bookId, payload.newTitle);
+            if (bookUpdated == null)
             {
-                return TypedResults.NotFound();
+                return Results.BadRequest("Failed to update book.");
             }
-            book.AuthorId = author.Id;
-            book.Author = author;
-            //var bookAuthor = new BookAuthor { AuthorId = author.Id };
-            //book.BookAuthors.Add(bookAuthor);
-
-            booksRepository.SaveChanges();
-
             return TypedResults.Ok(new BookResponseDTO(book));
         }
 
-        private static async Task<IResult> DeleteBook(int bookId, IBookRepository bookRepository)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> DeleteBook(int bookId, IBookRepository repository)
         {
-            Book? book = await bookRepository.DeleteBook(bookId);
+            Book? book = await repository.GetBook(bookId);
             if (book == null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.NotFound("Book not found");
             }
-            bookRepository.SaveChanges();
+            Book? bookDelete = await repository.DeleteBook(bookId);
+            if (bookDelete == null)
+            {
+                return Results.BadRequest("Failed to delete book.");
+            }
+
             return TypedResults.Ok(new BookResponseDTO(book));
         }
 
 
-        private static async Task<IResult> CreateBook(int authorId, int bookid, string bookTitle, IBookRepository bookRepository, IAuthorRepository authorRepository)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> CreateBook(CreateBookPayload payload, IBookRepository repository)
         {
-         
-
-            // Get the author
-            Author? author = await authorRepository.GetAuthor(authorId);
-            if (author == null)
+            if (payload.Title == null || payload.Title == "")
             {
-                return TypedResults.NotFound();
+                return Results.BadRequest("A non-empty Name is required");
             }
 
-            // Validate the book object
-            Book? book = await bookRepository.GetBook(bookid);
-            if (book != null)
+            Book? book = await repository.CreateBook(payload.Title);
+            if (book == null)
             {
-                return TypedResults.BadRequest();
+                return Results.BadRequest("Failed to create book.");
             }
 
-            if (string.IsNullOrEmpty(bookTitle))
-            {
-                return TypedResults.BadRequest(new { Title = "Title is required." });
-            }
-
-            // Create a new book
-            Book newBook = new Book
-            {
-                Id = bookid,
-                Title = bookTitle,
-                AuthorId = authorId,
-                Author = author
-            };
-
-            // Add the new book to the repository
-            await bookRepository.AddBook(newBook);
-
-            // Return the new book
-            return TypedResults.Created($"/books/{newBook.Id}", new BookResponseDTO(newBook));
+            return TypedResults.Created($"/books/{book.Id}", new BookResponseDTO(book));
         }
 
     }

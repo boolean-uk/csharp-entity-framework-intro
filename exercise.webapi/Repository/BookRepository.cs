@@ -18,66 +18,56 @@ namespace exercise.webapi.Repository
         
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.BookAuthors).ThenInclude(b => b.Author).ToListAsync();
         }
 
        
         public async Task<Book?> GetBook(int bookId)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            return await _db.Books.Include(b => b.BookAuthors).ThenInclude(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
         }
         
 
-        /*
-        public async Task<IEnumerable<Book>> GetAllBooks(bool includeAuthors = false)
-        {
-            var query = _db.Books.Include(b => b.BookAuthors);
-
-            if (includeAuthors)
-            {
-                query = query.Include(b => b.BookAuthors).ThenInclude(ba => ba.Author);
-            }
-
-            return await query.ToListAsync();
-        }
-
-
-        public async Task<Book?> GetBook(int bookId, bool includeAuthors = false)
-        {
-            var query = _db.Books.Include(b => b.BookAuthors);
-
-            if (includeAuthors)
-            {
-                query = query.Include(b => b.BookAuthors).ThenInclude(ba => ba.Author);
-            }
-
-            return await query.FirstOrDefaultAsync(b => b.Id == bookId);
-        }
-        */
-
         public async Task<Book?> DeleteBook(int bookId)
         {
-            var book = await GetBook(bookId);
-            if (book == null)
+            Book book = await GetBook(bookId);
+            if (book != null)
             {
-                return null;
+                _db.Books.Remove(book);
+                await _db.SaveChangesAsync();
+                return book;
             }
-            _db.Books.Remove(book);
-            //await _db.SaveChangesAsync();
 
+            return null;
+        }
+
+        public async Task<Book?> CreateBook(string Title)
+        {
+            if (Title == "") return null;
+            Book book = new Book {Title = Title };
+            await _db.Books.AddAsync(book);
+            await _db.SaveChangesAsync();
             return book;
         }
 
-        public async Task AddBook(Book book)
+
+
+
+        public async Task<Book?> UpdateBook(int BookId, string newTitle)//update author for a book?
         {
-            _db.Books.Add(book);
-            await _db.SaveChangesAsync();
-            //return book;
+            Book book = await GetBook(BookId);
+            if (book != null)
+            {
+                book.Title = newTitle ?? book.Title;
+                await _db.SaveChangesAsync();
+
+                return book;
+            }
+            
+            return null;
         }
 
-        public void SaveChanges()
-        {
-            _db.SaveChanges();
-        }
+  
+
     }
 }
