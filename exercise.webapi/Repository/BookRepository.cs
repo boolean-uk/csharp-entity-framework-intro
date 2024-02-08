@@ -18,34 +18,41 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
         }
         public async Task<Book?> GetBook(int id)
         {
-            return await _db.Books.Include(t => t.Author).SingleOrDefaultAsync(t => t.Id == id);
+            return await _db.Books.Include(t => t.Author).Include(b => b.Publisher).SingleOrDefaultAsync(t => t.Id == id);
         }
-        public async Task<Book?> UpdateBook(int id, BookUpdatePayload updateData)
+        public async Task<Book?> UpdateBook(int id, int newAuthorId)
         {
-            var book = await _db.Books.Include(t => t.Author).SingleOrDefaultAsync(t => t.Id == id);
-            var author = await _db.Authors.SingleOrDefaultAsync(t => t.Id == updateData.authorId);
+            //Load book to update
+            var book = await GetBook(id);
+            //Load author from provided newAuthorId
+            var author = await _db.Authors.SingleOrDefaultAsync(t => t.Id == newAuthorId);
+            //Check book && author exist, otherwise return null
             if (book == null || author == null)
             {
                 return null;
             }
             bool hasUpdate = false;
-            if (updateData.authorId != null)
+            if (newAuthorId != null)
             {
-                book.AuthorId = (int)updateData.authorId;
+                book.AuthorId = newAuthorId;
                 book.Author = author;
                 hasUpdate = true;
             }
-            if (!hasUpdate) throw new Exception("No update data provided");
+            if (!hasUpdate)
+            {
+                return null;
+            }
             _db.SaveChanges();
             return book;
         }
         public async Task<Book?> DeleteBook(int id)
         {
-            var book = await _db.Books.Include(t => t.Author).SingleOrDefaultAsync(t => t.Id == id);
+            //Load book to delete
+            var book = await GetBook(id);
             if (book == null)
             {
                 return null;
@@ -54,15 +61,15 @@ namespace exercise.webapi.Repository
             _db.SaveChanges();
             return book;
         }
-        public async Task<Book?> CreateBook(BookPostPayload newBook)
+        public async Task<Book?> CreateBook(string newTitle, int newAuthorId)
         {
             //Create book to return
             Book book = new Book();
             //Get the author from payload author ID
-            var author = await _db.Authors.SingleOrDefaultAsync(t => t.Id == newBook.authorId);
+            var author = await _db.Authors.SingleOrDefaultAsync(t => t.Id == newAuthorId);
             //Populate the book with payload data
-            book.Title = newBook.title;
-            book.AuthorId = newBook.authorId;
+            book.Title = newTitle;
+            book.AuthorId = newAuthorId;
             book.Author = author;
             //add book to database and save it + return
             _db.Books.Add(book);

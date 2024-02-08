@@ -24,37 +24,65 @@ namespace exercise.webapi.Endpoints
         }
         private static async Task<IResult> GetBook(IBookRepository bookRepository, int id)
         {
-            var book = new GetBookDTO(await bookRepository.GetBook(id));
-            return TypedResults.Ok(book);
+            //Load book
+            var book = await bookRepository.GetBook(id);
+            //Check if book exists otherwise return notFound
+            if (book == null)
+            {
+                return TypedResults.NotFound($"No book found with id: {id}!");
+            }
+            //Insert book into DTO and return ok
+            var result = new GetBookDTO(book);
+            return TypedResults.Ok(result);
         }
         private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, BookUpdatePayload updateData)
         {
-            var book = new GetBookDTO(await bookRepository.UpdateBook(id, updateData));
-            return TypedResults.Created($"/book", book);
+            //Load book to update
+            var book = await bookRepository.GetBook(id);
+            //Check if book exists otherwise return notFound
+            if (book == null )
+            {
+                return TypedResults.NotFound($"No book found with id: {id}!");
+            }
+            //Run repository method
+            book = await bookRepository.UpdateBook(id, updateData.authorId);
+            //Insert book into DTO and return ok
+            var result = new GetBookDTO(book);
+            return TypedResults.Created($"/book{book.Id}", result);
         }
         private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int id)
         {
-            var bookToDie = new GetBookDTO(await bookRepository.DeleteBook(id));
-            return TypedResults.Ok(bookToDie);
+            //Load book to delete
+            var book = await bookRepository.GetBook(id);
+            //Check if book exists otherwise return notFound
+            if (book == null)
+            {
+                return TypedResults.NotFound($"No book found with id: {id}!");
+            }
+            //Run repository method
+            book = await bookRepository.DeleteBook(id);
+            //Insert book into DTO and return ok
+            var result = new GetBookDTO(book);
+            return TypedResults.Ok(result);
         }
         private static async Task<IResult> CreateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, BookPostPayload newBook)
         {
             //Check PostPayload if valid
-            if (newBook.title == null || newBook.title == string.Empty || newBook.authorId == null)
+            if (newBook.title == null || newBook.title == string.Empty || newBook.authorId == null || newBook.authorId == 0)
             {
                 //if title is null/empty: throw error
-                return TypedResults.BadRequest();
+                return TypedResults.BadRequest("All fields must contain data!");
             }
             //Load author for payload id
             Author? author = await authorRepository.GetAuthor(newBook.authorId);
             if (author == null)
             {
                 //if author id is not found: throw error
-                return TypedResults.NotFound();
+                return TypedResults.NotFound($"No author with id: {newBook.authorId}!");
             }
             //create Book and add PostPayload info to book
-            var book = new GetBookDTO(await bookRepository.CreateBook(newBook));
-            return TypedResults.Created($"/book", book);
+            var book = new GetBookDTO(await bookRepository.CreateBook(newBook.title, newBook.authorId));
+            return TypedResults.Created($"/book{book.Id}", book);
         }
     }
 }

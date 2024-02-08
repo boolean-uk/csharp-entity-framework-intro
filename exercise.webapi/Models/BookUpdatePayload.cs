@@ -1,4 +1,4 @@
 ﻿namespace exercise.webapi.Models
 {
-    public record BookUpdatePayload(int? authorId);
+    public record BookUpdatePayload(int authorId);
 }

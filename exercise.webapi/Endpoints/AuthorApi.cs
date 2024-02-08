@@ -18,8 +18,16 @@ namespace exercise.webapi.Endpoints
         }
         private static async Task<IResult> GetAuthor(IAuthorRepository authorRepository, int id)
         {
-            var author = new GetAuthorDTO(await authorRepository.GetAuthor(id));
-            return TypedResults.Ok(author);
+            //Load author
+            var author = await authorRepository.GetAuthor(id);
+            //Check if author exists otherwise return notFound
+            if (author == null)
+            {
+                return TypedResults.NotFound($"No author found with id: {id}!");
+            }
+            //Insert author into DTO and return ok for found
+            var result = new GetAuthorDTO(author);
+            return TypedResults.Ok(result);
         }
     }
 }
