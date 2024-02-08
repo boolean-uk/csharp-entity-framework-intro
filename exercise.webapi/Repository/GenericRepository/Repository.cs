@@ -28,6 +28,11 @@ namespace exercise.webapi.Repository.GenericRepository
             return entity;
         }
 
+        public virtual Task<T> Delete(T entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual async Task<IEnumerable<T>> Get()
         {
             return await _table.ToListAsync();

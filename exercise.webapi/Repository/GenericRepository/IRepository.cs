@@ -8,6 +8,9 @@ namespace exercise.webapi.Repository.GenericRepository
         Task<IEnumerable<T>> Get();
         Task<T> Update(T entity);
         Task<T> Delete(object id);
+        Task<T> Delete(T entity);
         Task<T> GetById(object id);
+
+
     }
 }

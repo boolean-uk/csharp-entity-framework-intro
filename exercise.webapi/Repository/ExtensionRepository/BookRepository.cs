@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace exercise.webapi.Repository
+namespace exercise.webapi.Repository.ExtensionRepository
 {
     public class BookRepository : Repository<Book>
     {

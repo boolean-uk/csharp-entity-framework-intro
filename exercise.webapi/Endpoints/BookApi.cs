@@ -1,7 +1,9 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Models.ModelsBookAPI;
 using exercise.webapi.Repository.GenericRepository;
+using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Endpoints
 {
@@ -60,11 +62,14 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(bookDto);
         }
 
-        private static async Task<IResult> UpdateBook(
+        private static async Task<IResult> UpdateBook
+            (
                 IRepository<Book> bookRepository,
                 IRepository<Author> authorRepository,
                 IRepository<BookAuthor> bookAuthorRepository,
-                BookInput bookInput, int id)
+                BookInput bookInput, 
+                int id
+            )
         {
             var book = await bookRepository.GetById(id);
             if (book == null)
@@ -72,13 +77,15 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.NotFound();
             }
 
-            book.Title = bookInput.Title;
-
-            var existingAssociations = book.BookAuthorPairs.ToList();
-            foreach (var association in existingAssociations)
+            var allBookAuthors = await bookAuthorRepository.Get();
+            var relevantBookAuthors = allBookAuthors.Where(ba => ba.BookId == id);
+            foreach (var bookAuthor in relevantBookAuthors)
             {
-                await bookAuthorRepository.Delete(association);
+                
+                await bookAuthorRepository.Delete(bookAuthor);
             }
+
+            book.Title = bookInput.Title;
 
             foreach (var authorId in bookInput.AuthorIds)
             {
@@ -88,17 +95,15 @@ namespace exercise.webapi.Endpoints
                     return Results.BadRequest($"Author with ID {authorId} not found.");
                 }
 
-                var newAssociation = new BookAuthor
+                var bookAuthor = new BookAuthor
                 {
                     BookId = id,
                     AuthorId = authorId
                 };
-                await bookAuthorRepository.Insert(newAssociation);
+                await bookAuthorRepository.Insert(bookAuthor);
             }
 
-            await bookRepository.Update(book);
-
-            book = await bookRepository.GetById(id);
+            book = await bookRepository.Update(book);
 
             var updatedBookDto = new BookDto
             {
