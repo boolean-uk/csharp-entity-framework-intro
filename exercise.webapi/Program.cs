@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(
     opt => opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IAuthorRepo, AuthorRepo>();
+
 
 var app = builder.Build();
 
@@ -30,4 +32,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.ConfigureBooksApi();
+app.ConfigureAuthorApi();
 app.Run();

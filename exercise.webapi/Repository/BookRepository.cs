@@ -29,7 +29,7 @@ namespace exercise.webapi.Repository
             var entity = await _db.Books
                 .Include (b => b.Publisher)
                 .Include(a => a.Bookauthors)
-                .Include(ba => ba.Author)
+                .ThenInclude(c => c.Author)
                 .FirstAsync(a => a.Id == id);
             return entity;
         }
@@ -78,6 +78,56 @@ namespace exercise.webapi.Repository
             return book;
         }
 
+        public async Task<Book> DeleteBook(int id)
+        {
+            var book = _db.Books
+                .Include(p => p.Publisher)
+                .Include(ba => ba.Bookauthors)
+                .ThenInclude(a => a.Author)
+                .FirstOrDefault(x => x.Id == id);
+
+            if(book != null)
+            {
+                _db.Books.Remove(book);
+                await _db.SaveChangesAsync(); 
+            }
+            return book;
+        }
+
+        public async Task<Book> CreateBook(BookPost model)
+        {
+            var publisher = await _db.Publishers.FindAsync(model.PublisherId);
+            var author = await _db.Authors.ToListAsync();
+
+            if(publisher == null || model.Title == "string")
+            {
+                return null;
+            }
+            var book = new Book
+            {
+                Title = model.Title,
+                PublisherId = model.PublisherId,
+                Publisher = publisher
+            };
+            foreach(var authId in model.AuthorIds)
+            {
+                var thisauthor = await _db.Authors.FindAsync(authId);
+                if(author == null) {
+                    return null;
+                }
+                var bookauth = new BookAuthor
+                {
+                    Book = book,
+                    Author = thisauthor,
+                };
+
+                _db.BookAuthors.Add(bookauth);
+            }
+
+            await _db.SaveChangesAsync();
+            await _db.Entry(book).Collection(b => b.Bookauthors).LoadAsync();
+            return book;   
+        }
 
     }
 }
