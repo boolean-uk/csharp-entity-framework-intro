@@ -104,7 +104,6 @@ namespace exercise.webapi.Data
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }
