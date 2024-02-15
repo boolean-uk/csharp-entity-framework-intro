@@ -6,7 +6,7 @@ namespace exercise.webapi.Repository
 {
     public class AuthorRepository : IAuthorRepository
     {
-        DataContext _db;
+        private readonly DataContext _db;
 
         public AuthorRepository(DataContext db)
         {
@@ -16,16 +16,16 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
             return await _db.Authors.Include(a => a.Books).ToListAsync();
-
         }
 
-        public async Task<Author> GetAuthorByID(int authorID)
+        public async Task<Author> GetAuthorById(int id)
         {
-            IEnumerable<Author> allAuthors = await GetAllAuthors();
+            return await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
+        }
 
-            Author? author = allAuthors.FirstOrDefault(a => a.Id == authorID);
-
-            return author;
+        public async Task SaveChanges()
+        {
+            await _db.SaveChangesAsync();
         }
     }
 }

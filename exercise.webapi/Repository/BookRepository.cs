@@ -6,7 +6,7 @@ namespace exercise.webapi.Repository
 {
     public class BookRepository : IBookRepository
     {
-        DataContext _db;
+        private readonly DataContext _db;
 
         public BookRepository(DataContext db)
         {
@@ -14,59 +14,46 @@ namespace exercise.webapi.Repository
         }
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
 
         }
 
-        public async Task<Book> GetBookById(int bookID)
+        public async Task<Book> GetBookById(int id)
         {
-            IEnumerable<Book> allBooks = await GetAllBooks();
-
-            Book? book = allBooks.FirstOrDefault(b => b.Id == bookID);
-
-            return book;
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
+        }
+        public async Task<Author> GetAuthorById(int authorId)
+        {
+            return await _db.Authors.FindAsync(authorId);
         }
 
-        public async Task<Book> UpdateBookByID(int bookID, string firstname, string lastname)
+        public async Task SaveChanges()
         {
-            IEnumerable<Book> allBooks = await GetAllBooks();
-
-            Book? book = allBooks.FirstOrDefault(b => b.Id == bookID);
-
-            if (book != null)
-            {
-                book.Author.FirstName = firstname;
-                book.Author.LastName = lastname;
-                _db.SaveChanges();
-                return book;
-            }
-            return book;
+            await _db.SaveChangesAsync();
         }
 
-        public async Task<Book> DeleteBookByID(int bookID)
+        public async Task DeleteBook(Book book)
         {
-            List<Book> allBooks = await _db.Books.Include(b => b.Author).ToListAsync();
-
-            Book? book = allBooks.FirstOrDefault(b => b.Id == bookID);
-
-            if (book != null)
-            {
-                allBooks.Remove(book);
-                _db.Books.Remove(book);
-                _db.SaveChanges();
-                return book;
-            }
-            return book;
+            _db.Books.Remove(book);
+            await SaveChanges();
         }
 
-        public async Task<Book> CreateNewBook(string title, int authorID)
+        public async Task AddBook(Book book)
         {
-            Book book = new Book();
-            book.Title = title;
-            book.AuthorId = authorID;
             _db.Books.Add(book);
-            _db.SaveChanges();
-            return book;
+            await SaveChanges();
+        }
+        public async Task<Publisher> GetPublisherById(int id)
+        {
+            return await _db.Publishers.Include(p => p.Books).ThenInclude(b => b.Author).FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<List<Publisher>> GetAllPublishers()
+        {
+            return await _db.Publishers
+                .Include(p => p.Books)
+                .ThenInclude(b => b.Author)
+                .ToListAsync();
         }
     }
 }
