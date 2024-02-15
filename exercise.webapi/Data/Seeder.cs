@@ -77,16 +77,19 @@ namespace exercise.webapi.Data
             "Leopards"
         };
 
-        private List<Author> _authors = new List<Author>();
-        private List<Book> _books = new List<Book>();
+        private List<string> _publisherNames = new List<string>()
+        {
+            "Rosenkilde Company",
+            "Nigelspub",
+            "TFT",
+            "Houses",
+        };
 
         public Seeder()
         {
-
             Random authorRandom = new Random();
             Random bookRandom = new Random();
-
-
+            Random publisherRandom = new Random();
 
             for (int x = 1; x < 250; x++)
             {
@@ -98,20 +101,28 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
-
             for (int y = 1; y < 250; y++)
             {
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
                 book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+                // Create and associate a publisher with the book
+                Publisher publisher = new Publisher();
+                publisher.Id = y;
+                publisher.Name = $"{_publisherNames[publisherRandom.Next(_publisherNames.Count)]}";
+                book.PublisherId = publisher.Id;
+
+                _publishers.Add(publisher);
                 _books.Add(book);
             }
-
-
         }
+        private List<Author> _authors = new List<Author>();
+        private List<Publisher> _publishers = new List<Publisher>();
+        private List<Book> _books = new List<Book>();
+
         public List<Author> Authors { get { return _authors; } }
+        public List<Publisher> Publishers { get { return _publishers; } }
         public List<Book> Books { get { return _books; } }
     }
 }
