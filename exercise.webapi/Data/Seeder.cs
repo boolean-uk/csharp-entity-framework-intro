@@ -77,16 +77,51 @@ namespace exercise.webapi.Data
             "Leopards"
         };
 
+        private List<string> _publisher = new List<string>()
+        {
+            "Penguin",
+            "Random House",
+            "Harper Collins",
+            "Simon & Schuster",
+            "Macmillan",
+            "Hachette",
+            "Pearson",
+            "Scholastic",
+            "Cengage",
+            "Wiley"
+        };
+
+        private List<string> _location = new List<string>()
+        {
+            "London",
+            "New York",
+            "Sydney",
+            "Paris",
+            "Berlin",
+            "Tokyo",
+            "Rome",
+            "Amsterdam"
+        };
+
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publishers = new List<Publisher>();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
+            Random publisherRandom = new Random();
 
-
+            for (int z =1; z < 250; z++)
+            {
+                Publisher publisher = new Publisher();
+                publisher.Id = z;
+                publisher.Name = _publisher[publisherRandom.Next(_publisher.Count)];
+                publisher.Location = _location[publisherRandom.Next(_location.Count)];
+                _publishers.Add(publisher);
+            }
 
             for (int x = 1; x < 250; x++)
             {
@@ -95,9 +130,9 @@ namespace exercise.webapi.Data
                 author.FirstName = _firstnames[authorRandom.Next(_firstnames.Count)];
                 author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
                 author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
+                author.PublisherId = _publishers[publisherRandom.Next(_publisher.Count)].Id;
                 _authors.Add(author);
             }
-
 
             for (int y = 1; y < 250; y++)
             {
@@ -110,8 +145,12 @@ namespace exercise.webapi.Data
             }
 
 
+
+
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+
+        public List<Publisher> Publishers { get { return _publishers; } }
     }
 }

@@ -9,6 +9,9 @@ namespace exercise.webapi.Models
         public string LastName { get; set; }
         public string Email { get; set; }
 
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
+
         //[JsonIgnore] // Todo: replace this with DTO approach
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }

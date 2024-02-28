@@ -11,6 +11,8 @@ namespace exercise.webapi.DTO
 
         public string Email { get; set; }
 
+        public PublisherDTO Publisher { get; set; }
+
         public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
 
         public AuthorResponseDTO(Author author) 
@@ -20,6 +22,7 @@ namespace exercise.webapi.DTO
             LastName = author.LastName;
             Email = author.Email;
             Books = new List<BookDTO>();
+            Publisher = new PublisherDTO(author.Publisher);
 
             foreach (var book in author.Books)
             {
