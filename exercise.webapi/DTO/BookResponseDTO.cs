@@ -10,9 +10,12 @@ namespace exercise.webapi.DTO
         public int AuthorId { get; set; }
         public AuthorDTO Author { get; set; }
 
+        public PublisherDTO Publisher { get; set; }
+
         public BookResponseDTO() 
         {
             Author = new AuthorDTO();
+            Publisher = new PublisherDTO();
         }
     }
 }

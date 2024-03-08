@@ -17,7 +17,7 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<BookResponseDTO>> GetAllBooks()
         {
-            var books = await _db.Books.Include(b => b.Author).ToListAsync();
+            var books = await _db.Books.Include(b => b.Author).Include(b=>b.Publisher).ToListAsync();
             List<BookResponseDTO> result = new List<BookResponseDTO>();
             foreach (var book in books)
             {
@@ -32,7 +32,7 @@ namespace exercise.webapi.Repository
         {
             
 
-            var book = await _db.Books.Include(b => b.Author).SingleOrDefaultAsync(b => b.Id == id);
+            var book = await _db.Books.Include(b => b.Author).Include(b => b.Publisher).SingleOrDefaultAsync(b => b.Id == id);
             BookResponseDTO bookResponseDTO = PutBookInDTO(book);
             _db.SaveChanges();
             return bookResponseDTO;
