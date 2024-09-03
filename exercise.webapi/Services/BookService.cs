@@ -48,6 +48,15 @@ namespace exercise.webapi.Services
             return bookDTO;
         }
 
+        public async Task<BookDTO> DeleteBook(int id)
+        {
+            Book book = await _bookRepository.DeleteBook(id);
+
+            var bookDTO = ConvertToBookDTO(book);
+
+            return bookDTO;
+        }
+
         public BookDTO ConvertToBookDTO(Book book)
         {
 

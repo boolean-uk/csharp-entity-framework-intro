@@ -1,6 +1,7 @@
 ﻿using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using exercise.webapi.Services;
+using System.Runtime.InteropServices;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -13,6 +14,7 @@ namespace exercise.webapi.Endpoints
             app.MapGet("/books", GetBooks);
             app.MapGet("/books{id}", GetBook);
             app.MapPatch("/books{id}", UpdateBook);
+            app.MapDelete("/books{id}", DeleteBook);
         }
 
         private static async Task<IResult> GetBooks(BookService bookService)
@@ -34,6 +36,20 @@ namespace exercise.webapi.Endpoints
             try
             {
                 book = await bookService.UpdateBook(id, updateDTO);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
+            return TypedResults.Ok(book);
+        }
+
+        private static async Task<IResult> DeleteBook(BookService bookService, int id)
+        {
+            BookDTO book = null;
+            try
+            {
+                book = await bookService.DeleteBook(id);
             }
             catch (Exception ex)
             {
