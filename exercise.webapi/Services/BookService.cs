@@ -39,6 +39,15 @@ namespace exercise.webapi.Services
             return bookDTO;
         }
 
+        public async Task<BookDTO> UpdateBook(int id, UpdateBookAuthorDTO updateDTO)
+        {
+            Book updatedBook = await _bookRepository.UpdateBook(id, updateDTO);
+
+            var bookDTO = ConvertToBookDTO(updatedBook);
+
+            return bookDTO;
+        }
+
         public BookDTO ConvertToBookDTO(Book book)
         {
 

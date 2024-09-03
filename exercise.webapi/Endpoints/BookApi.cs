@@ -12,6 +12,7 @@ namespace exercise.webapi.Endpoints
         {
             app.MapGet("/books", GetBooks);
             app.MapGet("/books{id}", GetBook);
+            app.MapPatch("/books{id}", UpdateBook);
         }
 
         private static async Task<IResult> GetBooks(BookService bookService)
@@ -26,6 +27,22 @@ namespace exercise.webapi.Endpoints
 
             return book != null ? TypedResults.Ok(book) : TypedResults.NotFound("Book not found");
         }
+
+        private static async Task<IResult> UpdateBook(BookService bookService, int id, UpdateBookAuthorDTO updateDTO)
+        {
+            BookDTO book = null;
+            try
+            {
+                book = await bookService.UpdateBook(id, updateDTO);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
+            return TypedResults.Ok(book);
+        }
+
+
 
         
     }
