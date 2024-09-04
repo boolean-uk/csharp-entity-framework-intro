@@ -16,6 +16,7 @@ builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Libra
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<AuthorService>();
 builder.Services.AddSingleton<IdGenerator, IdGenerator>();
 
 var app = builder.Build();
@@ -35,4 +36,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.ConfigureBooksApi();
+app.ConfigureAuthorsApi();
 app.Run();

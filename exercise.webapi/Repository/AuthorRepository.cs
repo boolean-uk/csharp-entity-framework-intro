@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
@@ -10,6 +11,11 @@ namespace exercise.webapi.Repository
         public AuthorRepository(DataContext db)
         {
             _db = db;
+        }
+
+        public async Task<List<Author>> GetAuthors()
+        {
+            return await _db.Authors.Include(b => b.Books).ToListAsync();
         }
 
         public async Task<Author> GetAuthor(int id)
