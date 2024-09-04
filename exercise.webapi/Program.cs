@@ -1,7 +1,10 @@
 using exercise.webapi.Data;
+using exercise.webapi.Services;
 using exercise.webapi.Endpoints;
 using exercise.webapi.Repository;
 using Microsoft.EntityFrameworkCore;
+using exercise.wwwapi.Helpers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<AuthorService>();
+builder.Services.AddScoped<PublisherService>();
+builder.Services.AddSingleton<IdGenerator, IdGenerator>();
 
 var app = builder.Build();
 
@@ -29,4 +38,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.ConfigureBooksApi();
+app.ConfigureAuthorsApi();
+app.ConfigurePublisherApi();
 app.Run();
