@@ -16,13 +16,13 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
 
         }
 
         public async Task<Book> GetBook(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
 
         }
 
@@ -43,13 +43,14 @@ namespace exercise.webapi.Repository
             _db.Books.Update(book);
             await _db.SaveChangesAsync();
 
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book> DeleteBook(int id)
         {
             var book = await _db.Books
             .Include(b => b.Author)
+            .Include(b => b.Publisher)
             .FirstOrDefaultAsync(b => b.Id == id);
 
             if (book == null)
@@ -73,6 +74,7 @@ namespace exercise.webapi.Repository
 
             return await _db.Books
             .Include(b => b.Author)
+            .Include(b => b.Publisher)
             .FirstOrDefaultAsync(b => b.Id == book.Id);
         }
 

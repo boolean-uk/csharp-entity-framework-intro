@@ -12,7 +12,7 @@ namespace exercise.webapi.Endpoints
         public static void ConfigureAuthorsApi(this WebApplication app)
         {
             app.MapGet("/authors", GetAuthors);
-            app.MapGet("/authors{id}", GetAuthor);
+            app.MapGet("/authors/{id}", GetAuthor);
         }
 
         private static async Task<IResult> GetAuthors(AuthorService authorService)

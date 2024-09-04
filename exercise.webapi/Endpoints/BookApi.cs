@@ -12,9 +12,9 @@ namespace exercise.webapi.Endpoints
         public static void ConfigureBooksApi(this WebApplication app)
         {
             app.MapGet("/books", GetBooks);
-            app.MapGet("/books{id}", GetBook);
-            app.MapPatch("/books{id}", UpdateBook);
-            app.MapDelete("/books{id}", DeleteBook);
+            app.MapGet("/books/{id}", GetBook);
+            app.MapPatch("/books/{id}", UpdateBook);
+            app.MapDelete("/books/{id}", DeleteBook);
             app.MapPost("/books", CreateBook);
         }
 

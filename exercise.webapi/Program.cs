@@ -15,8 +15,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<AuthorService>();
+builder.Services.AddScoped<PublisherService>();
 builder.Services.AddSingleton<IdGenerator, IdGenerator>();
 
 var app = builder.Build();
@@ -37,4 +39,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.ConfigureBooksApi();
 app.ConfigureAuthorsApi();
+app.ConfigurePublisherApi();
 app.Run();

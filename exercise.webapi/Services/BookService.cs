@@ -9,12 +9,14 @@ namespace exercise.webapi.Services
     {
         private readonly IBookRepository _bookRepository;
         private readonly IAuthorRepository _authorRepository;
+        private readonly IPublisherRepository _publisherRepository;
         private readonly IdGenerator _idGenerator;
 
-        public BookService(IBookRepository repository, IAuthorRepository authorRepository, IdGenerator idGenerator)
+        public BookService(IBookRepository repository, IAuthorRepository authorRepository, IPublisherRepository publisherRepository, IdGenerator idGenerator)
         {
             _bookRepository = repository;
             _authorRepository = authorRepository;
+            _publisherRepository = publisherRepository;
             _idGenerator = idGenerator;
         }
 
@@ -65,13 +67,16 @@ namespace exercise.webapi.Services
         public async Task<BookDTO> CreateBook(CreateBookDTO createDTO)
         {
             var author = await _authorRepository.GetAuthor(createDTO.AuthorId);
+            var publisher = await _publisherRepository.GetPublisher(createDTO.PublisherId);
 
             Book book = new Book
             {
                 Id = _idGenerator.GetBookId(),
                 Title = createDTO.Title,
                 AuthorId = author.Id,
-                Author = author
+                Author = author,
+                PublisherId = publisher.Id,
+                Publisher = publisher
             };
 
             book = await _bookRepository.CreateBook(book);
@@ -95,6 +100,12 @@ namespace exercise.webapi.Services
                     FirstName = book.Author.FirstName,
                     LastName = book.Author.LastName,
                     Email = book.Author.Email
+                },
+                PublisherId = book.Publisher.Id,
+                Publisher = new PublisherDTO
+                {
+                    Id = book.Publisher.Id,
+                    Name = book.Publisher.Name
                 }
             };
 
