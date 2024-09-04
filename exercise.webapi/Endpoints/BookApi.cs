@@ -15,6 +15,7 @@ namespace exercise.webapi.Endpoints
             app.MapGet("/books{id}", GetBook);
             app.MapPatch("/books{id}", UpdateBook);
             app.MapDelete("/books{id}", DeleteBook);
+            app.MapPost("/books", CreateBook);
         }
 
         private static async Task<IResult> GetBooks(BookService bookService)
@@ -58,8 +59,20 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(book);
         }
 
-
-
+        private static async Task<IResult> CreateBook(BookService bookService, CreateBookDTO createDTO)
+        {
+            BookDTO book = null;
+            try
+            {
+                book = await bookService.CreateBook(createDTO);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.NotFound(ex.Message);
+            }
+            
+            return TypedResults.Ok(book);
+        }
         
     }
 }

@@ -1,4 +1,6 @@
 ﻿using exercise.webapi.Models;
+using exercise.wwwapi.Helpers;
+using System.Reflection.Emit;
 
 namespace exercise.webapi.Data
 {
@@ -79,14 +81,14 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private IdGenerator _idGenerator;
+
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
-
-
 
             for (int x = 1; x < 250; x++)
             {

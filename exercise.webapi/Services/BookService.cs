@@ -1,16 +1,21 @@
 ﻿using System.Reflection.Emit;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using exercise.wwwapi.Helpers;
 
 namespace exercise.webapi.Services
 {
     public class BookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly IdGenerator _idGenerator;
 
-        public BookService(IBookRepository repository)
+        public BookService(IBookRepository repository, IAuthorRepository authorRepository, IdGenerator idGenerator)
         {
             _bookRepository = repository;
+            _authorRepository = authorRepository;
+            _idGenerator = idGenerator;
         }
 
         public async Task<List<BookDTO>> GetBooks()
@@ -57,7 +62,26 @@ namespace exercise.webapi.Services
             return bookDTO;
         }
 
-        public BookDTO ConvertToBookDTO(Book book)
+        public async Task<BookDTO> CreateBook(CreateBookDTO createDTO)
+        {
+            var author = await _authorRepository.GetAuthor(createDTO.AuthorId);
+
+            Book book = new Book
+            {
+                Id = _idGenerator.GetBookId(),
+                Title = createDTO.Title,
+                AuthorId = author.Id,
+                Author = author
+            };
+
+            book = await _bookRepository.CreateBook(book);
+
+            var bookDTO = ConvertToBookDTO(book);
+
+            return bookDTO;
+        }
+
+        private BookDTO ConvertToBookDTO(Book book)
         {
 
             var bookDTO = new BookDTO

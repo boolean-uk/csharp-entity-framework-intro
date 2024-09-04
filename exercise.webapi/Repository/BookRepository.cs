@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -59,5 +60,22 @@ namespace exercise.webapi.Repository
 
             return book;
         }
+
+        public async Task<Book> CreateBook(Book book)
+        {
+            var authorExists = await _db.Authors.AnyAsync(a => a.Id == book.AuthorId);
+
+            if (!authorExists)
+                throw new Exception("Author not found");
+
+            _db.Books.Add(book);
+            await _db.SaveChangesAsync();
+
+            return await _db.Books
+            .Include(b => b.Author)
+            .FirstOrDefaultAsync(b => b.Id == book.Id);
+        }
+
+
     }
 }
