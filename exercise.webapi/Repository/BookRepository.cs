@@ -4,19 +4,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class BookRepository: IBookRepository
+    public class BookRepository(DataContext db) : IRepository<Book>
     {
-        DataContext _db;
-        
-        public BookRepository(DataContext db)
+        public async Task<IEnumerable<Book>> GetAll()
         {
-            _db = db;
+            return await db.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<Book> GetById(int id)
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            throw new NotImplementedException();
+        }
 
+        public async Task<Book> GetByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Book> Add(Book entity)
+        {
+            db.Books.Add(entity);
+            await db.SaveChangesAsync();
+            return entity;
         }
     }
 }
