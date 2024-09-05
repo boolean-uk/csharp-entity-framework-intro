@@ -22,5 +22,12 @@ namespace exercise.webapi.Repository
         { 
             return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<Book> Update(Book book)
+        {
+            _db.Books.Update(book);
+            await _db.SaveChangesAsync();
+            return book;
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using exercise.webapi.DTOs;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
 {
@@ -12,6 +11,7 @@ namespace exercise.webapi.Endpoints
             var books = app.MapGroup("books");
             books.MapGet("/", GetBooks);
             books.MapGet("/{id}", GetABook);
+            books.MapPut("/{id}/{authorid}", UpdateAuthor);
         }
 
 
@@ -34,6 +34,18 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(bookdto);
         }
 
+
+        private static async Task<IResult> UpdateAuthor(IBookRepository bookRepository, IAuthorRepository authorRepository, int bookid, int authorid) 
+        {
+            var book = await bookRepository.GetBook(bookid);
+            if (book is null) return TypedResults.NotFound("Book was not found");
+            var author = await authorRepository.GetAuthor(authorid);
+            if (author is null) return TypedResults.NotFound("Author was not found");
+            book.Author = author;
+            book.AuthorId = authorid;
+            bookRepository.Update(book);
+            return TypedResults.Ok(MapToBookDTO(book));
+        }
         private static BookDTO MapToBookDTO(Book book)
         {
             return new BookDTO
