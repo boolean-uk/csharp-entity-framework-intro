@@ -8,7 +8,7 @@
             {
                 Id = book.Id,
                 Title = book.Title,
-                Author = book.Author.MapToDTO(),
+                Author = book.Author.IMapToDTO(),
                 AuthorId = book.AuthorId
             };
         }
@@ -19,7 +19,7 @@
             {
                 Id = book.Id,
                 Title = book.Title,
-                Author = book.Author.MapToDTO(),
+                Author = book.Author.IMapToDTO(),
                 AuthorId = book.AuthorId
             }).ToList();
         }

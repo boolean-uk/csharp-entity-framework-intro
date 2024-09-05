@@ -14,6 +14,18 @@
             };
         }
 
+        public static AuthorDTO IMapToDTO(this Author author)
+        {
+            return new AuthorDTO
+            {
+                Id = author.Id,
+                FirstName = author.FirstName,
+                LastName = author.LastName,
+                Email = author.Email,
+                Books = null
+            };
+        }
+
         public static List<AuthorDTO> MapListToDTO(this List<Author> books)
         {
             return books.Select(author => new AuthorDTO
@@ -32,7 +44,7 @@
             {
                 Id = book.Id,
                 Title = book.Title,
-                Author = book.Author.MapToDTO(),
+                Author = null,
                 AuthorId = book.AuthorId
             }).ToList();
         }
