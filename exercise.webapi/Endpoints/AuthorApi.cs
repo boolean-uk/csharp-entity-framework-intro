@@ -12,16 +12,16 @@ namespace exercise.webapi.Endpoints
             authors.MapGet("/{id}", GetAuthor);
         }
 
-        private static async Task<IResult> GetAuthor(IBookRepository repository, int id)
+        private static async Task<IResult> GetAuthor(IAuthorRepository repository, int id)
         {
-            BookDTO book = await repository.GetBook(id);
-            return TypedResults.Ok(book);
+            var author = repository.GetAuthor(id);
+            return TypedResults.Ok(author);
         }
 
-        private static async Task<IResult> GetAuthors(IBookRepository repository)
+        private static async Task<IResult> GetAuthors(IAuthorRepository repository)
         {
-            var books = await repository.GetAllBooks();
-            return TypedResults.Ok(books);
+            var authors = repository.GetAll();
+            return TypedResults.Ok(authors);
         }
     }
 }
