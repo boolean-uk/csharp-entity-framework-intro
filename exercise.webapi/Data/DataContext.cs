@@ -26,6 +26,8 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Book>().HasData(seeder.Books);
 
         }
+
+        // these are the tables that are created.
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
     }
