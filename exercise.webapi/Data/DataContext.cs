@@ -1,21 +1,21 @@
 ﻿using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
+using System.Diagnostics;
 
 namespace exercise.webapi.Data
 {
     public class DataContext : DbContext
     {
-
+        private string _connectionString;
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            _connectionString = configuration.GetValue<string>("ConnectionStrings:DefaultConnectionString")!;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseInMemoryDatabase("Library");
+            optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.LogTo(message => Debug.WriteLine(message));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
