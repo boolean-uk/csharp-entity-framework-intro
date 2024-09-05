@@ -18,19 +18,19 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> DeleteBook(IBookRepository repository, int id)
         {
-            Book book = repository.DeleteBook(id);
+            BookDTO book = repository.DeleteBook(id);
             return TypedResults.Ok(book);
         }
 
         private static async Task<IResult> CreateBook(IBookRepository repository, string Title, int AuthorId)
         {
-            Book book = await repository.CreateBook(Title, AuthorId);
+            BookDTO book = await repository.CreateBook(Title, AuthorId);
             return TypedResults.Ok(book);
         }
 
         private static async Task<IResult> UpdateBook(IBookRepository repository, int id, string Title, int AuthorId)
         {
-            Book book = await repository.UpdateBook(id, Title, AuthorId);
+            BookDTO book = await repository.UpdateBook(id, Title, AuthorId);
             return TypedResults.Ok(book);
         }
 
