@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Models;
+using exercise.webapi.ViewModels;
 
 namespace exercise.webapi.Data
 {
@@ -108,7 +109,6 @@ namespace exercise.webapi.Data
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }
-
 
         }
         public List<Author> Authors { get { return _authors; } }
