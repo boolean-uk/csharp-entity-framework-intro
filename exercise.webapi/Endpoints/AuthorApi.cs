@@ -1,23 +1,38 @@
 ﻿
+using exercise.webapi.DtoModels.AuthorApiDtos;
+using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
+
 namespace exercise.webapi.Endpoints
 {
     public static class AuthorApi
     {
         public static void ConfigureAuthorsApi(this WebApplication app)
         {
-            app.MapGet("/books", GetAuthors);
-            app.MapGet("/books/{id:int}", GetSingleAuthor);
+            app.MapGet("/authors", GetAuthors);
+            app.MapGet("/authors/{id:int}", GetSingleAuthor);
 
         }
 
-        private static async Task GetSingleAuthor(int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> GetSingleAuthor(IAuthorRepository repository, int id)
         {
-            throw new NotImplementedException();
+            var author = await repository.GetSingleAuthor(id);
+            AuthorDto authorDto = new AuthorDto(author);
+            return TypedResults.Ok(authorDto);
         }
 
-        private static async Task GetAuthors()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> GetAuthors(IAuthorRepository repository)
         {
-            throw new NotImplementedException();
+            var authorList = await repository.GetAuthors();
+            List<AuthorDto> authorDtoList = new List<AuthorDto>();
+
+            foreach(var a in authorList)
+            {
+                authorDtoList.Add(new AuthorDto(a));
+            }
+            return TypedResults.Ok(authorDtoList);
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿using exercise.webapi.DtoModels.BookApiDtos;
-using exercise.webapi.Models;
+﻿using exercise.webapi.Models;
 
-namespace exercise.webapi.DtoModels.AuthorApiDtos
+namespace exercise.webapi.DtoModels.BookApiDtos
 {
     public class BookDto
     {

@@ -1,5 +1,4 @@
 ﻿using exercise.webapi.DtoModels;
-using exercise.webapi.DtoModels.AuthorApiDtos;
 using exercise.webapi.DtoModels.BookApiDtos;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
