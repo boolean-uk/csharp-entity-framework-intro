@@ -1,7 +1,9 @@
 ﻿using exercise.webapi.DtoModels;
-using exercise.webapi.DTOModels;
+using exercise.webapi.DtoModels.AuthorApiDtos;
+using exercise.webapi.DtoModels.BookApiDtos;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using exercise.webapi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints
@@ -14,6 +16,7 @@ namespace exercise.webapi.Endpoints
             app.MapGet("/books/{id:int}", GetSingleBook);
             app.MapPut("/books/{id:int}", UpdateBook);
             app.MapDelete("/books{id:int}", DeleteBook);
+            app.MapPost("/books", CreateBook);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -24,7 +27,7 @@ namespace exercise.webapi.Endpoints
 
             foreach(var b in books)
             {
-                bookDtos.Add(new BookDto(b, new AuthorDto(b.Author)));
+                bookDtos.Add(new BookDto(b, new BookAuthorDto(b.Author)));
             }
 
             return TypedResults.Ok(bookDtos);
@@ -34,8 +37,8 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetSingleBook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.GetSingleBook(id);
-            var bookDto = new BookDto(book, new AuthorDto(book.Author));
-            return TypedResults.Ok(book);
+            var bookDto = new BookDto(book, new BookAuthorDto(book.Author));
+            return TypedResults.Ok(bookDto);
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -47,8 +50,8 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.BadRequest("Author or book does not exist");
             }
-            var bookUpdatedDto = new BookDto(bookUpdated, new AuthorDto(bookUpdated.Author));
-            return TypedResults.Created("", bookUpdated);
+            var bookUpdatedDto = new BookDto(bookUpdated, new BookAuthorDto(bookUpdated.Author));
+            return TypedResults.Created("", bookUpdatedDto);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -60,8 +63,23 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound("Book does not exist");
             }
-            var bookDto = new BookDto(bookDeleted, new AuthorDto(bookDeleted.Author));
+            var bookDto = new BookDto(bookDeleted, new BookAuthorDto(bookDeleted.Author));
             return TypedResults.Ok(bookDto);
+        }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPostModel bookModel)
+        {
+            //I assume you add a pre-existing author
+            Book bookAdded = await bookRepository.CreateBook(bookModel);
+            if(bookAdded == null)
+            {
+                TypedResults.BadRequest("Author does not exist");
+            }
+
+            BookDto bookDto = new BookDto(bookAdded, new BookAuthorDto(bookAdded.Author));
+            return TypedResults.Created("",bookDto);
         }
     }
 }

@@ -1,13 +1,16 @@
-﻿using System.Text.Json.Serialization;
+﻿using exercise.webapi.Models;
+using System.Text.Json.Serialization;
 
-namespace exercise.webapi.Models
+namespace exercise.webapi.DtoModels
 {
-    public class Author
+    public class AuthorDtocs
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+
+        [JsonIgnore] // Todo: replace this with DTO approach
         public ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

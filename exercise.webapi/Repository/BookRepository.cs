@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Data;
 using exercise.webapi.Models;
+using exercise.webapi.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
@@ -53,6 +54,26 @@ namespace exercise.webapi.Repository
             _db.Remove(bookToBeDeleted);
             await _db.SaveChangesAsync();
             return bookToBeDeleted;
+        }
+
+        public async Task<Book> CreateBook(BookPostModel newBook)
+        {
+            Author author = await _db.Authors.FirstOrDefaultAsync(a => a.Id == newBook.AuthorId);
+            if(author == null)
+            {
+                return null;
+            }
+
+            Book bookToBeAdded = new Book();
+            bookToBeAdded.AuthorId = newBook.AuthorId;
+            bookToBeAdded.Title = newBook.Title;
+            bookToBeAdded.Author = author;
+
+            author.Books.Add(bookToBeAdded);
+
+            await _db.Books.AddAsync(bookToBeAdded);
+            _db.SaveChangesAsync();
+            return bookToBeAdded; 
         }
     }
 }
