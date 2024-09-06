@@ -42,6 +42,64 @@ namespace exercise.webapi.Repository
             return response;
         }
 
+        public async Task<AuthorResponse> AssignAuthor(int bookId, int authorId)
+        {
+            //Get author
+            var author = await _db.Authors.Include(a => a.BookAuthors).ThenInclude(ab => ab.Book).FirstOrDefaultAsync(a => a.Id == authorId);
+            if (author == null)
+            {
+                throw new Exception("Author not found");
+            }
+
+            //Get book
+            var book = await _db.Books.Include(b => b.BookAuthors).ThenInclude(ba => ba.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            if (book == null)
+            {
+                throw new Exception("Book not found");
+            }
+
+            //Assign the author to the book
+            book.BookAuthors.Add(new BookAuthor() { BookId = bookId, AuthorId = authorId });
+            _db.Attach(book).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+
+            //Response
+            var response = ConstructAuthorResponse(author);
+            return response;
+        }
+
+        public async Task<AuthorResponse> RemoveAuthor(int bookId, int authorId)
+        {
+            //Get author
+            var author = await _db.Authors.Include(a => a.BookAuthors).ThenInclude(ab => ab.Book).FirstOrDefaultAsync(a => a.Id == authorId);
+            if (author == null)
+            {
+                throw new Exception("Author not found");
+            }
+
+            //Get book
+            var book = await _db.Books.Include(b => b.BookAuthors).ThenInclude(ba => ba.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            if (book == null)
+            {
+                throw new Exception("Book not found");
+            }
+
+            //Get the BookAuthor object to remove
+            foreach(var bookAuthor in book.BookAuthors)
+            {
+                if(bookAuthor.AuthorId == authorId)
+                {
+                    book.BookAuthors.Remove(bookAuthor);
+                    await _db.SaveChangesAsync();
+                    break;
+                }
+            }
+
+            //Response
+            var response = ConstructAuthorResponse(author);
+            return response;
+        }
+
         private AuthorResponse ConstructAuthorResponse(Author author)
         {
             //Construct response
