@@ -11,12 +11,12 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureBooksApi(this WebApplication app)
         {
-            app.MapGroup("books");
-            app.MapGet("/", GetBooks);
-            app.MapGet("/{id}", GetABook);
-            app.MapPut("/{id}", UpdateABook);
-            app.MapDelete("/{id}", DeleteABook);
-            app.MapPost("/{id}", CreateABook);
+            var book = app.MapGroup("books");
+            book.MapGet("/", GetBooks);
+            book.MapGet("/{id}", GetABook);
+            book.MapPut("/{id}", UpdateABook);
+            book.MapDelete("/{id}", DeleteABook);
+            book.MapPost("/{id}", CreateABook);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,8 +30,6 @@ namespace exercise.webapi.Endpoints
             {
                 DTOBook b = new();
                 b.Title = book.Title;
-
-                DTOAuthor a = new();
                 b.AuthorName = book.Author.FirstName + " " + book.Author.LastName;
 
                 response.Books.Add(b);

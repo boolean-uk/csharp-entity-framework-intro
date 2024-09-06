@@ -12,14 +12,15 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureAuthorApi(this WebApplication app)
         {
-            app.MapGroup("Author");
-            app.MapGet("/", GetAuthors);
+            var author = app.MapGroup("Author");
+            author.MapGet("/", GetAuthors);
+            author.MapGet("/{id}", GetAnAuthor);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
         {
-            /*
+
             GetAuthorResponce response = new();
 
             var authors = await authorRepository.GetAllAuthors();
@@ -37,9 +38,36 @@ namespace exercise.webapi.Endpoints
                 response.Authors.Add(a);
             }
 
-            //return TypedResults.Ok(response);
-            */
-            return TypedResults.Ok();
+            return TypedResults.Ok(response);
+
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> GetAnAuthor(IAuthorRepository authorRepository, int id)
+        {
+            try
+            {
+                var author = await authorRepository.GetAnAuthor(id);
+
+                GetAuthorModel getAuthorModel = new()
+                {
+                    AuthorName = author.FirstName + " " + author.LastName,
+                   
+                };
+                foreach (Book book in author.Books)
+                {
+                    getAuthorModel.BookTitles.Add(book.Title);
+                }
+
+
+                return TypedResults.Ok(getAuthorModel);
+            }
+
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
+            }
+        }
+
+
     }
 }
