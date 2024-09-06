@@ -20,7 +20,7 @@ namespace exercise.webapi.DtoModels.AuthorApiDtos
 
             foreach(var b in author.Books)
             {
-                Books.Add(new BookInAuthorDto(b));
+                Books.Add(new BookInAuthorDto(b, b.Publisher.Name));
             }
         }
     }

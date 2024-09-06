@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.DtoModels.BookApiDtos;
+using exercise.webapi.Models;
 
 namespace exercise.webapi.DtoModels.PublisherDtos
 {
@@ -9,5 +10,11 @@ namespace exercise.webapi.DtoModels.PublisherDtos
 
         public BookAuthorDto Author { get; set; }
 
+        public BookInPublisherDto(Book book, BookAuthorDto aDto)
+        {
+            Id = book.Id;
+            Title = book.Title;
+            Author = aDto;
+        }
     }
 }

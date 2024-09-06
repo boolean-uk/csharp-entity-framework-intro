@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.DtoModels;
 using exercise.webapi.DtoModels.BookApiDtos;
+using exercise.webapi.DtoModels.PublisherDtos;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using exercise.webapi.ViewModels;
@@ -26,7 +27,7 @@ namespace exercise.webapi.Endpoints
 
             foreach(var b in books)
             {
-                bookDtos.Add(new BookDto(b, new BookAuthorDto(b.Author)));
+                bookDtos.Add(new BookDto(b, new BookAuthorDto(b.Author), b.Publisher.Name));
             }
 
             return TypedResults.Ok(bookDtos);
@@ -36,7 +37,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetSingleBook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.GetSingleBook(id);
-            var bookDto = new BookDto(book, new BookAuthorDto(book.Author));
+            var bookDto = new BookDto(book, new BookAuthorDto(book.Author), book.Publisher.Name);
             return TypedResults.Ok(bookDto);
         }
 
@@ -49,7 +50,7 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.BadRequest("Author or book does not exist");
             }
-            var bookUpdatedDto = new BookDto(bookUpdated, new BookAuthorDto(bookUpdated.Author));
+            var bookUpdatedDto = new BookDto(bookUpdated, new BookAuthorDto(bookUpdated.Author), bookUpdated.Publisher.Name);
             return TypedResults.Created("", bookUpdatedDto);
         }
 
@@ -62,7 +63,7 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound("Book does not exist");
             }
-            var bookDto = new BookDto(bookDeleted, new BookAuthorDto(bookDeleted.Author));
+            var bookDto = new BookDto(bookDeleted, new BookAuthorDto(bookDeleted.Author), bookDeleted.Publisher.Name);
             return TypedResults.Ok(bookDto);
         }
 
@@ -77,7 +78,7 @@ namespace exercise.webapi.Endpoints
                 TypedResults.BadRequest("Author does not exist");
             }
 
-            BookDto bookDto = new BookDto(bookAdded, new BookAuthorDto(bookAdded.Author));
+            BookInPublisherDto bookDto = new BookInPublisherDto(bookAdded, new BookAuthorDto(bookAdded.Author));
             return TypedResults.Created("",bookDto);
         }
     }
