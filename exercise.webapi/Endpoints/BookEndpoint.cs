@@ -15,6 +15,8 @@ namespace exercise.webapi.Endpoints
             app.MapPut("/books/Update", Update);
             app.MapDelete("/books/DeleteBook{id}", DeleteBook);
             app.MapPost("/books/AddBook", AddBook);
+            app.MapPut("/books/AssignAuthor", AssignAuthor);
+            app.MapDelete("/books/RemoveAuthor", RemoveAuthor);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -46,6 +48,20 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> Update(IBookRepository repository, int id, BookUpdate data)
         {
             var result = await repository.UpdateBook(id, data);
+            return TypedResults.Ok(result);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> RemoveAuthor(IBookRepository repository, int id, int authorId)
+        {
+            var result = await repository.RemoveAuthorFromBook(id, authorId);
+            return TypedResults.Ok(result);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        private static async Task<IResult> AssignAuthor(IBookRepository repository, int id, int authorId)
+        {
+            var result = await repository.AssignAuthorToBook(id, authorId);
             return TypedResults.Ok(result);
         }
 

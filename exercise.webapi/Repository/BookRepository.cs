@@ -3,6 +3,7 @@ using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace exercise.webapi.Repository
 {
@@ -42,6 +43,58 @@ namespace exercise.webapi.Repository
             ResponseBookDTO response = PutBook(book);
             
             return response;
+        }
+
+        public async Task<ResponseBookDTO> AssignAuthorToBook(int id, int authorId)
+        {
+            var book = await _db.Books
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .SingleOrDefaultAsync(b => b.Id == id);
+
+            if (book != null)
+            {
+                var author = await _db.Authors.SingleOrDefaultAsync(a => a.Id == authorId);
+                if (author != null)
+                {
+                   
+
+                    book.BookAuthors.Add(new BookAuthor
+                    {
+                        BookId = book.Id,
+                        AuthorId = authorId,
+                        Book = book,
+                        Author = author
+                    });
+
+                    ResponseBookDTO result = new ResponseBookDTO
+                    {
+                        Id = book.Id,
+                        Title = book.Title,
+                        Authors = new List<AuthorDTO>() // Initialize the Authors list
+                    };
+
+                    // Loop through all BookAuthors to populate the Authors list in the DTO
+                    foreach (var bookAuthor in book.BookAuthors)
+                    {
+                        var auth = bookAuthor.Author; // Get the author from the BookAuthor junction
+                        result.Authors.Add(new AuthorDTO
+                        {
+                            Id = auth.Id,
+                            Email = auth.Email,
+                            FirstName = auth.FirstName,
+                            LastName = auth.LastName
+                        });
+                    }
+                    await _db.SaveChangesAsync();
+                    return result;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         public async Task<bool> CheckBookDataId(BookPost data)
@@ -112,6 +165,38 @@ namespace exercise.webapi.Repository
             ResponseBookDTO response = PutBook(book);
 
             return response;
+        }
+
+        public async Task<bool> RemoveAuthorFromBook(int id, int authorId)
+        {
+            var book = await _db.Books
+               .Include(b => b.BookAuthors)
+               .ThenInclude(ba => ba.Author)
+               .SingleOrDefaultAsync(b => b.Id == id);
+
+            if (book != null)
+            {
+                var author = await _db.Authors.SingleOrDefaultAsync(a => a.Id == authorId);
+                
+                if (author != null)
+                { 
+                    // Loop through all BookAuthors 
+                    foreach (var bookAuthor in book.BookAuthors)
+                    {
+                        if(bookAuthor.AuthorId == author.Id) // Find what to remove
+                        {
+                            book.BookAuthors.Remove(bookAuthor);
+                            await _db.SaveChangesAsync();
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
         }
 
         public async Task<ResponseBookDTO> UpdateBook(int id, BookUpdate data)
