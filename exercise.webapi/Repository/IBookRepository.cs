@@ -5,10 +5,10 @@ namespace exercise.webapi.Repository
 {
     public interface IBookRepository
     {
-        public Task<IEnumerable<Book>> GetAllBooks();
-        public Task<Book> GetBook(int id);
-        public Task<Book> UpdateBook(int id, Book entity);
-        public Task<Book> DeleteBook(int id);
-        public Task<Book> AddBook(Book entity);
+        public Task<IEnumerable<BookResponse>> GetAllBooks();
+        public Task<BookResponse> GetBook(int id);
+        public Task<BookResponse> UpdateBook(int bookId, int authorId);
+        public Task<BookResponse> DeleteBook(int id);
+        public Task<BookResponse> AddBook(Book entity);
     }
 }

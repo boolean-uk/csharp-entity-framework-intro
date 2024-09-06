@@ -3,6 +3,7 @@ using exercise.webapi.Repository;
 using exercise.webapi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using static System.Reflection.Metadata.BlobBuilder;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace exercise.webapi.Endpoints
 {
@@ -41,27 +42,18 @@ namespace exercise.webapi.Endpoints
             {
                 //Get the author if it already exists
                 var author = await authorRepository.GetAuthor(data.AuthorId);
-                if (author == null)
-                {
-                    return TypedResults.NotFound();
-                }
-                else
+                if (author != null)
                 {
                     //Construct the book
                     var book = new Book()
                     {
                         Title = data.Title,
-                        AuthorId = data.AuthorId,
-                        Author = author
+                        AuthorId = data.AuthorId
                     };
-
-                    ////Add bookModel to the author
-                    //BookDTO bookModel = new BookDTO() { Id = book.Id, Title = book.Title };
-                    //await authorRepository.AddBook(bookModel, data.AuthorId);
 
                     var results = await bookRepository.AddBook(book);
 
-                    if(results == null)
+                    if (results == null)
                     {
                         return TypedResults.BadRequest();
                     }
@@ -69,6 +61,10 @@ namespace exercise.webapi.Endpoints
                     {
                         return TypedResults.Created($"http://localhost:5201/books/{results.Id}", results);
                     }
+                }
+                else
+                {
+                    return TypedResults.NotFound();
                 }
             }
             catch (Exception ex)
@@ -84,44 +80,23 @@ namespace exercise.webapi.Endpoints
         {
             try
             {
-                //Get the new author
-                var author = await authorRepository.GetAuthor(authorId);
-                if(author != null)
+                //Get the book
+                var book = await bookRepository.GetBook(bookId);
+                if (book != null)
                 {
-                    //Get the book
-                    var book = await bookRepository.GetBook(bookId);
-
-                    //Remove the book from the previous author
-                    if (book.Author != null)
-                    {
-                        BookDTO? booker = book.Author.Books.FirstOrDefault(b => b.Id == bookId);
-                        if (booker != null)
-                        {
-                            book.Author.Books.Remove(booker);
-
-                            //Update the book author
-                            book.Author = author;
-
-                            //Add the book to the new author
-                            book.Author.Books.Add(booker);
-
-                            //Update
-                            var results = await bookRepository.UpdateBook(bookId, book);
-                            return TypedResults.Ok(results);
-                        }
-                        else
-                        {
-                            return TypedResults.NotFound();
-                        }
-                    }
-                    else
+                    //Check if author exists
+                    var author = await authorRepository.GetAuthor(authorId);
+                    if(author == null)
                     {
                         return TypedResults.BadRequest();
                     }
+                    //Update the book's author
+                    var results = await bookRepository.UpdateBook(bookId, authorId);
+                    return TypedResults.Ok(results);
                 }
                 else
                 {
-                    return TypedResults.BadRequest();
+                    return TypedResults.NotFound();
                 }
             }
             catch (Exception ex)
@@ -136,10 +111,12 @@ namespace exercise.webapi.Endpoints
         {
             try
             {
-                //Delete the book from the database
-                var results = await repository.DeleteBook(id);
-                if(results != null)
+                //Check if the book exists
+                var book = await repository.GetBook(id);
+                if (book != null)
                 {
+                    //Delete the book from the database
+                    var results = await repository.DeleteBook(id);
                     return TypedResults.Ok(results);
                 }
                 else

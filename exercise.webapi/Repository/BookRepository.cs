@@ -2,6 +2,7 @@
 using exercise.webapi.Models;
 using exercise.webapi.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace exercise.webapi.Repository
@@ -15,60 +16,86 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<Book> AddBook(Book entity)
+        public async Task<BookResponse> AddBook(Book entity)
         {
+            //Add the book
             await _db.AddAsync(entity);
             await _db.SaveChangesAsync();
 
-            /*
-            //Output
-            OutputDTO output = new OutputDTO(entity);
-            return output;
-            */
-            return entity;
+            //Response
+            var response = ConstructBookResponse(entity);
+            return response;
         }
 
-        public async Task<Book> DeleteBook(int id)
+        public async Task<BookResponse> DeleteBook(int id)
         {
-            var entity = await _db.Books.FindAsync(id);
-            //OutputDTO? output = null;
-            if (entity != null)
+            //Find the book
+            var entity = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            if (entity == null)
             {
-                ////Remove the book from the previous author
-                //BookDTO? book = entity.Author.Books.FirstOrDefault(b => b.Id == entity.Id);
-                //if (book != null)
-                //{
-                //    entity.Author.Books.Remove(book);
-                //}
-                //Remove the book
-                _db.Books.Remove(entity);
-                await _db.SaveChangesAsync();
-                //output = new OutputDTO(entity);
+                throw new Exception("Book not found");
             }
-            return entity;
+            //Remove the book
+            _db.Books.Remove(entity);
+            await _db.SaveChangesAsync();
+
+            //Response
+            var response = ConstructBookResponse(entity);
+            return response;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<IEnumerable<BookResponse>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            //Get books
+            var books = await _db.Books.Include(b => b.Author).ToListAsync();
+
+            //Response
+            List<BookResponse> response = new List<BookResponse>();
+            foreach (var book in books)
+            {
+                response.Add(ConstructBookResponse(book));
+            }
+            return response;
         }
 
-        public async Task<Book> GetBook(int id)
+        public async Task<BookResponse> GetBook(int id)
         {
-            var entity = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
-            return entity;
+            //Get book
+            var entity = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            if (entity == null)
+            {
+                throw new Exception("Book not found");
+            }
+
+            //Response
+            var response = ConstructBookResponse(entity);
+            return response;
         }
 
-        public async Task<Book> UpdateBook(int id, Book entity)
+        public async Task<BookResponse> UpdateBook(int bookId, int authorId)
         {
+            //Find the book
+            var entity = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            if (entity == null)
+            {
+                throw new Exception("Book not found");
+            }
+
+            //Update
+            entity.AuthorId = authorId;
             _db.Attach(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync();
-            /*
-            //Output
-            OutputDTO output = new OutputDTO(entity);
-            return output;
-            */
-            return entity;
+
+            //Response
+            var response = ConstructBookResponse(entity);
+            return response;
+        }
+
+        private BookResponse ConstructBookResponse(Book book)
+        {
+            //Construct response
+            var response = new BookResponse(book);
+            return response;
         }
     }
 }

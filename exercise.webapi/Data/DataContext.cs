@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Models;
+using exercise.webapi.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -23,6 +24,7 @@ namespace exercise.webapi.Data
             Seeder seeder = new Seeder();
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
+
             modelBuilder.Entity<Book>().HasData(seeder.Books);
 
         }

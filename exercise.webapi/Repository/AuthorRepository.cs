@@ -14,15 +14,39 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<List<Author>> GetAllAuthors()
+        public async Task<List<AuthorResponse>> GetAllAuthors()
         {
-            return await _db.Authors.Include(b => b.Books).ToListAsync();
+            //Get authors
+            var authors = await _db.Authors.Include(b => b.Books).ToListAsync();
+
+            //Response
+            List<AuthorResponse> response = new List<AuthorResponse>();
+            foreach (var author in authors)
+            {
+                response.Add(ConstructAuthorResponse(author));
+            }
+            return response;
         }
 
-        public async Task<Author> GetAuthor(int id)
+        public async Task<AuthorResponse> GetAuthor(int id)
         {
-            var entity = await _db.Authors.FirstOrDefaultAsync(a => a.Id == id);
-            return entity;
+            //Get author
+            var author = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
+            if (author == null)
+            {
+                throw new Exception("Author not found");
+            }
+
+            //Response
+            var response = ConstructAuthorResponse(author);
+            return response;
+        }
+
+        private AuthorResponse ConstructAuthorResponse(Author author)
+        {
+            //Construct response
+            var response = new AuthorResponse(author);
+            return response;
         }
     }
 }
