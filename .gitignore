@@ -368,3 +368,4 @@ FodyWeavers.xsd
 */**/obj/Release   
 /workshop.wwwapi/appsettings.json
 /workshop.wwwapi/appsettings.Development.json
+/exercise.webapi/appsettings.json
