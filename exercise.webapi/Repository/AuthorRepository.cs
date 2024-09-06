@@ -11,14 +11,21 @@ public class AuthorRepository(DataContext db) : IRepository<Author>
         return await db.Authors.ToListAsync();
     }
 
-    public Task<Author> GetById(int id)
+    public async Task<Author> GetById(int id)
     {
-        throw new NotImplementedException();
+        return (await db.Authors.FindAsync(id))!; 
     }
 
     public Task<Author> GetByName(string name)
     {
         throw new NotImplementedException();
+    }
+    
+    public async Task<Author> GetByFullName(string firstName, string lastName)
+    {
+        return (await db.Authors.FirstOrDefaultAsync(a =>
+            a.FirstName.ToLower() == firstName.ToLower() &&
+            a.LastName.ToLower() == lastName.ToLower()))!; 
     }
 
     public async Task<Author> Add(Author entity)
@@ -26,5 +33,22 @@ public class AuthorRepository(DataContext db) : IRepository<Author>
         db.Authors.Add(entity);
         await db.SaveChangesAsync();
         return entity;
+    }
+
+    public async Task<Author> Remove(Author entity)
+    {
+        db.Authors.Remove(entity);
+        await db.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<Author> Update(Author entity)
+    {
+        var author = (await db.Authors.FindAsync(entity.Id))!;
+        author.FirstName = entity.FirstName;
+        author.LastName = entity.LastName;
+        author.Email = entity.Email;
+        await db.SaveChangesAsync();
+        return author;
     }
 }
