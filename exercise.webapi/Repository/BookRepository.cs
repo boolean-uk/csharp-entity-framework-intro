@@ -27,7 +27,7 @@ namespace exercise.webapi.Repository
         public async Task<Book> UpdateBook(int bookId, int authorId)
         {
 
-            Book bookToBeUpdated = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == bookId);
+            Book bookToBeUpdated = await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == bookId);
             Author newAuthor = await _db.Authors.FirstOrDefaultAsync(a => a.Id == authorId);
             
             if(bookToBeUpdated == null || newAuthor == null )
@@ -68,6 +68,7 @@ namespace exercise.webapi.Repository
             bookToBeAdded.AuthorId = newBook.AuthorId;
             bookToBeAdded.Title = newBook.Title;
             bookToBeAdded.Author = author;
+            bookToBeAdded.Publisher = new Publisher();
 
             author.Books.Add(bookToBeAdded);
 
