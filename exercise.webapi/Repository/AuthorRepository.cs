@@ -13,7 +13,7 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<Author> GetAuthor(int id)
+        public async Task<Author> GetA(int id)
         {
             return await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
         }
@@ -21,6 +21,13 @@ namespace exercise.webapi.Repository
         public async Task<IEnumerable<Author>> GetAll()
         {
             return await _db.Authors.Include(a => a.Books).ToListAsync();
+        }
+
+        public async Task<Author> Update(Author author)
+        {
+            _db.Authors.Update(author);
+            await _db.SaveChangesAsync();
+            return author;
         }
     }
 }

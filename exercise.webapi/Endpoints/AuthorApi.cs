@@ -21,7 +21,7 @@ namespace exercise.webapi.Endpoints
         }
         public static async Task<IResult> GetAuthor(IAuthorRepository authorRepository, int id) 
         {
-            var author = await authorRepository.GetAuthor(id);
+            var author = await authorRepository.GetA(id);
             return TypedResults.Ok(MapToAuthorDTO(author));
         }
 
