@@ -18,7 +18,10 @@ namespace exercise.webapi.DTO
 
         public static DTOBook ConvertToBOOKDT(this Book b) 
         {
-
+            if (b is null)
+            {
+                return null;
+            }
             return new DTOBook { 
                 Title = b.Title, 
                 Author =b.Author.ConvertToAuthorDTO()
@@ -28,11 +31,15 @@ namespace exercise.webapi.DTO
 
         public static DTOAuthor ConvertToAuthorDTO(this Author a)
         {
+            if (a is null)
+            {
+                return null;
+            }
             return new DTOAuthor
             {
                 FirstName = a.FirstName,
                 LastName = a.LastName,
-                Books = a.Books
+                Books = null
             };
         }
 

@@ -9,9 +9,12 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureBooksApi(this WebApplication app)
         {
-            app.MapGet("/books", GetBooks);
-            app.MapGet("/books/{title}", GetABook);
-            //app.MapPut("/books/{title}", UppdateBook)
+            var books = app.MapGroup("books");
+            books.MapGet("/", GetBooks);
+            books.MapGet("/{title}", GetABook);
+            books.MapPut("/{title}", UppdateBook);
+            books.MapPost("/", AddBook);
+            books.MapDelete("/", DeleteBook);
             
         }
 
@@ -29,6 +32,22 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(ConvertToDTOList.ConvertToBOOKDT(book));
         }
 
-      //  private static async Task<IResult> 
+        private static async Task<IResult> UppdateBook(IBookRepository bookRepository, string title, string newTitle) 
+        {
+            var book = await bookRepository.UppdateBook(title, newTitle);
+            return TypedResults.Ok(ConvertToDTOList.ConvertToBOOKDT(book));
+        }
+
+        private static async Task<IResult> AddBook(IBookRepository bookRepository, string title, string authorFirstName, string authorLastName)
+        {
+            var book = await bookRepository.AddBook(title, authorFirstName, authorLastName);
+            return TypedResults.Ok(ConvertToDTOList.ConvertToBOOKDT(book));
+        }
+
+        private static async Task<IResult> DeleteBook(IBookRepository bookRepository, string title)
+        {
+            var book = await bookRepository.DeleteBook(title);
+            return TypedResults.Ok(ConvertToDTOList.ConvertToBOOKDT(book));
+        }
     }
 }
