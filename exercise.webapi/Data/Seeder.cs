@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Models;
+using exercise.webapi.ViewModels;
 
 namespace exercise.webapi.Data
 {
@@ -79,6 +80,7 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<BookAuthor> _bookAuthors = new List<BookAuthor>();
 
         public Seeder()
         {
@@ -104,14 +106,31 @@ namespace exercise.webapi.Data
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+
+                //Each book can have 1-3 authors as a start
+                int authors = bookRandom.Next(1, 4);
+                List<int> randoms = new List<int>();
+                while(randoms.Count < authors)
+                {
+                    int authorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                    if(randoms.Contains(authorId))
+                    {
+                        continue;
+                    }
+                    randoms.Add(authorId);
+                }
+
+                foreach (var id in randoms)
+                {
+                    _bookAuthors.Add(new BookAuthor() { BookId = book.Id, AuthorId = id });
+                }
+                //Add the book
                 _books.Add(book);
             }
-
-
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+
+        public List<BookAuthor> BookAuthors { get { return _bookAuthors; } }
     }
 }

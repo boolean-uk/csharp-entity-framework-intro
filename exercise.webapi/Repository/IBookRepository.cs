@@ -1,9 +1,14 @@
 ﻿using exercise.webapi.Models;
+using exercise.webapi.ViewModels;
 
 namespace exercise.webapi.Repository
 {
     public interface IBookRepository
     {
-        public Task<IEnumerable<Book>> GetAllBooks();
+        public Task<IEnumerable<BookResponse>> GetAllBooks();
+        public Task<BookResponse> GetBook(int id);
+        public Task<BookResponse> UpdateBook(int bookId, List<int> authorIds);
+        public Task<BookResponse> DeleteBook(int id);
+        public Task<BookResponse> AddBook(Book entity);
     }
 }
