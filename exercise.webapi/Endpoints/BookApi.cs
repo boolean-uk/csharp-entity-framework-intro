@@ -17,6 +17,9 @@ namespace exercise.webapi.Endpoints
             app.MapPost("/books", Add);
             app.MapPut("/books{id}", Update);
             app.MapDelete("/books{id}", Delete);
+            app.MapPut("/books/addauthor/{id}", AddAuthor);
+            app.MapPut("/books/removeauthor/{id}", RemoveAuthor);
+
 
         }
 
@@ -56,12 +59,19 @@ namespace exercise.webapi.Endpoints
             try
             {
                 var b = await bookRepository.GetBook(id);
+                if (b == null)
+                {
+                    return TypedResults.Problem("thats crazy bro doesnt exist"); 
+                }
                 BookDTO book = new BookDTO();
                 book.Title = b.Title;
                 BookAuthorDTO author = new BookAuthorDTO();
-                author.Name = b.Author.FirstName + " " + b.Author.LastName;
-                book.Author = author;
-
+                if (b.Author != null)
+                {
+                    author.Name = b.Author.FirstName + " " + b.Author.LastName;
+                    book.Author = author;
+                }
+      
                 return TypedResults.Ok(book);
             }
             catch (Exception ex)
@@ -155,5 +165,63 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.BadRequest(ex.Message);
             }
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        private static async Task<IResult> AddAuthor(IBookRepository bookRepository, IAuthorRepository authorRepository, int bookId, int authorId)
+        {
+            try
+            {
+                Book targetBook = await bookRepository.GetBook(bookId);
+                if (targetBook == null)
+                {
+                    return TypedResults.NotFound("Book not found");
+                }
+
+                Author newAuthor = await authorRepository.GetAuthor(authorId);
+                if (newAuthor == null)
+                {
+                    return TypedResults.NotFound("Author not found");
+                }
+
+                var result = await bookRepository.UpdateBook(bookId, newAuthor);
+                BookDTO bookDTO = new BookDTO();
+                BookAuthorDTO authorDTO = new BookAuthorDTO();
+
+                bookDTO.Title = result.Title;
+                authorDTO.Name = result.Author.FirstName + " " + result.Author.LastName;
+                bookDTO.Author = authorDTO;
+
+                return TypedResults.Ok(bookDTO);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
+            }
+        }
+
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        private static async Task<IResult> RemoveAuthor(IBookRepository bookRepository, IAuthorRepository authorRepository, int id)
+        {
+            try
+            {
+                Book b = await bookRepository.GetBook(id);
+                Author ripAuthor = await authorRepository.GetAuthor(b.AuthorId);
+                b = await bookRepository.RemoveAuthor(id);
+                ripAuthor.Books.Remove(b);
+                
+
+                return TypedResults.Ok(b);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.Problem(ex.Message);
+            }
+        }
+
     }
 }

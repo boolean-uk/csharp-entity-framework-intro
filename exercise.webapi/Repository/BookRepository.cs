@@ -24,7 +24,7 @@ namespace exercise.webapi.Repository
         public async Task<Book> GetBook(int id)
         {
    
-            Book book = await _db.Books.Include(a => a.Author).FirstOrDefaultAsync(b => b.Id == id);
+            Book book = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
 
             return book;
         }
@@ -45,10 +45,28 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> UpdateBook(int id, Author author)
         {
-            Book book = await _db.Books.Include(a => a.Author).FirstOrDefaultAsync(b => b.Id == id);
+            Book book = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
             book.Author = author;
             await _db.SaveChangesAsync();
             return book;
+        }
+
+        public async Task<Book> AddAuthor(int id, Author author)
+        {
+            Book target = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
+            target.Author = author;
+            await _db.SaveChangesAsync();
+            return target;
+
+        }
+
+        public async Task<Book> RemoveAuthor(int id)
+        {
+            Book target = await _db.Books.Include(a => a.Author).FirstOrDefaultAsync(b => b.Id == id);
+            target.Author = null;
+            target.AuthorId = 0;
+            await _db.SaveChangesAsync();
+            return target;
         }
     }
 }
