@@ -9,11 +9,14 @@ namespace exercise.webapi.DtoModels.BookApiDtos
 
         public BookAuthorDto Author { get; set; }
 
-        public BookDto(Book book, BookAuthorDto aDto)
+        public PublisherInBookDto Publisher { get; set; }
+
+        public BookDto(Book book, BookAuthorDto aDto, string publisherName)
         {
             Id = book.Id;
             Title = book.Title;
             Author = aDto;
+            Publisher = new PublisherInBookDto(publisherName);
         }
     }
 }

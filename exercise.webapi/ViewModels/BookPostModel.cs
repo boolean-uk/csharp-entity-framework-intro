@@ -6,5 +6,6 @@ namespace exercise.webapi.ViewModels
     {
         public string Title { get; set; }
         public int AuthorId { get; set; }
+
     }
 }
