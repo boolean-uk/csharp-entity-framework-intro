@@ -17,13 +17,23 @@ namespace exercise.webapi.Repository
 
         public async Task<ResponseBookDTO> AddBook(BookPost data)
         {
-            var author = await _db.Authors.SingleOrDefaultAsync(a=>a.Id == data.authorId);
+            //var author = await _db.Authors.SingleOrDefaultAsync(a=>a.Id == data.authorId);
+           
+
             Book book = new Book()
             {
                 Title = data.title,
-                AuthorId = data.authorId,
-                Author = author
+                //AuthorId = data.authorId,
+                //Author = author
             };
+            foreach (var author in data.authorId)
+            {
+                book.BookAuthors.Add(new BookAuthor
+                {
+                    BookId = book.Id,
+                    AuthorId = author
+                });
+            }
             _db.Books.Add(book);
             ResponseBookDTO response = PutBook(book);
             _db.SaveChanges();
@@ -42,74 +52,141 @@ namespace exercise.webapi.Repository
 
         public async Task<bool> DeleteBook(int id)
         {
-            var book = await _db.Books.Include(b=>b.Author).SingleOrDefaultAsync(b=>b.Id == id);
-            if(book != null)
+            var book = await _db.Books
+              .Include(b => b.BookAuthors)
+              .ThenInclude(ba => ba.Author)
+              .SingleOrDefaultAsync(b => b.Id == id);
+
+            if (book != null)
             {
+
                 _db.Books.Remove(book);
-                _db.SaveChanges();
+
+                // Save changes to the database
+                await _db.SaveChangesAsync();
                 return true;
             }
+
             return false;
         }
 
         public async Task<IEnumerable<ResponseBookDTO>> GetAllBooks()
         {
-            var books = await _db.Books.Include(b => b.Author).ToListAsync();   
+            // Include BookAuthors and then Authors via ThenInclude to load related entities
+            var books = await _db.Books
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .ToListAsync();
+
             List<ResponseBookDTO> result = new List<ResponseBookDTO>();
+
+            // Convert each book entity to ResponseBookDTO
             foreach (var book in books)
             {
-                result.Add(PutBook(book));
+                result.Add(PutBook(book)); // PutBook handles multiple authors now
             }
-            _db.SaveChanges();
+
             return result;
         }
 
         public async Task<ResponseBookDTO> GetBook(int id)
         {
-            var book = await _db.Books.Include(b => b.Author).SingleOrDefaultAsync(b => b.Id == id);
+            // Include BookAuthors and related Authors
+            var book = await _db.Books
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .SingleOrDefaultAsync(b => b.Id == id);
+
+            // Check if the book is found
+            if (book == null)
+            {
+                return null; // or handle the case where the book is not found as needed
+            }
+
+            // Convert the book entity to ResponseBookDTO
             ResponseBookDTO response = PutBook(book);
-            _db.SaveChanges();
+
             return response;
         }
 
         public async Task<ResponseBookDTO> UpdateBook(int id, BookUpdate data)
         {
-            var book = await _db.Books.Include(b => b.Author).SingleOrDefaultAsync(b=> b.Id == id);
-            if(book != null)
+            // Include BookAuthors and related Authors for the book
+            var book = await _db.Books
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .SingleOrDefaultAsync(b => b.Id == id);
+
+            if (book != null)
             {
+                // Update the book's properties and associated authors
                 UpdateValues(book, data);
+
+                // Convert the updated book entity to ResponseBookDTO
                 ResponseBookDTO result = PutBook(book);
-                _db.SaveChanges();
+
+                // Save changes to the database
+                await _db.SaveChangesAsync();
+
                 return result;
             }
+
             return null;
         }
 
         private ResponseBookDTO PutBook(Book? book)
         {
-            ResponseBookDTO result = new ResponseBookDTO();
-            if(book != null)
+            if (book == null)
             {
-                result.Author.Id = book.Author.Id;
-                result.AuthorId = book.Author.Id;
-                result.Id = book.Id;
-                result.Title = book.Title;
-                result.Author.Email = book.Author.Email;
-                result.Author.FirstName = book.Author.FirstName;
-                result.Author.LastName = book.Author.LastName;
-                return result;
+                throw new Exception("Something went wrong, book was null!");
             }
-            throw new Exception("Something went wrong, book was null!");
+
+            // Create the result DTO
+            ResponseBookDTO result = new ResponseBookDTO
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Authors = new List<AuthorDTO>() // Initialize the Authors list
+            };
+
+            // Loop through all BookAuthors to populate the Authors list in the DTO
+            foreach (var bookAuthor in book.BookAuthors)
+            {
+                var author = bookAuthor.Author; // Get the author from the BookAuthor junction
+                result.Authors.Add(new AuthorDTO
+                {
+                    Id = author.Id,
+                    Email = author.Email,
+                    FirstName = author.FirstName,
+                    LastName = author.LastName
+                });
+            }
+
+            return result;
         }
 
         private async void UpdateValues(Book book, BookUpdate data)
         {
-            var author = await _db.Authors.SingleOrDefaultAsync(a => a.Id == data.authorId);
-            if (author == null)
+            book.BookAuthors.Clear();
+
+            // Add new authors to the BookAuthors collection
+            foreach (var authorId in data.AuthorIds)
             {
-                throw new Exception("Something went wrong, invalid id!");
+                var author = await _db.Authors.SingleOrDefaultAsync(a => a.Id == authorId);
+                if (author == null)
+                {
+                    throw new Exception($"Author with ID {authorId} not found.");
+                }
+
+                // Add new BookAuthor entry for each author
+                book.BookAuthors.Add(new BookAuthor
+                {
+                    BookId = book.Id,
+                    AuthorId = author.Id,
+                    Book = book,
+                    Author = author
+                });
             }
-            book.Author = author;
         }
     }
 

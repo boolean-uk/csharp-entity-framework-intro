@@ -3,7 +3,7 @@
     public class BookPost()
     {
         public required string title { get; set; }
-        public required int authorId { get; set; }
+        public required ICollection<int> authorId { get; set; }
     }
 }
 

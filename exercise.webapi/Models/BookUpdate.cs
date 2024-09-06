@@ -2,6 +2,6 @@
 {
     public class BookUpdate
     {
-        public required int authorId { get; set; }
+        public required List<int> AuthorIds { get; set; }
     }
 }

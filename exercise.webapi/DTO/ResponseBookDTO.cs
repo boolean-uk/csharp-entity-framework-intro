@@ -6,14 +6,11 @@ namespace exercise.webapi.DTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public int AuthorId { get; set; }
-        public AuthorDTO Author { get; set; }
-       
+        public List<AuthorDTO> Authors { get; set; }  // Modified to handle multiple authors
 
         public ResponseBookDTO()
         {
-            Author = new AuthorDTO();
+            Authors = new List<AuthorDTO>();  // Initialize the list in the constructor
         }
-
     }
 }
