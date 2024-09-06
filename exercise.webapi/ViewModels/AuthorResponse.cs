@@ -16,9 +16,15 @@ namespace exercise.webapi.ViewModels
             this.FirstName = author.FirstName;
             this.LastName = author.LastName;
             this.Email = author.Email;
-            foreach (var item in author.Books)
+            if(author.BookAuthors != null)
             {
-                this.Books.Add(new BookDTO(item));
+                foreach (var item in author.BookAuthors)
+                {
+                    if(item.Book != null)
+                    {
+                        this.Books.Add(new BookDTO(item.Book));
+                    }
+                }
             }
         }
     }

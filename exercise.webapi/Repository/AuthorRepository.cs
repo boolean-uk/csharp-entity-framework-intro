@@ -17,7 +17,7 @@ namespace exercise.webapi.Repository
         public async Task<List<AuthorResponse>> GetAllAuthors()
         {
             //Get authors
-            var authors = await _db.Authors.Include(b => b.Books).ToListAsync();
+            var authors = await _db.Authors.Include(b => b.BookAuthors).ThenInclude(ba => ba.Book).ToListAsync();
 
             //Response
             List<AuthorResponse> response = new List<AuthorResponse>();
@@ -31,7 +31,7 @@ namespace exercise.webapi.Repository
         public async Task<AuthorResponse> GetAuthor(int id)
         {
             //Get author
-            var author = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
+            var author = await _db.Authors.Include(a => a.BookAuthors).ThenInclude(ab => ab.Book).FirstOrDefaultAsync(a => a.Id == id);
             if (author == null)
             {
                 throw new Exception("Author not found");

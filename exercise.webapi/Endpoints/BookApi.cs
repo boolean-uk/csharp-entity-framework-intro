@@ -15,7 +15,7 @@ namespace exercise.webapi.Endpoints
             books.MapGet("/GetBooks", GetBooks);
             books.MapPost("/AddBook", AddABook);
             books.MapGet("/GetBook{id}", GetBook);
-            books.MapPut("/UpdateBook{bookId}|{authorId}", UpdateBook);
+            books.MapPut("/UpdateBook{bookId}", UpdateBook);
             books.MapDelete("/RemoveBook{id}", RemoveBook);
         }
 
@@ -40,31 +40,35 @@ namespace exercise.webapi.Endpoints
         {
             try
             {
-                //Get the author if it already exists
-                var author = await authorRepository.GetAuthor(data.AuthorId);
-                if (author != null)
+                //Check if the input data was good
+                foreach (var Id in data.AuthorIds)
                 {
-                    //Construct the book
-                    var book = new Book()
-                    {
-                        Title = data.Title,
-                        AuthorId = data.AuthorId
-                    };
-
-                    var results = await bookRepository.AddBook(book);
-
-                    if (results == null)
+                    var response = authorRepository.GetAuthor(Id);
+                    if (response.IsFaulted)
                     {
                         return TypedResults.BadRequest();
                     }
-                    else
-                    {
-                        return TypedResults.Created($"http://localhost:5201/books/{results.Id}", results);
-                    }
+                }
+                //Construct the book
+                var book = new Book()
+                {
+                    Title = data.Title
+                };
+
+                foreach (var Id in data.AuthorIds)
+                {
+                    book.BookAuthors.Add(new BookAuthor() { BookId = book.Id, AuthorId = Id });
+                }
+
+                var results = await bookRepository.AddBook(book);
+
+                if (results == null)
+                {
+                    return TypedResults.BadRequest();
                 }
                 else
                 {
-                    return TypedResults.NotFound();
+                    return TypedResults.Created($"http://localhost:5201/books/{results.Id}", results);
                 }
             }
             catch (Exception ex)
@@ -76,22 +80,25 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public static async Task<IResult> UpdateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, int bookId, int authorId)
+        public static async Task<IResult> UpdateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, int bookId, UpdateInputDTO data)
         {
             try
             {
+                //Check if the input data was good
+                foreach(var Id in data.newAuthors)
+                {
+                    var response = authorRepository.GetAuthor(Id);
+                    if(response.IsFaulted)
+                    {
+                        return TypedResults.BadRequest();
+                    }
+                }
                 //Get the book
                 var book = await bookRepository.GetBook(bookId);
                 if (book != null)
                 {
-                    //Check if author exists
-                    var author = await authorRepository.GetAuthor(authorId);
-                    if(author == null)
-                    {
-                        return TypedResults.BadRequest();
-                    }
-                    //Update the book's author
-                    var results = await bookRepository.UpdateBook(bookId, authorId);
+                    //Update the book's authors
+                    var results = await bookRepository.UpdateBook(bookId, data.newAuthors);
                     return TypedResults.Ok(results);
                 }
                 else
