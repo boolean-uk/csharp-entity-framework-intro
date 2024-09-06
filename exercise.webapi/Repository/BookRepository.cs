@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Data;
+using exercise.webapi.DtoModels.BookApiDtos;
 using exercise.webapi.Models;
 using exercise.webapi.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -59,16 +60,18 @@ namespace exercise.webapi.Repository
         public async Task<Book> CreateBook(BookPostModel newBook)
         {
             Author author = await _db.Authors.FirstOrDefaultAsync(a => a.Id == newBook.AuthorId);
-            if(author == null)
+            Publisher publisher = await _db.Publishers.FirstOrDefaultAsync(p => p.Id == newBook.PublisherId);
+            if(author == null || publisher == null)
             {
                 return null;
             }
 
             Book bookToBeAdded = new Book();
             bookToBeAdded.AuthorId = newBook.AuthorId;
+            bookToBeAdded.PublisherId = newBook.PublisherId;
             bookToBeAdded.Title = newBook.Title;
             bookToBeAdded.Author = author;
-            bookToBeAdded.Publisher = new Publisher();
+            bookToBeAdded.Publisher = publisher;
 
             author.Books.Add(bookToBeAdded);
 
