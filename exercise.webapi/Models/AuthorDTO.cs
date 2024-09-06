@@ -2,7 +2,7 @@
 
 namespace exercise.webapi.Models
 {
-    public class Author
+    public class AuthorDTO
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -10,6 +10,6 @@ namespace exercise.webapi.Models
         public string Email { get; set; }
 
          // Todo: replace this with DTO approach
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<BookDTO> Books { get; set; } = new List<BookDTO>();
     }
 }
