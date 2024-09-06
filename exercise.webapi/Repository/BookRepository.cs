@@ -17,37 +17,42 @@ namespace exercise.webapi.Repository
 
         public async Task<ResponseBookDTO> AddBook(BookPost data)
         {
-            //var author = await _db.Authors.SingleOrDefaultAsync(a=>a.Id == data.authorId);
-           
-
+            
             Book book = new Book()
             {
                 Title = data.title,
-                //AuthorId = data.authorId,
-                //Author = author
             };
-            foreach (var author in data.authorId)
+            _db.Books.Add(book);
+            await _db.SaveChangesAsync();
+
+            foreach (var authorId in data.authorId)
             {
+                var author = await _db.Authors.FindAsync(authorId);
+                if (author == null)
+                {
+                    throw new Exception("Author ID not found!");
+                }
                 book.BookAuthors.Add(new BookAuthor
                 {
                     BookId = book.Id,
-                    AuthorId = author
+                    AuthorId = authorId
                 });
             }
-            _db.Books.Add(book);
+            await _db.SaveChangesAsync();
             ResponseBookDTO response = PutBook(book);
-            _db.SaveChanges();
+            
             return response;
         }
 
         public async Task<bool> CheckBookDataId(BookPost data)
         {
-            var result = await _db.Authors.FindAsync(data.authorId);
-            if(result != null)
-            {
-                return true;
-            }
-            return false;
+            var authorIds = data.authorId;
+            var existingAuthorIds = await _db.Authors
+                .Where(a => authorIds.Contains(a.Id))
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            return existingAuthorIds.Count == authorIds.Count;
         }
 
         public async Task<bool> DeleteBook(int id)
