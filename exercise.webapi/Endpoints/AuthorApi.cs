@@ -3,6 +3,7 @@ using exercise.webapi.DTO;
 using exercise.webapi.DTOS;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints
 {
@@ -16,13 +17,15 @@ namespace exercise.webapi.Endpoints
             authors.MapGet("/{id}", GetAuthorById);
         }
 
-        public static async Task<IResult> GetAuthorById(IAuthorRepository authorRepository, int id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
         {
-            try
-            {
-                var author = await authorRepository.GetAuthorById(id);
+            GetAllAuthorsResponse response = new GetAllAuthorsResponse();
+            var authors = await authorRepository.GetAllAuthors();
 
-                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks() 
+            foreach (Author author in authors)
+            {
+                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks()
                 {
                     Id = author.Id,
                     FirstName = author.FirstName,
@@ -30,7 +33,40 @@ namespace exercise.webapi.Endpoints
                     Email = author.Email
                 };
 
-                foreach (Book book in author.Books) 
+                foreach (Book book in author.Books)
+                {
+                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor()
+                    {
+                        Id = book.Id,
+                        Title = book.Title
+                    };
+
+                    dtoAuthor.Books.Add(dtoBook);
+                }
+
+                response.Authors.Add(dtoAuthor);
+            }
+
+            return TypedResults.Ok(response.Authors);
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> GetAuthorById(IAuthorRepository authorRepository, int id)
+        {
+            try
+            {
+                var author = await authorRepository.GetAuthorById(id);
+
+                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks()
+                {
+                    Id = author.Id,
+                    FirstName = author.FirstName,
+                    LastName = author.LastName,
+                    Email = author.Email
+                };
+
+                foreach (Book book in author.Books)
                 {
                     DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor()
                     {
@@ -45,40 +81,8 @@ namespace exercise.webapi.Endpoints
             }
             catch (Exception ex)
             {
-                return TypedResults.NotFound(ex.Message);
+                return TypedResults.Problem(ex.Message);
             }
-        }
-
-        public static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
-        {
-            GetAllAuthorsResponse response = new GetAllAuthorsResponse();
-            var authors = await authorRepository.GetAllAuthors();
-
-            foreach (Author author in authors)
-            {
-                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks() 
-                {
-                    Id = author.Id,
-                    FirstName = author.FirstName,
-                    LastName = author.LastName,
-                    Email = author.Email
-                };
-
-                foreach (Book book in author.Books)
-                {
-                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor() 
-                    {
-                        Id = book.Id,
-                        Title = book.Title
-                    };
-
-                    dtoAuthor.Books.Add(dtoBook);
-                }
-
-                response.Authors.Add(dtoAuthor);
-            }
-
-            return TypedResults.Ok(response.Authors);
         }
     }
 }

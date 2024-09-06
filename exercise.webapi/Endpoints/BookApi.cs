@@ -93,11 +93,6 @@ namespace exercise.webapi.Endpoints
             {
                 var target = await bookRepository.GetBookById(id);
 
-                if (target == null)
-                {
-                    return TypedResults.NotFound("Target not found");
-                }
-
                 target.Author.FirstName = author.FirstName;
                 target.Author.LastName = author.LastName;
                 target.Author.Email = author.Email;
@@ -134,11 +129,6 @@ namespace exercise.webapi.Endpoints
             try
             {
                 var target = await bookRepository.GetBookById(id);
-
-                if (target == null)
-                {
-                    return TypedResults.NotFound("Target not found");
-                }
 
                 await bookRepository.DeleteBookById(id);
 

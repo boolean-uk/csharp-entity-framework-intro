@@ -24,6 +24,11 @@ namespace exercise.webapi.Repository
         {
             var entity = await _db.Books.Include(a => a.Author).FirstOrDefaultAsync(b => b.Id == id);
 
+            if (entity == null) 
+            {
+                throw new Exception($"Book with id {id} does not exist.");
+            }
+
             return entity;
         }
 
@@ -39,6 +44,11 @@ namespace exercise.webapi.Repository
         {
             var entity = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
 
+            if (entity == null)
+            {
+                throw new Exception($"Book with id {id} does not exist.");
+            }
+
             _db.Remove(entity);
 
             await _db.SaveChangesAsync();
@@ -48,6 +58,10 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> CreateBook(Book entity)
         {
+            if (entity.Title != null)
+            {
+                throw new Exception("The book needs a title.");
+            }
             _db.Books.Add(entity);
 
             await _db.SaveChangesAsync();

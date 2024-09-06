@@ -22,6 +22,11 @@ namespace exercise.webapi.Repository
         {
             var entity = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(b => b.Id == id);
 
+            if (entity == null) 
+            {
+                throw new Exception($"Author with id {id} does not exist.");
+            }
+
             return entity;
         }
     }
