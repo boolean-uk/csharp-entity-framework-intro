@@ -58,32 +58,44 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(book);
         }
 
-        private static async Task<IResult> UpdateBook(IBookRepository bookRepository, int id, BookPutModel model)
+        private static async Task<IResult> UpdateBook(IAuthorRepository authorRepository, IBookRepository bookRepository, int id, BookPutModel model)
         {
             var editing = await bookRepository.GetBookById(id);
-
-            //book.Title = editing.Title;
-
-            Author author = new Author();
-            author.FirstName = model.FirstName;
-            author.LastName = model.LastName;
-            author.Email = model.Email;
-            
-            editing.Author = author;
-            await bookRepository.UpdateById(id, editing);
 
             DTOBook editedBook = new DTOBook();
             editedBook.Title = editing.Title;
             editedBook.ID = editing.Id;
 
             DTOAuthor dtoAuthor = new DTOAuthor();
-            dtoAuthor.Name = editing.Author.FirstName + " " + editing.Author.LastName;
-            dtoAuthor.Email = editing.Author.Email;
 
-            editedBook.Author = dtoAuthor; 
-            return TypedResults.Ok(editedBook);
-            //var edited = await bookRepository.GetBookById(id);
-            //return TypedResults.Ok(GetBookById(bookRepository ,id));
+            var exists = await authorRepository.GetAuthorByName(model.FirstName, model.LastName);
+
+            if (exists != null) 
+            {
+                editing.AuthorId = exists.Id;
+
+                dtoAuthor.Name = exists.FirstName + " " + exists.LastName;
+                dtoAuthor.Email = exists.Email;
+                editedBook.Author = dtoAuthor;
+                await bookRepository.UpdateById(id, editing);
+                return TypedResults.Ok(editedBook);
+            }
+            else
+            {
+                Author author = new Author();
+                author.FirstName = model.FirstName;
+                author.LastName = model.LastName;
+                author.Email = model.Email;
+
+                editing.Author = author;
+                await bookRepository.UpdateById(id, editing);
+
+                dtoAuthor.Name = editing.Author.FirstName + " " + editing.Author.LastName;
+                dtoAuthor.Email = editing.Author.Email;
+
+                editedBook.Author = dtoAuthor;
+                return TypedResults.Ok(editedBook);
+            }
         }
 
         private static async Task<IResult> DeleteById(IBookRepository bookRepository, int id)

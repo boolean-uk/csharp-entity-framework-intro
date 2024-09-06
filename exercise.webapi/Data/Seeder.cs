@@ -88,18 +88,19 @@ namespace exercise.webapi.Data
 
 
 
-            for (int x = 1; x < 250; x++)
+            for (int x = 1; x < 40; x++)
             {
                 Author author = new Author();
                 author.Id = x;
                 author.FirstName = _firstnames[authorRandom.Next(_firstnames.Count)];
                 author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
                 author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
+                author.Books = (from book in _books where book.Author.Id == author.Id select book).ToList();
                 _authors.Add(author);
             }
 
 
-            for (int y = 1; y < 250; y++)
+            for (int y = 1; y < 40; y++)
             {
                 Book book = new Book();
                 book.Id = y;
