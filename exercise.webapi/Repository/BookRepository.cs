@@ -24,8 +24,11 @@ namespace exercise.webapi.Repository
         public async Task<Book> GetBook(int id)
         {
    
-            Book book = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
-
+            Book book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            if (book == null) 
+            {
+                book = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
+            }
             return book;
         }
 
