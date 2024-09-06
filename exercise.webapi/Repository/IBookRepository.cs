@@ -10,6 +10,7 @@ namespace exercise.webapi.Repository
         public Task<Book> DeleteBookById(int id);
         public Task<IEnumerable<Book>> GetAllBooks();
         public Task<Book> GetBookById(int id);
-        public Task<Book> UpdateBookById(int id, Book entity);
+        public Task<Book> RemoveAuthorFromBookById(int id);
+        public Task<Book> UpdateBookById(Book entity);
     }
 }

@@ -14,9 +14,11 @@ namespace exercise.webapi.Endpoints
 
             books.MapGet("/", GetBooks);
             books.MapGet("/{id}", GetBookById);
-            books.MapPut("/{id}", UpdateBookAuthor);
-            books.MapDelete("/{id}", DeleteBookById);
+            books.MapPut("/update/{id}", UpdateBookAuthor);
+            books.MapDelete("/delete/{id}", DeleteBookById);
             books.MapPost("/create", CreateBook);
+            books.MapPut("/{id}/removeAuthor", RemoveAuthorFromBook);
+            //books.MapPut("/{id}/assignAuthor", AssignAuthorToBook);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -97,7 +99,7 @@ namespace exercise.webapi.Endpoints
                 target.Author.LastName = author.LastName;
                 target.Author.Email = author.Email;
 
-                await bookRepository.UpdateBookById(id, target);
+                await bookRepository.UpdateBookById(target);
 
                 DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks() 
                 { 
@@ -185,6 +187,20 @@ namespace exercise.webapi.Endpoints
                 };
 
                 return TypedResults.Ok(dtoBook);
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.Problem(ex.Message);
+            }
+        }
+
+        public static async Task<IResult> RemoveAuthorFromBook(IBookRepository bookRepository, int id)
+        {
+            try
+            {
+                var target = await bookRepository.RemoveAuthorFromBookById(id);
+
+                return TypedResults.Ok(target);
             }
             catch (Exception ex)
             {
