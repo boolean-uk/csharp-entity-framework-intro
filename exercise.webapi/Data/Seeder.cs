@@ -79,6 +79,7 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        public List<BookAuthor> BookAuthors { get; private set; } = new List<BookAuthor>();
 
         public Seeder()
         {
@@ -101,12 +102,24 @@ namespace exercise.webapi.Data
 
             for (int y = 1; y < 250; y++)
             {
-                Book book = new Book();
-                book.Id = y;
-                book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
-                _books.Add(book);
+                Book book = new Book
+                {
+                    Id = y,
+                    Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}"
+                };
+
+                var selectedAuthors = Authors.OrderBy(a => Guid.NewGuid()).Take(3).ToList(); // Select 3 random authors
+
+                foreach (var author in selectedAuthors)
+                {
+                    BookAuthors.Add(new BookAuthor
+                    {
+                        BookId = book.Id,
+                        AuthorId = author.Id
+                    });
+                }
+
+                Books.Add(book);
             }
 
 
