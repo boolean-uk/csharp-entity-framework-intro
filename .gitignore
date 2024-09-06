@@ -366,8 +366,6 @@ FodyWeavers.xsd
 */**/bin/Release   
 */**/obj/Debug   
 */**/obj/Release
-appsettings.json
-appsettings.Development.json
 Migrations/
 /exercise.webapi/appsettings.json
 /exercise.webapi/appsettings.Development.json
