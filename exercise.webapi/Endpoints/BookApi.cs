@@ -19,12 +19,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAll();
-            List<BookDTO> result = [];
-            foreach (var book in books)
-            {
-                var bookdto = MapToBookDTO(book);
-                result.Add(bookdto);
-            }
+            List<BookDTO> result = (from book in books select MapToBookDTO(book)).ToList();
             return TypedResults.Ok(result);
         }
         private static async Task<IResult> GetABook(IBookRepository bookRepository, int id)
@@ -61,17 +56,6 @@ namespace exercise.webapi.Endpoints
                 Title = book.Title,
                 AuthorId = book.AuthorId,
                 Author = $"{book.Author.FirstName} {book.Author.LastName}"
-            };
-        }
-
-        private static AuthorDTO MapToAuthorDTO(Author author)
-        {
-            return new AuthorDTO
-            {
-                Id = author.Id,
-                FirstName = author.FirstName,
-                LastName = author.LastName,
-                Email = author.Email
             };
         }
     }
