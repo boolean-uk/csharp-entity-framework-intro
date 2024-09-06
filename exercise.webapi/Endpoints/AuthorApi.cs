@@ -22,17 +22,21 @@ namespace exercise.webapi.Endpoints
             {
                 var author = await authorRepository.GetAuthorById(id);
 
-                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks();
-                dtoAuthor.Id = author.Id;
-                dtoAuthor.FirstName = author.FirstName;
-                dtoAuthor.LastName = author.LastName;
-                dtoAuthor.Email = author.Email;
+                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks() 
+                {
+                    Id = author.Id,
+                    FirstName = author.FirstName,
+                    LastName = author.LastName,
+                    Email = author.Email
+                };
 
                 foreach (Book book in author.Books) 
                 {
-                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor();
-                    dtoBook.Id = book.Id;
-                    dtoBook.Title = book.Title;
+                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor()
+                    {
+                        Id = book.Id,
+                        Title = book.Title
+                    };
 
                     dtoAuthor.Books.Add(dtoBook);
                 }
@@ -52,17 +56,21 @@ namespace exercise.webapi.Endpoints
 
             foreach (Author author in authors)
             {
-                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks();
-                dtoAuthor.Id = author.Id;
-                dtoAuthor.FirstName = author.FirstName;
-                dtoAuthor.LastName = author.LastName;
-                dtoAuthor.Email = author.Email;
+                DTOAuthorWithBooks dtoAuthor = new DTOAuthorWithBooks() 
+                {
+                    Id = author.Id,
+                    FirstName = author.FirstName,
+                    LastName = author.LastName,
+                    Email = author.Email
+                };
 
                 foreach (Book book in author.Books)
                 {
-                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor();
-                    dtoBook.Id = book.Id;
-                    dtoBook.Title = book.Title;
+                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor() 
+                    {
+                        Id = book.Id,
+                        Title = book.Title
+                    };
 
                     dtoAuthor.Books.Add(dtoBook);
                 }

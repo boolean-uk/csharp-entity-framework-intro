@@ -27,17 +27,20 @@ namespace exercise.webapi.Endpoints
 
             foreach (Book book in books) 
             {
-                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor();
-                dtoBook.Id = book.Id;
-                dtoBook.Title = book.Title;
+                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks() 
+                {
+                    Id = book.Author.Id,
+                    FirstName = book.Author.FirstName,
+                    LastName = book.Author.LastName,
+                    Email = book.Author.Email
+                };
 
-                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks();
-                dtoAuthor.Id = book.Author.Id;
-                dtoAuthor.FirstName = book.Author.FirstName;
-                dtoAuthor.LastName = book.Author.LastName;
-                dtoAuthor.Email = book.Author.Email;
-
-                dtoBook.Author = dtoAuthor;
+                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor()
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    Author = dtoAuthor
+                };
 
                 response.Books.Add(dtoBook);
             }
@@ -53,16 +56,25 @@ namespace exercise.webapi.Endpoints
             {
                 var book = await bookRepository.GetBookById(id);
 
-                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks();
-                dtoAuthor.Id = book.Author.Id;
-                dtoAuthor.FirstName = book.Author.FirstName;
-                dtoAuthor.LastName = book.Author.LastName;
-                dtoAuthor.Email = book.Author.Email;
+                if (book == null)
+                {
+                    return TypedResults.NotFound("Target not found");
+                }
 
-                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor();
-                dtoBook.Id = book.Id;
-                dtoBook.Title = book.Title;
-                dtoBook.Author = dtoAuthor;
+                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks() 
+                {
+                    Id = book.Author.Id,
+                    FirstName = book.Author.FirstName,
+                    LastName = book.Author.LastName,
+                    Email = book.Author.Email
+                };
+
+                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() 
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    Author = dtoAuthor
+                };
 
                 return TypedResults.Ok(dtoBook);
             }
@@ -73,11 +85,18 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public static async Task<IResult> UpdateBookAuthor(IBookRepository bookRepository, int id, AuthorPutModel author)
         {
             try
             {
                 var target = await bookRepository.GetBookById(id);
+
+                if (target == null)
+                {
+                    return TypedResults.NotFound("Target not found");
+                }
 
                 target.Author.FirstName = author.FirstName;
                 target.Author.LastName = author.LastName;
@@ -85,17 +104,19 @@ namespace exercise.webapi.Endpoints
 
                 await bookRepository.UpdateBookById(id, target);
 
-                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks() { 
+                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks() 
+                { 
                     Id = target.Author.Id, 
                     FirstName = target.Author.FirstName, 
                     LastName = target.Author.LastName, 
                     Email = target.Author.Email 
                 };
 
-                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() { 
+                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() 
+                { 
                     Id = target.Id, 
                     Title = target.Title, 
-                    Author = dtoAuthor 
+                    Author = dtoAuthor
                 };
 
                 return TypedResults.Ok(dtoBook);
@@ -107,11 +128,17 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> DeleteBookById(IBookRepository bookRepository, int id)
         {
             try
             {
                 var target = await bookRepository.GetBookById(id);
+
+                if (target == null)
+                {
+                    return TypedResults.NotFound("Target not found");
+                }
 
                 await bookRepository.DeleteBookById(id);
 
@@ -123,7 +150,8 @@ namespace exercise.webapi.Endpoints
                     Email = target.Author.Email
                 };
 
-                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() { 
+                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() 
+                { 
                     Id = target.Id, 
                     Title = target.Title, 
                     Author = dtoAuthor 
@@ -142,14 +170,31 @@ namespace exercise.webapi.Endpoints
         {
             try
             {
-                Book newBook = new Book();
+                Book newBook = new Book() 
+                {
+                    Title = book.Title,
+                    AuthorId = book.AuthorId
+                };
 
-                newBook.Title = book.Title;
-                newBook.AuthorId = book.AuthorId;
+                var createdBook = await bookRepository.CreateBook(newBook);
+                var response = await bookRepository.GetBookById(createdBook.Id);
 
-                await bookRepository.CreateBook(newBook);
+                DTOAuthorWithoutBooks dtoAuthor = new DTOAuthorWithoutBooks() 
+                { 
+                    Id = response.Author.Id,
+                    FirstName = response.Author.FirstName,
+                    LastName = response.Author.LastName,
+                    Email = response.Author.Email
+                };
 
-                return TypedResults.Ok();
+                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor()
+                {
+                    Id = response.Id,
+                    Title = response.Title,
+                    Author = dtoAuthor
+                };
+
+                return TypedResults.Ok(dtoBook);
             }
             catch (Exception ex)
             {
