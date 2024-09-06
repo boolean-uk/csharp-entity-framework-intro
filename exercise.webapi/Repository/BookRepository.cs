@@ -13,12 +13,12 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooks()
+        public async Task<IEnumerable<Book>> GetAll()
         {
             return await _db.Books.Include(b => b.Author).ToListAsync();
 
         }
-        public async Task<Book> GetBook(int id) 
+        public async Task<Book> GetA(int id) 
         { 
             return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -26,6 +26,15 @@ namespace exercise.webapi.Repository
         public async Task<Book> Update(Book book)
         {
             _db.Books.Update(book);
+            await _db.SaveChangesAsync();
+            return book;
+        }
+
+        public async Task<Book> Delete(int id)
+        {
+            var book = await GetA(id);
+            if (book == null) return book;
+            _db.Books.Remove(book);
             await _db.SaveChangesAsync();
             return book;
         }

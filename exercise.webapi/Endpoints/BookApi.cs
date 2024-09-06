@@ -12,12 +12,13 @@ namespace exercise.webapi.Endpoints
             books.MapGet("/", GetBooks);
             books.MapGet("/{id}", GetABook);
             books.MapPut("/{id}/{authorid}", UpdateAuthor);
+            books.MapDelete("/{id}", DeleteBook);
         }
 
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
-            var books = await bookRepository.GetAllBooks();
+            var books = await bookRepository.GetAll();
             List<BookDTO> result = [];
             foreach (var book in books)
             {
@@ -28,7 +29,7 @@ namespace exercise.webapi.Endpoints
         }
         private static async Task<IResult> GetABook(IBookRepository bookRepository, int id)
         {
-            var book = await bookRepository.GetBook(id);
+            var book = await bookRepository.GetA(id);
             if (book == null) return TypedResults.NotFound("Book was not found");
             var bookdto = MapToBookDTO(book);
             return TypedResults.Ok(bookdto);
@@ -37,13 +38,19 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> UpdateAuthor(IBookRepository bookRepository, IAuthorRepository authorRepository, int bookid, int authorid) 
         {
-            var book = await bookRepository.GetBook(bookid);
+            var book = await bookRepository.GetA(bookid);
             if (book is null) return TypedResults.NotFound("Book was not found");
             var author = await authorRepository.GetAuthor(authorid);
             if (author is null) return TypedResults.NotFound("Author was not found");
             book.Author = author;
             book.AuthorId = authorid;
             bookRepository.Update(book);
+            return TypedResults.Ok(MapToBookDTO(book));
+        }
+
+        private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int id)
+        {
+            var book = await bookRepository.Delete(id);
             return TypedResults.Ok(MapToBookDTO(book));
         }
         private static BookDTO MapToBookDTO(Book book)
