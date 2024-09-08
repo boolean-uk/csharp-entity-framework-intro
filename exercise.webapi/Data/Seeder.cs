@@ -79,10 +79,10 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<AuthorBook> _authorBooks = new List<AuthorBook>();
 
         public Seeder()
         {
-
             Random authorRandom = new Random();
             Random bookRandom = new Random();
 
@@ -95,7 +95,7 @@ namespace exercise.webapi.Data
                 author.FirstName = _firstnames[authorRandom.Next(_firstnames.Count)];
                 author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
                 author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
-                author.Books = (from book in _books where book.Author.Id == author.Id select book).ToList();
+                author.Books = _authorBooks.Where(ab => ab.AuthorId == author.Id).SelectMany(ab => _books.Where(b => b.Id == ab.BookId)).ToList();
                 _authors.Add(author);
             }
 
@@ -104,12 +104,22 @@ namespace exercise.webapi.Data
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = _authors[book.AuthorId-1];
+                book.Authors = _authorBooks.Where(ab => ab.BookId == book.Id).SelectMany(ab => _authors.Where(a => a.Id == ab.AuthorId)).ToList();
                 _books.Add(book);
+            }
+
+            for (int z = 1; z < entitiesToCreate * 3; z++)
+            {
+                AuthorBook authorBook = new AuthorBook();
+                authorBook.Id = z;
+                authorBook.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                authorBook.BookId = _books[bookRandom.Next(_books.Count)].Id;
+
+                _authorBooks.Add(authorBook);
             }
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<AuthorBook> AuthorBooks { get { return _authorBooks; } }
     }
 }

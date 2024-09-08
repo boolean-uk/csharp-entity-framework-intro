@@ -3,16 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.webapi.Models
 {
-    [Table("book")]
-    public class Book
+    [Table("authorBook")]
+    public class AuthorBook
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("title")]
-        public string Title { get; set; }
+        [ForeignKey("AuthorId")]
+        public int AuthorId { get; set; }
 
-        public List<Author> Authors { get; set; } = new List<Author>();
+        [ForeignKey("BookId")]
+        public int BookId { get; set; }
     }
 }

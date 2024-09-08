@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Emit;
@@ -25,10 +26,26 @@ namespace exercise.webapi.Data
         {
             Seeder seeder = new Seeder();
 
+            modelBuilder.Entity<Author>()
+                .HasMany(a => a.Books)
+                .WithMany(b => b.Authors)
+                .UsingEntity<AuthorBook>(ab => ab.ToTable("authorBook"));
+
+            modelBuilder.Entity<Book>()
+                .HasMany(b => b.Authors)
+                .WithMany(a => a.Books)
+                .UsingEntity<AuthorBook>(ab => ab.ToTable("authorBook"));
+
+            modelBuilder.Entity<AuthorBook>()
+                .HasKey(ab => ab.Id);
+
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<AuthorBook>().HasData(seeder.AuthorBooks);
         }
+
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<AuthorBook> AuthorBooks { get; set; }
     }
 }

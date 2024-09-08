@@ -14,25 +14,9 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-        public async Task<Author> Add(Author entity)
-        {
-            await _db.AddAsync(entity);
-            await _db.SaveChangesAsync();
-            return entity;
-        }
-
-        public async Task<Author> DeleteById(int id)
-        {
-            var target = await _db.Authors.FirstOrDefaultAsync(b => b.Id == id);
-            _db.Authors.Remove(target);
-            await _db.SaveChangesAsync();
-            return target;
-        }
-
         public async Task<IEnumerable<Author>> GetAllAuthors()
         {
-            var target = await _db.Authors.Include(a => a.Books).ToListAsync();
-            return target;
+            return await _db.Authors.Include(a => a.Books).ToListAsync();
         }
 
         public async Task<Author> GetById(int id)
@@ -40,13 +24,28 @@ namespace exercise.webapi.Repository
             return await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<Author> Add(Author entity)
+        {
+            await _db.AddAsync(entity);
+            await _db.SaveChangesAsync();
+            return entity;
+        }
+
         public async Task<Author> UpdateById(int id, Author entity)
         {
-            var target = await _db.Authors.FirstOrDefaultAsync(a => a.Id == id);
+            var target = await _db.Authors.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);
             target.FirstName = entity.FirstName;
             target.LastName = entity.LastName;
             target.Email = entity.Email;
             _db.Attach(target).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return target;
+        }
+
+        public async Task<Author> DeleteById(int id)
+        {
+            var target = await _db.Authors.FirstOrDefaultAsync(a => a.Id == id);
+            _db.Authors.Remove(target);
             await _db.SaveChangesAsync();
             return target;
         }

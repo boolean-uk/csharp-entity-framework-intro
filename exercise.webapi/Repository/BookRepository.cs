@@ -14,6 +14,16 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
+        public async Task<IEnumerable<Book>> GetAllBooks()
+        {
+            return await _db.Books.Include(b => b.Authors).ToListAsync();
+        }
+
+        public async Task<Book> GetById(int id)
+        {
+            return await _db.Books.Include(b => b.Authors).FirstOrDefaultAsync(b => b.Id == id);
+        }
+
         public async Task<Book> Add(Book entity)
         {
             await _db.AddAsync(entity);
@@ -23,29 +33,11 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> DeleteById(int id)
         {
-            var target = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
-            _db.Books.Remove(target);
+            var bookTarget = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
+            _db.Books.Remove(bookTarget);
+
             await _db.SaveChangesAsync();
-            return target;
-        }
-
-        public async Task<IEnumerable<Book>> GetAllBooks()
-        {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
-        }
-
-        public async Task<Book> GetById(int id)
-        {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
-        }
-
-        public async Task<Book> UpdateById(int bookId, int authorId)
-        {
-            var entity = await _db.Books.FirstOrDefaultAsync(b => b.Id == bookId);
-            entity.AuthorId = authorId;
-            _db.Attach(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
-            return entity;
+            return bookTarget;
         }
     }
 }
