@@ -1,6 +1,7 @@
 ﻿using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Identity;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -15,6 +16,7 @@ namespace exercise.webapi.Endpoints
             books.MapPut("/{title}", UppdateBook);
             books.MapPost("/", AddBook);
             books.MapDelete("/", DeleteBook);
+            books.MapPut("/{title}/uppdate", UppdateAuthorBook);
             
         }
 
@@ -47,6 +49,12 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> DeleteBook(IBookRepository bookRepository, string title)
         {
             var book = await bookRepository.DeleteBook(title);
+            return TypedResults.Ok(ConvertToDTOList.ConvertToBOOKDT(book));
+        }
+
+        private static async Task<IResult> UppdateAuthorBook(IBookRepository bookRepository, string title, string? AuthorFirstName, string? Authorlastname)
+        {
+            var book = await bookRepository.UppdateAutorBook(title, AuthorFirstName, Authorlastname);
             return TypedResults.Ok(ConvertToDTOList.ConvertToBOOKDT(book));
         }
     }

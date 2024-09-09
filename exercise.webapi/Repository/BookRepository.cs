@@ -71,5 +71,39 @@ namespace exercise.webapi.Repository
             }
             return _db.Books.Include(b => b.Author).FirstOrDefault(b => b.Title.Equals(newTitle));
         }
+
+        public async Task<Book> UppdateAutorBook(string title, string? authorfirstname, string? authorlastname)
+        {
+            var newauthor = _db.Authors.Include(b => b.Books).FirstOrDefault(a => a.FirstName.Equals(authorfirstname) && a.LastName.Equals(authorlastname));
+            var book = _db.Books.Include(b => b.Author).FirstOrDefault(b => b.Title.Equals(title));
+
+            if (authorfirstname is null || authorlastname is null) 
+            {
+                book.Author.Books.Remove(book);
+                book.Author = null;
+                book.AuthorId = 0;
+                await _db.SaveChangesAsync();
+                return book;
+            }
+
+            if (book is not null)
+            {
+                if (newauthor is null)
+                {
+                    int authorID = _db.Authors.Max(x => x.Id) + 1;
+                    newauthor = new Author { Books = new List<Book>(), FirstName = authorfirstname, LastName = authorlastname, Id = authorID, Email = $"{authorfirstname}.{authorlastname}" };
+                    _db.Authors.Add(newauthor);
+                }
+
+                newauthor.Books.Add(book);
+                book.Author = newauthor;
+                book.AuthorId = newauthor.Id;
+                await _db.SaveChangesAsync();
+                return book;
+
+            }
+
+            return book;
+        }
     }
 }
