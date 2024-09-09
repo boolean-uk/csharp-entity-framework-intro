@@ -8,5 +8,6 @@ namespace exercise.webapi.DTOS
         public int Id { get; set; }
         public string Title { get; set; }
         public DTOAuthorWithoutBooks Author { get; set; }
+        public DTOPublisherWithoutBook Publisher { get; set; }
     }
 }

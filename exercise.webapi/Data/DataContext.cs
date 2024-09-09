@@ -11,6 +11,7 @@ namespace exercise.webapi.Data
         private string _connectionString;
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -29,8 +30,8 @@ namespace exercise.webapi.Data
             Seeder seeder = new Seeder();
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
+            modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
-
         }
     }
 }

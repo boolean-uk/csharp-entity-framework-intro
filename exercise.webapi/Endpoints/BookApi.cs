@@ -17,7 +17,7 @@ namespace exercise.webapi.Endpoints
             books.MapPut("/update/{id}", UpdateBookAuthor);
             books.MapDelete("/delete/{id}", DeleteBookById);
             books.MapPost("/create", CreateBook);
-            books.MapPut("/{id}/removeAuthor", RemoveAuthorFromBook);
+            //books.MapPut("/{id}/removeAuthor", RemoveAuthorFromBook);
             //books.MapPut("/{id}/assignAuthor", AssignAuthorToBook);
         }
 
@@ -37,11 +37,19 @@ namespace exercise.webapi.Endpoints
                     Email = book.Author.Email
                 };
 
+                DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook() 
+                {
+                    Id = book.Publisher.Id,
+                    Name = book.Publisher.Name,
+                    Email = book.Publisher.Email
+                };
+
                 DTOBookWithAuthor dtoBook = new DTOBookWithAuthor()
                 {
                     Id = book.Id,
                     Title = book.Title,
-                    Author = dtoAuthor
+                    Author = dtoAuthor,
+                    Publisher = dtoPublisher
                 };
 
                 response.Books.Add(dtoBook);
@@ -71,11 +79,19 @@ namespace exercise.webapi.Endpoints
                     Email = book.Author.Email
                 };
 
+                DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook()
+                {
+                    Id = book.Publisher.Id,
+                    Name = book.Publisher.Name,
+                    Email = book.Publisher.Email
+                };
+
                 DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() 
                 {
                     Id = book.Id,
                     Title = book.Title,
-                    Author = dtoAuthor
+                    Author = dtoAuthor,
+                    Publisher = dtoPublisher
                 };
 
                 return TypedResults.Ok(dtoBook);
@@ -109,11 +125,19 @@ namespace exercise.webapi.Endpoints
                     Email = target.Author.Email 
                 };
 
+                DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook()
+                {
+                    Id = target.Publisher.Id,
+                    Name = target.Publisher.Name,
+                    Email = target.Publisher.Email
+                };
+
                 DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() 
                 { 
                     Id = target.Id, 
                     Title = target.Title, 
-                    Author = dtoAuthor
+                    Author = dtoAuthor,
+                    Publisher = dtoPublisher
                 };
 
                 return TypedResults.Ok(dtoBook);
@@ -142,11 +166,19 @@ namespace exercise.webapi.Endpoints
                     Email = target.Author.Email
                 };
 
-                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor() 
-                { 
-                    Id = target.Id, 
-                    Title = target.Title, 
-                    Author = dtoAuthor 
+                DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook()
+                {
+                    Id = target.Publisher.Id,
+                    Name = target.Publisher.Name,
+                    Email = target.Publisher.Email
+                };
+
+                DTOBookWithAuthor dtoBook = new DTOBookWithAuthor()
+                {
+                    Id = target.Id,
+                    Title = target.Title,
+                    Author = dtoAuthor,
+                    Publisher = dtoPublisher
                 };
 
                 return TypedResults.Ok(dtoBook);
@@ -165,7 +197,8 @@ namespace exercise.webapi.Endpoints
                 Book newBook = new Book() 
                 {
                     Title = book.Title,
-                    AuthorId = book.AuthorId
+                    AuthorId = book.AuthorId,
+                    PublisherId = book.PublisherId
                 };
 
                 var createdBook = await bookRepository.CreateBook(newBook);
@@ -179,11 +212,19 @@ namespace exercise.webapi.Endpoints
                     Email = response.Author.Email
                 };
 
+                DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook()
+                {
+                    Id = response.Publisher.Id,
+                    Name = response.Publisher.Name,
+                    Email = response.Publisher.Email
+                };
+
                 DTOBookWithAuthor dtoBook = new DTOBookWithAuthor()
                 {
                     Id = response.Id,
                     Title = response.Title,
-                    Author = dtoAuthor
+                    Author = dtoAuthor,
+                    Publisher = dtoPublisher
                 };
 
                 return TypedResults.Ok(dtoBook);

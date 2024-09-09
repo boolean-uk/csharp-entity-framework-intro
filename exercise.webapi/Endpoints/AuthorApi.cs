@@ -35,10 +35,18 @@ namespace exercise.webapi.Endpoints
 
                 foreach (Book book in author.Books)
                 {
-                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor()
+                    DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook() 
+                    {
+                        Id = book.Publisher.Id,
+                        Name = book.Publisher.Name,
+                        Email = book.Publisher.Email
+                    };
+
+                    DTOBookWithoutAuthorWithPublisher dtoBook = new DTOBookWithoutAuthorWithPublisher()
                     {
                         Id = book.Id,
-                        Title = book.Title
+                        Title = book.Title,
+                        Publisher = dtoPublisher
                     };
 
                     dtoAuthor.Books.Add(dtoBook);
@@ -68,10 +76,18 @@ namespace exercise.webapi.Endpoints
 
                 foreach (Book book in author.Books)
                 {
-                    DTOBookWithoutAuthor dtoBook = new DTOBookWithoutAuthor()
+                    DTOPublisherWithoutBook dtoPublisher = new DTOPublisherWithoutBook() 
+                    {
+                        Id = book.Publisher.Id,
+                        Name = book.Publisher.Name,
+                        Email = book.Publisher.Email
+                    };
+
+                    DTOBookWithoutAuthorWithPublisher dtoBook = new DTOBookWithoutAuthorWithPublisher()
                     {
                         Id = book.Id,
-                        Title = book.Title
+                        Title = book.Title,
+                        Publisher = dtoPublisher
                     };
 
                     dtoAuthor.Books.Add(dtoBook);

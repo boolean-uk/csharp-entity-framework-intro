@@ -6,6 +6,6 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public ICollection<DTOBookWithoutAuthor> Books { get; set; } = new List<DTOBookWithoutAuthor>();
+        public ICollection<DTOBookWithoutAuthorWithPublisher> Books { get; set; } = new List<DTOBookWithoutAuthorWithPublisher>();
     }
 }
