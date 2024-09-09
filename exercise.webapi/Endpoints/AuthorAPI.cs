@@ -30,20 +30,27 @@ namespace exercise.webapi.Endpoints
                     Id = a.Id,
                     Name = a.FirstName + " " + a.LastName,
                     Email = a.Email,
-//Books = new List<BookWithoutAuthor>()
 
                 };
 
                 foreach (Book b in a.Books )
                 {
+                    PublisherWithoutBooksDTO publisherDTO = new PublisherWithoutBooksDTO()
+                    {
+                        Id = b.Publisher.Id,
+                        Name = b.Publisher.FirstName + " " + b.Publisher.LastName,
+
+                    };
                     BookWithoutAuthor bookDTO = new BookWithoutAuthor() { 
                         Title = b.Title, 
-                        Id = b.Id
-                        
+                        Id = b.Id,
+                        Publisher = publisherDTO
                     };
 
                     authorDTO.Books.Add(bookDTO);
                 }
+
+               
 
                 response.authors.Add(authorDTO);
             }
@@ -66,10 +73,18 @@ namespace exercise.webapi.Endpoints
 
             foreach (Book b in author.Books)
             {
+
+                PublisherWithoutBooksDTO publisherDTO = new PublisherWithoutBooksDTO()
+                {
+                    Id = b.Publisher.Id,
+                    Name = b.Publisher.FirstName + " " + b.Publisher.LastName,
+
+                };
                 BookWithoutAuthor bookDTO = new BookWithoutAuthor()
                 {
                     Title = b.Title,
-                    Id = b.Id
+                    Id = b.Id,
+                    Publisher = publisherDTO
 
                 };
                 authorDTO.Books.Add(bookDTO);

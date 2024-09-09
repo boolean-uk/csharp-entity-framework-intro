@@ -32,14 +32,19 @@ namespace exercise.webapi.Endpoints
                 AuthorWithoutEmailBooks author = new AuthorWithoutEmailBooks();
                 author.Name = b.Author.FirstName + " " + b.Author.LastName;
                 author.Id = b.Author.Id;
-              
 
-                BookDTO book = new BookDTO()
+                PublisherWithoutBooksDTO publisher = new PublisherWithoutBooksDTO();
+                publisher.Id = b.Publisher.Id;
+                publisher.Name = b.Publisher.FirstName + " " + b.Publisher.LastName;
+
+
+                BookPublisherDTO book = new BookPublisherDTO()
                 {
                     Id = b.Id,
                     Title = b.Title,
                     AuthorId = b.AuthorId,
                     Author = author,
+                    Publisher = publisher
                 };
 
                 response.Books.Add(book);
@@ -58,14 +63,20 @@ namespace exercise.webapi.Endpoints
             AuthorWithoutEmailBooks author = new AuthorWithoutEmailBooks();
             author.Name = response.Author.FirstName + " " + response.Author.LastName;
             author.Id = response.Author.Id;
-            
-            BookDTO book = new BookDTO() 
+
+
+            PublisherWithoutBooksDTO publisher = new PublisherWithoutBooksDTO();
+           publisher.Id = response.Publisher.Id;
+            publisher.Name = response.Publisher.FirstName + " " + response.Publisher.LastName;
+
+
+            BookPublisherDTO book = new BookPublisherDTO() 
             { 
                 Id = response.Id, 
                 Title = response.Title, 
                 AuthorId = response.AuthorId,
                 Author = author,
-                
+                Publisher = publisher
             };
 
             
