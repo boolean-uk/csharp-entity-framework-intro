@@ -1,4 +1,6 @@
-﻿using exercise.webapi.Repository;
+﻿using exercise.webapi.DTO;
+using exercise.webapi.Models;
+using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints
@@ -17,15 +19,63 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetAuthors(IAuthorRepository rep)
         {
+            GetAuthorResponse response = new GetAuthorResponse();
             var authors = await rep.GetAuthors();
-            return TypedResults.Ok(authors);
+           
+            foreach (Author a in authors)
+            {
+
+                AuthorDTO authorDTO = new AuthorDTO()
+                {
+                    Id = a.Id,
+                    Name = a.FirstName + " " + a.LastName,
+                    Email = a.Email,
+//Books = new List<BookWithoutAuthor>()
+
+                };
+
+                foreach (Book b in a.Books )
+                {
+                    BookWithoutAuthor bookDTO = new BookWithoutAuthor() { 
+                        Title = b.Title, 
+                        Id = b.Id
+                        
+                    };
+
+                    authorDTO.Books.Add(bookDTO);
+                }
+
+                response.authors.Add(authorDTO);
+            }
+            
+            
+            
+            return TypedResults.Ok(response);
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetAuthor(IAuthorRepository rep, int id)
         {
             var author = await rep.GetAnAuthor(id);
+            AuthorDTO authorDTO = new AuthorDTO();
+            
+            authorDTO.Id = id;
+            authorDTO.Name = author.FirstName + " " + author.LastName;
+            authorDTO.Email = author.Email;
 
-            return TypedResults.Ok(author);
+
+
+            foreach (Book b in author.Books)
+            {
+                BookWithoutAuthor bookDTO = new BookWithoutAuthor()
+                {
+                    Title = b.Title,
+                    Id = b.Id
+
+                };
+                authorDTO.Books.Add(bookDTO);
+
+            }
+                return TypedResults.Ok(authorDTO);
 
         }
 

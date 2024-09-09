@@ -15,10 +15,6 @@ builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
 var app = builder.Build();
 
-using (var dbContext = new DataContext(new DbContextOptions<DataContext>()))
-{
-    dbContext.Database.EnsureCreated();
-}
 
 
 // Configure the HTTP request pipeline.

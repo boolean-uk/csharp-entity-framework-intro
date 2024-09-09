@@ -3,6 +3,7 @@ using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using exercise.webapi.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Endpoints
@@ -28,15 +29,17 @@ namespace exercise.webapi.Endpoints
 
             foreach (Book b in results)
             {
-                AuthorDTO author = new AuthorDTO();
+                AuthorWithoutEmailBooks author = new AuthorWithoutEmailBooks();
                 author.Name = b.Author.FirstName + " " + b.Author.LastName;
+                author.Id = b.Author.Id;
+              
 
                 BookDTO book = new BookDTO()
                 {
                     Id = b.Id,
                     Title = b.Title,
                     AuthorId = b.AuthorId,
-                    Author = author
+                    Author = author,
                 };
 
                 response.Books.Add(book);
@@ -52,15 +55,17 @@ namespace exercise.webapi.Endpoints
 
 
             var response = await bookRepository.GetBook(id);
-            AuthorDTO author = new AuthorDTO();
+            AuthorWithoutEmailBooks author = new AuthorWithoutEmailBooks();
             author.Name = response.Author.FirstName + " " + response.Author.LastName;
-
+            author.Id = response.Author.Id;
+            
             BookDTO book = new BookDTO() 
             { 
                 Id = response.Id, 
                 Title = response.Title, 
                 AuthorId = response.AuthorId,
-                Author = author
+                Author = author,
+                
             };
 
             
@@ -82,9 +87,10 @@ namespace exercise.webapi.Endpoints
                 
                 var response = await bookRepository.GetBook(book.Id);
 
-                AuthorDTO author = new AuthorDTO()
+                AuthorWithoutEmailBooks author = new AuthorWithoutEmailBooks()
                 {
-                    Name = response.Author.FirstName + " " + response.Author.LastName
+                    Name = response.Author.FirstName + " " + response.Author.LastName,
+                    Id = response.Author.Id,
                 };
 
                 BookDTO bookDTO = new BookDTO()
@@ -92,7 +98,8 @@ namespace exercise.webapi.Endpoints
                     Id = response.Id,
                     Title = response.Title,
                     AuthorId = response.AuthorId,
-                    Author = author
+                    Author = author,
+                    
                 };
 
 
@@ -114,15 +121,19 @@ namespace exercise.webapi.Endpoints
                 var target = await bookRepository.GetBook(id);
                 target.AuthorId = model.AuthorId;
 
-                AuthorDTO author = new AuthorDTO();
+                AuthorWithoutEmailBooks author = new AuthorWithoutEmailBooks();
                 author.Name = target.Author.FirstName + " " + target.Author.LastName;
+                author.Id = target.Author.Id; ;
+       
+
 
                 BookDTO book = new BookDTO()
                 {
                     Id = target.Id,
                     Title = target.Title,
                     AuthorId = target.AuthorId,
-                    Author = author
+                    Author = author,
+
                 };
                 
 
@@ -150,14 +161,17 @@ namespace exercise.webapi.Endpoints
                 var response = await bookRepository.GetBook(id);
                 var book = await bookRepository.DeleteBook(id);
 
-                AuthorDTO authorDTO = new AuthorDTO();
+                AuthorWithoutEmailBooks authorDTO = new AuthorWithoutEmailBooks();
+                authorDTO.Id = response.Author.Id;
                 authorDTO.Name = response.Author.FirstName + " " + response.Author.LastName;
+            
                 BookDTO bookDTO = new BookDTO()
                 {
                     Id = response.Id,
                     Title = response.Title,
                     AuthorId = response.AuthorId,
-                    Author = authorDTO
+                    Author = authorDTO,
+                  
                 };
 
 
