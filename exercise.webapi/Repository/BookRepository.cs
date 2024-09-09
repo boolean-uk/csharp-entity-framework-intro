@@ -34,19 +34,19 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<BookDTO>> GetAllBooks()
         {
-            var books = await _db.Books.Include(b => b.Author).ToListAsync();
+            var books = await _db.Books.Include(b => b.Author).Include(p => p.Publisher).ToListAsync();
             return books.MapListToDTO();
         }
 
         public async Task<BookDTO> GetBook(int Id)
         {
-            Book book = _db.Books.Include(b => b.Author).FirstOrDefault(x => x.Id == Id);
+            Book book = _db.Books.Include(b => b.Author).Include(p => p.Publisher).FirstOrDefault(x => x.Id == Id);
             return book.MapToDTO();
         }
 
         public async Task<BookDTO> UpdateBook(int Id, string Title, int AuthorId)
         {
-            var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == Id);
+            var book = await _db.Books.Include(b => b.Author).Include(p => p.Publisher).FirstOrDefaultAsync(b => b.Id == Id);
             if (book != null)
             {
                 var author = await _db.Authors.FirstOrDefaultAsync(a => a.Id == AuthorId);

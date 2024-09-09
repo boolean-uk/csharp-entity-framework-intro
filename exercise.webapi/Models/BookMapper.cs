@@ -9,7 +9,9 @@
                 Id = book.Id,
                 Title = book.Title,
                 Author = book.Author.IMapToDTO(),
-                AuthorId = book.AuthorId
+                AuthorId = book.AuthorId,
+                PublisherId = book.PublisherId,
+                Publisher = book.Publisher.MapToDTO()
             };
         }
 
@@ -20,7 +22,9 @@
                 Id = book.Id,
                 Title = book.Title,
                 Author = book.Author.IMapToDTO(),
-                AuthorId = book.AuthorId
+                AuthorId = book.AuthorId,
+                PublisherId = book.PublisherId,
+                Publisher = book.Publisher.MapToDTO()
             }).ToList();
         }
     }
