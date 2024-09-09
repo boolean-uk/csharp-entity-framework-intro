@@ -15,6 +15,7 @@ namespace exercise.webapi.Endpoints
             books.MapGet("/{id}",GetOne);
             books.MapPut("/{id}", UpdateBook);
             books.MapDelete("/{id}", Deletebook);
+            books.MapPut("/Assign-Author/{id}", AssignAuthor);
         }
        
 
@@ -23,7 +24,15 @@ namespace exercise.webapi.Endpoints
             await bookrepo.Delete(id);
             return TypedResults.Ok(id);
         }
+        public static async Task<IResult> AssignAuthor(IBookRepository bookrepo, int bookId, int authorId)
+        {
+            var updatedBook = await bookrepo.AssignAuthor(bookId, authorId);
 
+            if (updatedBook == null)
+                return TypedResults.NotFound();
+
+            return TypedResults.Ok(updatedBook);
+        }
         private static async Task<IResult> UpdateBook(IBookRepository bookrepo, int id, Book book)
         {
             var updateBook = await bookrepo.Update(book, id);

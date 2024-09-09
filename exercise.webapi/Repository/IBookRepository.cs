@@ -9,5 +9,6 @@ namespace exercise.webapi.Repository
         Task<Book> Update(Book bok1, int id);
         Task<Book> Delete(int id);
         Task<Book> GetProdById(int id);   
+        Task<Book> AssignAuthor(int bookId, int id);
     }
 }
