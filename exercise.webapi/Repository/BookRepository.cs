@@ -39,5 +39,12 @@ namespace exercise.webapi.Repository
             await _db.SaveChangesAsync();
             return match;
         }
+
+        public async Task<Book> CreateBook(Book entity)
+        {
+            await _db.AddAsync(entity);
+            await _db.SaveChangesAsync();
+            return entity;
+        }
     }
 }
