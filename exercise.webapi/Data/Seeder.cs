@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+using exercise.webapi.Models;
 
 namespace exercise.webapi.Data
 {

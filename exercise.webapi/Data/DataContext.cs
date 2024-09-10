@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Models;
+using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;

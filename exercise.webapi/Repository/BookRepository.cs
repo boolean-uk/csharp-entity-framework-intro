@@ -1,4 +1,4 @@
-﻿using exercise.webapi.Data;
+using exercise.webapi.Data;
 using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -16,6 +16,7 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
+
             return await _db.Books.Include(b => b.Authors).ToListAsync();
         }
 
