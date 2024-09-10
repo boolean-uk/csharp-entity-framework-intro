@@ -77,10 +77,10 @@ namespace exercise.webapi.Data
             "Leopards"
         };
 
-        private List<Author> _authors = new List<Author>();
-        private List<Book> _books = new List<Book>();
-        private List<Publisher> _publishers = new List<Publisher>();
-
+        private List<Author> _authors = [];
+        private List<Book> _books = [];
+        private List<Publisher> _publishers = [];
+        private List<BookAuthor> _bookAuthors = [];
         public Seeder()
         {
 
@@ -113,17 +113,22 @@ namespace exercise.webapi.Data
                 Book book = new Book();
                 book.Id = z;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
                 book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
 
                 _books.Add(book);
             }
 
+            BookAuthor bookAuthor = new BookAuthor() { AuthorId = 1, BookId = 1 };
+            _bookAuthors.Add(bookAuthor);
 
 
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Publisher> Publishers { get { return _publishers; } }
         public List<Book> Books { get { return _books; } }
+        public List<BookAuthor> BookAuthors
+        {
+            get { return _bookAuthors; }
+        }
     }
 }

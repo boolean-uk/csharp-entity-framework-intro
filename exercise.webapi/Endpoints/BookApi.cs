@@ -7,26 +7,6 @@ namespace exercise.webapi.Endpoints
 {
     public static class BookApi
     {
-        private static BookDTO MapToBookDTO(Book book)
-        {
-            if (book.Author is null)
-            {
-                return new BookDTO
-                {
-                    Id = book.Id,
-                    Title = book.Title,
-                    AuthorId = book.AuthorId,
-                    Author = null
-                };
-            }
-            return new BookDTO
-            {
-                Id = book.Id,
-                Title = book.Title,
-                AuthorId = book.AuthorId,
-                Author = $"{book.Author.FirstName} {book.Author.LastName}"
-            };
-        }
         public static void ConfigureBooksApi(this WebApplication app)
         {
             var books = app.MapGroup("books");
@@ -61,8 +41,7 @@ namespace exercise.webapi.Endpoints
             var author = await authorRepository.GetA(authorid);
             if (author is null) return TypedResults.NotFound("Author was not found");
 
-            book.Author = author;
-            book.AuthorId = authorid;
+            book.Authors.Add(author);
             await bookRepository.Update(book);
 
             return TypedResults.Ok(book.MapToBookDTO());
@@ -77,17 +56,17 @@ namespace exercise.webapi.Endpoints
         {
             var book = await bookRepository.GetA(bookid);
             if (book is null) return TypedResults.NotFound("Book was not found");
-            if (book.Author == null) return TypedResults.BadRequest("Book has no author");
-            if (book.AuthorId != authorid) return TypedResults.BadRequest($"Book does not have author of with id {authorid}. This book has author with id {book.AuthorId}");
-            
+            if (book.Authors.Count == 0) return TypedResults.BadRequest("Book has no author");
+
             var author = await authorRepository.GetA(authorid);
             if (author is null) return TypedResults.NotFound("Author was not found");
+            if (book.Authors.Contains(author)) return TypedResults.BadRequest($"Book does not have author of with id {authorid}.");
+            
 
             author.Books.Remove(book);
             await authorRepository.Update(author);
 
-            book.Author = null;
-            book.AuthorId = null;
+            book.Authors.Remove(author);
             await bookRepository.Update(book);
 
             return TypedResults.Ok(book.MapToBookDTO());

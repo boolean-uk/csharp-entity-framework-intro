@@ -11,10 +11,9 @@ namespace exercise.webapi.Extensions
             {
                 Id = book.Id,
                 Title = book.Title,
-                AuthorId = book.AuthorId,
-                Author = $"{book.Author.FirstName} {book.Author.LastName}",
                 Publisher = book.Publisher.Name,
                 PublisherId = book.PublisherId,
+                Authors = (from author in book.Authors select $"{author.FirstName} {author.LastName}").ToList()
             };
         }
 
@@ -24,8 +23,7 @@ namespace exercise.webapi.Extensions
             {
                 Id = book.Id,
                 Title = book.Title,
-                AuthorId = book.AuthorId,
-                Author = $"{book.Author.FirstName} {book.Author.LastName}"
+                Authors = (from author in book.Authors select $"{author.FirstName} {author.LastName}").ToList()
             };
         }
 

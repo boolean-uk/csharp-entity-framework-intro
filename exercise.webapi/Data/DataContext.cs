@@ -20,15 +20,19 @@ namespace exercise.webapi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<BookAuthor>()
+                .HasKey(ba => new {ba.AuthorId, ba.BookId});
             Seeder seeder = new Seeder();
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
+            modelBuilder.Entity<BookAuthor>().HasData(seeder.BookAuthors);
 
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<BookAuthor> BookAuthors { get; set; }
     }
 }
