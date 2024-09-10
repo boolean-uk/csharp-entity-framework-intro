@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.DTOs;
+using exercise.webapi.Extensions;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 
@@ -40,14 +41,14 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAll();
-            List<BookDTO> result = (from book in books select MapToBookDTO(book)).ToList();
+            List<BookDTO> result = (from book in books select book.MapToBookDTO()).ToList();
             return TypedResults.Ok(result);
         }
         private static async Task<IResult> GetABook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.GetA(id);
             if (book == null) return TypedResults.NotFound("Book was not found");
-            var bookdto = MapToBookDTO(book);
+            var bookdto = book.MapToBookDTO();
             return TypedResults.Ok(bookdto);
         }
 
@@ -64,13 +65,13 @@ namespace exercise.webapi.Endpoints
             book.AuthorId = authorid;
             await bookRepository.Update(book);
 
-            return TypedResults.Ok(MapToBookDTO(book));
+            return TypedResults.Ok(book.MapToBookDTO());
         }
 
         private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.Delete(id);
-            return TypedResults.Ok(MapToBookDTO(book));
+            return TypedResults.Ok(book.MapToBookDTO());
         }
         private static async Task<IResult> RemoveAuthor(IBookRepository bookRepository, IAuthorRepository authorRepository, int bookid, int authorid)
         {
@@ -89,7 +90,7 @@ namespace exercise.webapi.Endpoints
             book.AuthorId = null;
             await bookRepository.Update(book);
 
-            return TypedResults.Ok(MapToBookDTO(book));
+            return TypedResults.Ok(book.MapToBookDTO());
         }
 
 

@@ -14,6 +14,6 @@ namespace exercise.webapi.Models
         public string LastName { get; set; }
         [Column("email")]
         public string Email { get; set; }
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public ICollection<Book> Books { get; set; }
     }
 }
