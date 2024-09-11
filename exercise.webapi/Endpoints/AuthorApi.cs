@@ -18,7 +18,7 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
         {
-            GetAuthorResponse authorResponse = new GetAuthorResponse();
+            GetAllResponse<DTOAuthor> authorResponse = new GetAllResponse<DTOAuthor>();
             var authors = await authorRepository.GetAllAuthors();
 
             foreach (Author author in authors)
@@ -26,10 +26,12 @@ namespace exercise.webapi.Endpoints
                 DTOAuthor dtoauthor = new DTOAuthor() { ID = author.Id, Name = $"{author.FirstName} {author.LastName}", Email = author.Email };
                 foreach (Book book in author.Books)
                 {
-                    dtoauthor.books.Add(book.Title);
+                    DTOPublisherWithoutBooks dtopublisher = new DTOPublisherWithoutBooks() { ID = book.Publisher.Id, Name = book.Publisher.Name };
+                    DTOBookWithoutAuthor dtobook = new DTOBookWithoutAuthor() { ID = book.Id, Title = book.Title, Publisher = dtopublisher };
+                    dtoauthor.books.Add(dtobook);
                 }
 
-                authorResponse.authors.Add(dtoauthor);
+                authorResponse.response.Add(dtoauthor);
             }
 
             return TypedResults.Ok(authorResponse);
@@ -50,7 +52,9 @@ namespace exercise.webapi.Endpoints
             DTOAuthor dtoauthor = new DTOAuthor() { ID = author.Id, Name = $"{author.FirstName} {author.LastName}", Email = author.Email };
             foreach (Book book in author.Books)
             {
-                dtoauthor.books.Add(book.Title);
+                DTOPublisherWithoutBooks dtopublisher = new DTOPublisherWithoutBooks() { ID = book.Publisher.Id, Name = book.Publisher.Name };
+                DTOBookWithoutAuthor dtobook = new DTOBookWithoutAuthor() { ID = book.Id, Title = book.Title, Publisher = dtopublisher };
+                dtoauthor.books.Add(dtobook);
             }
 
             return TypedResults.Ok(dtoauthor);

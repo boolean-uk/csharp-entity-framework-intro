@@ -15,13 +15,13 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).ToListAsync();
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
 
         }
 
         public async Task<Book> GetABook(int id)
         {
-            return await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book> AddBook(Book book)
@@ -43,7 +43,7 @@ namespace exercise.webapi.Repository
 
         public async Task<Book> DeleteBook(int id)
         {
-            var book = await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            var book = await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
 
             if (book != null)
             {
@@ -52,6 +52,13 @@ namespace exercise.webapi.Repository
             }
 
             return book;
+        }
+
+        public async Task<bool> CheckIfAuthor(int authorId)
+        {
+            var author = await _db.Authors.FirstOrDefaultAsync(a => a.Id == authorId);
+
+            return author != null;
         }
     }
 }

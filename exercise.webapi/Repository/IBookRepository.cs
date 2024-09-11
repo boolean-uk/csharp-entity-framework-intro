@@ -12,5 +12,7 @@ namespace exercise.webapi.Repository
         public Task<Book> UpdateBook(Book toUpdate);
 
         public Task<Book> DeleteBook(int id);
+
+        public Task<bool> CheckIfAuthor(int authorId);
     }
 }

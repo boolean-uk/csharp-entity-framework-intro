@@ -6,6 +6,6 @@
         public string Name { get; set; }
         public string Email { get; set; }
 
-        public List<string> books { get; set; } = new List<string>();
+        public List<DTOBookWithoutAuthor> books { get; set; } = new List<DTOBookWithoutAuthor>();
     }
 }

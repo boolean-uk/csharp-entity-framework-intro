@@ -22,14 +22,12 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status200OK)]
         public static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
-            GetBookResponse bookResponse = new GetBookResponse();
+            GetAllResponse<DTOBook> bookResponse = new GetAllResponse<DTOBook>();
             var books = await bookRepository.GetAllBooks();
             
             foreach (Book book in books)
             {
-                DTOAuthorWithoutBooks dtoauthor = new DTOAuthorWithoutBooks() { ID = book.Author.Id, Name = $"{book.Author.FirstName} {book.Author.LastName}"};
-                DTOBook dtobook = new DTOBook() { ID = book.Id, Title = book.Title, Author = dtoauthor };
-                bookResponse.Books.Add(dtobook);
+                bookResponse.response.Add(createDTOBook(book));
             }
 
             return TypedResults.Ok(bookResponse);
@@ -46,24 +44,26 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound(new Message());
             }
-            DTOAuthorWithoutBooks dtoauthor = new DTOAuthorWithoutBooks() { ID = book.Author.Id, Name = $"{book.Author.FirstName} {book.Author.LastName}"};
-            DTOBook dtobook = new DTOBook() { ID = book.Id, Title = book.Title, Author = dtoauthor };
-            return TypedResults.Ok(dtobook);
+
+            return TypedResults.Ok(createDTOBook(book));
         }
 
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType (StatusCodes.Status400BadRequest)]
-        public static async Task<IResult> AddBook(IBookRepository bookRepository, BookPostModel bookModel)
+        public static async Task<IResult> AddBook(IBookRepository bookRepository, IAuthorRepository authorRepository, BookPostModel bookModel)
         {
             try
             {
-                var book = await bookRepository.AddBook(new Book() { Title = bookModel.Title, AuthorId = bookModel.AuthorId });
+                if(! await bookRepository.CheckIfAuthor(bookModel.AuthorId))
+                {
+                    return TypedResults.NotFound(new Message() { Information = "Author does not exist in database" });
+                }
+
+                var book = await bookRepository.AddBook(new Book() { Title = bookModel.Title, AuthorId = bookModel.AuthorId, PublisherId = bookModel.PublisherId });
                 book = await bookRepository.GetABook(book.Id);
 
-                DTOAuthorWithoutBooks dtoauthor = new DTOAuthorWithoutBooks() { ID = book.Author.Id, Name = $"{book.Author.FirstName} {book.Author.LastName}" };
-                DTOBook dtobook = new DTOBook() { ID = book.Id, Title = book.Title, Author = dtoauthor };
-
-                return TypedResults.Created("", book);
+                return TypedResults.Created("", createDTOBook(book));
             }
             catch (Exception ex) 
             {
@@ -76,16 +76,20 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> UpdateBook(int id, IBookRepository bookRepository, int authorId)
         {
+            if (!  await bookRepository.CheckIfAuthor(authorId))
+            {
+                return TypedResults.NotFound(new Message() { Information = "Author does not exist in database" });
+            }
+
             var toUpdate = await bookRepository.GetABook(id);
+
             if (toUpdate != null)
             {
                 toUpdate.AuthorId = authorId;
                 await bookRepository.UpdateBook(toUpdate);
                 var updated = await bookRepository.GetABook(id);
-                DTOAuthorWithoutBooks dtoauthor = new DTOAuthorWithoutBooks() { ID = updated.Author.Id, Name = $"{updated.Author.FirstName} {updated.Author.LastName}" };
-                DTOBook dtobook = new DTOBook() { ID = updated.Id, Title = updated.Title, Author = dtoauthor };
 
-                return TypedResults.Created("", dtobook);
+                return TypedResults.Created("", createDTOBook(updated));
             }
             return TypedResults.NotFound(new Message());
         }
@@ -99,12 +103,18 @@ namespace exercise.webapi.Endpoints
 
             if (book != null)
             {
-                DTOAuthorWithoutBooks dtoauthor = new DTOAuthorWithoutBooks() { ID = book.Author.Id, Name = $"{book.Author.FirstName} {book.Author.LastName}" };
-                DTOBook dtobook = new DTOBook() { ID = book.Id, Title = book.Title, Author = dtoauthor };
-                return TypedResults.Ok(dtobook);
+                return TypedResults.Ok(createDTOBook(book));
             }
 
             return TypedResults.NotFound(new Message());
+        }
+
+        private static DTOBook createDTOBook(Book book) 
+        {
+            DTOAuthorWithoutBooks dtoauthor = new DTOAuthorWithoutBooks() { ID = book.Author.Id, Name = $"{book.Author.FirstName} {book.Author.LastName}" };
+            DTOPublisherWithoutBooks dtopublisher = new DTOPublisherWithoutBooks { ID = book.Publisher.Id, Name = book.Publisher.Name };
+            return new DTOBook() { ID = book.Id, Title = book.Title, Author = dtoauthor, Publisher = dtopublisher };
+
         }
     }
 }

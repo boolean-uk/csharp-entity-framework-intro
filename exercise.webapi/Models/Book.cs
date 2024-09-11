@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace exercise.webapi.Models
 {
@@ -12,6 +11,11 @@ namespace exercise.webapi.Models
         public string Title { get; set; }
         [ForeignKey("Author")]
         public int AuthorId { get; set; }
+
+        [ForeignKey("Publisher")]
+        public int PublisherId { get; set; }
+
         public Author Author { get; set; }
+        public Publisher Publisher { get; set; }
     }
 }
