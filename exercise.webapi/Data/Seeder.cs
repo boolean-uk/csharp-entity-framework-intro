@@ -77,14 +77,35 @@ namespace exercise.webapi.Data
             "Leopards"
         };
 
+        private List<string> _structure = new List<string>()
+        {
+            "House",
+            "Firm",
+            "Press",
+            "Supplier",
+            "Printer",
+            "Outlet"
+        };
+        private List<string> _action = new List<string>()
+        {
+            "Printing",
+            "Reading",
+            "Supplying",
+            "Enthusiastic",
+            "Scribbling",
+            "Best"
+        };
+
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publishers = new List<Publisher>();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
+            Random publisherRandom = new Random();
 
 
 
@@ -105,13 +126,26 @@ namespace exercise.webapi.Data
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
                 book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.PublisherId = publisherRandom.Next(250);
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }
+
+            for (int z = 1; z < 250; z++)
+            {
+                Publisher publisher = new Publisher();
+                publisher.Id = z;
+                publisher.Name = $"{_firstword[publisherRandom.Next(_firstword.Count)]} {_action[publisherRandom.Next(_action.Count)]} {_structure[publisherRandom.Next(_structure.Count)]}";
+                
+                //book.Author = authors[book.AuthorId-1];
+                _publishers.Add(publisher);
+            }
+
 
 
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publishers { get { return _publishers; } }
     }
 }
