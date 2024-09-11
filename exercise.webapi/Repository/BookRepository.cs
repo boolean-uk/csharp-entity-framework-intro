@@ -29,6 +29,11 @@ namespace exercise.webapi.Repository
                 .Include(b => b.Publisher)
                 .FirstOrDefaultAsync(b => b.Title.ToLower() == title.ToLower()))!;
         }
+        
+        public List<Book> GetByPublisherId(int id)
+        {
+            return db.Books.Where(b => b.PublisherId == id).ToList();
+        }
 
         public Task<Book> GetByFullName(string firstName, string lastName)
         {

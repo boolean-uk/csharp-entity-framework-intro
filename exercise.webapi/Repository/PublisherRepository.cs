@@ -48,4 +48,9 @@ public class PublisherRepository(DataContext db) : IRepository<Publisher>
         await db.SaveChangesAsync();
         return publisher;
     }
+
+    public List<Publisher> GetByPublisherId(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

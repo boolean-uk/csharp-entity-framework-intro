@@ -51,4 +51,9 @@ public class AuthorRepository(DataContext db) : IRepository<Author>
         await db.SaveChangesAsync();
         return author;
     }
+
+    public List<Author> GetByPublisherId(int id)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,3 +1,4 @@
+using exercise.webapi.DTOs;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using exercise.webapi.ViewModels;
@@ -11,14 +12,33 @@ public static class PublisherApi
     {
         var publishers = app.MapGroup("publisher");
         publishers.MapGet("/", GetPublishers);
+        publishers.MapGet("/{id}", GetPublisherById);
         publishers.MapPost("/", AddPublisher);
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
-    private static async Task<IResult> GetPublishers(IRepository<Publisher> repo)
+    private static async Task<IResult> GetPublishers(IRepository<Publisher> repo, IRepository<Book> bookRepo)
     {
         var list = await repo.GetAll();
-        return TypedResults.Ok(list);
+        var listDto = list.Select(p => new PublisherDTO()
+        {
+            Name = p.Name,
+            Books = bookRepo.GetByPublisherId(p.Id)
+        });
+        return TypedResults.Ok(listDto);
+    }
+    
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    private static async Task<IResult> GetPublisherById(IRepository<Publisher> repo, IRepository<Book> bookRepo, int id)
+    {
+        var p = await repo.GetById(id);
+        var response = new PublisherDTO()
+        {
+            Name = p.Name,
+            Books = bookRepo.GetByPublisherId(p.Id)
+        };
+        return TypedResults.Ok(response);
     }
 
     private static async Task<IResult> AddPublisher(IRepository<Publisher> repo, PostPublisherModel publisher)

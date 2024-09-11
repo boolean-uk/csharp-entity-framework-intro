@@ -11,5 +11,6 @@ namespace exercise.webapi.Repository
         public Task<T> Add(T entity);
         public Task<T> Remove(T entity);
         public Task<T> Update(T entity);
+        public List<T> GetByPublisherId(int id);
     }
 }

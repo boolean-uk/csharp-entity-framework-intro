@@ -82,11 +82,8 @@ namespace exercise.webapi.Data
 
         public Seeder()
         {
-
-            Random authorRandom = new Random();
-            Random bookRandom = new Random();
-
-
+            var authorRandom = new Random();
+            var bookRandom = new Random();
 
             for (int x = 1; x < 250; x++)
             {
@@ -108,8 +105,6 @@ namespace exercise.webapi.Data
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }
-
-
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
