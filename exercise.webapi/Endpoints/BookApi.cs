@@ -11,11 +11,12 @@ namespace exercise.webapi.Endpoints
     {
         public static void ConfigureBooksApi(this WebApplication app)
         {
-            app.MapGet("/books", GetBooks);
-            app.MapGet("/books{id}", GetABook);
-            app.MapPost("/books{id}", AddBook);
-            app.MapPut("/book{id}", UpdateBook);
-            app.MapDelete("/books{id}", DeleteBook);
+            var bookGroup = app.MapGroup("/books");
+            bookGroup.MapGet("", GetBooks);
+            bookGroup.MapGet("{id}", GetABook);
+            bookGroup.MapPost("", AddBook);
+            bookGroup.MapPut("{id}", UpdateBook);
+            bookGroup.MapDelete("{id}", DeleteBook);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
