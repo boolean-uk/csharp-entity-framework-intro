@@ -31,6 +31,19 @@ namespace exercise.webapi.Data
             "Middleton"
 
         };
+        private List<string> _publishers = new List<string>()
+        {
+            "Publisher",
+            "Very Cool Publisher",
+            "Only Publish Bad Things",
+            "Rude Publishers",
+            "Only Cool Books Allowed",
+            "Another Publisher Name",
+            "This one is cool",
+            "This one is bad again",
+            "I am running out of names",
+            "Last one"
+        };
         private List<string> _domain = new List<string>()
         {
             "bbc.co.uk",
@@ -79,14 +92,14 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _pubs = new List<Publisher>();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
-
-
+            Random randomPubs = new Random();
 
             for (int x = 1; x < 250; x++)
             {
@@ -98,6 +111,13 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
+            for (int z = 1; z < 11; z++)
+            {
+                Publisher publisher = new Publisher();
+                publisher.Id = z;
+                publisher.Name = _publishers[randomPubs.Next(_publishers.Count)];
+                _pubs.Add(publisher);
+            }
 
             for (int y = 1; y < 250; y++)
             {
@@ -105,6 +125,7 @@ namespace exercise.webapi.Data
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
                 book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.PublisherId = _pubs[randomPubs.Next(_pubs.Count)].Id;
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }
@@ -113,5 +134,6 @@ namespace exercise.webapi.Data
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publishers { get { return _pubs; } }
     }
 }
