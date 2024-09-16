@@ -105,12 +105,23 @@ namespace exercise.webapi.Data
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
                 book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
+                book.PublisherId = bookRandom.Next(1, 6);
                 //book.Author = authors[book.AuthorId-1];
                 _books.Add(book);
             }
 
 
         }
+
+        //added publisher
+        public List<Publisher> Publishers = new List<Publisher>
+        {
+            new Publisher { Id = 1, Name = "Publisher 1" },
+            new Publisher { Id = 2, Name = "Publisher 2" },
+            new Publisher { Id = 3, Name = "Publisher 3" },
+            new Publisher { Id = 4, Name = "Publisher 4" },
+            new Publisher { Id = 5, Name = "Publisher 5" }
+        };
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
     }
