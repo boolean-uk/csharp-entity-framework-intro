@@ -1,4 +1,5 @@
-﻿using exercise.webapi.Dto;
+﻿using System.ComponentModel.DataAnnotations;
+using exercise.webapi.Dto;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ namespace exercise.webapi.Endpoints
         {
             app.MapGet("/books", GetBooks);
             app.MapGet("/books/{id}", GetBook);
+            app.MapPost("/books", CreateBook);
             app.MapDelete("/books/{id}", DeleteBook);
             app.MapPut("/books/{id}", UpdateBook);
         }
@@ -69,6 +71,37 @@ namespace exercise.webapi.Endpoints
             
             newBook.Author.Books = new List<Book>();
             return TypedResults.Ok(new BookResponse(newBook));
+        }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository,
+            IAuthorRepository authorRepository, [FromBody] BookPost book)
+        {
+            try
+            {
+                Validator.ValidateObject(book, new ValidationContext(book), true);
+            }
+            catch (ValidationException e)
+            {
+                return TypedResults.BadRequest(e.Message);
+            }
+            
+            var author = await authorRepository.GetAuthorById(book.AuthorId);
+            if (author == null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var newBook = new Book
+            {
+                Title = book.Title,
+                AuthorId = book.AuthorId
+            };
+            var createdBook = await bookRepository.AddBook(newBook);
+            createdBook.Author.Books = new List<Book>();
+            return TypedResults.Created("/books/" + createdBook.Id);
         }
     }
 }

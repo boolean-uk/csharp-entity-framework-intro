@@ -12,6 +12,13 @@ namespace exercise.webapi.Repository
         {
             _db = db;
         }
+        
+        public async Task<Book> AddBook(Book book)
+        {
+            await _db.Books.AddAsync(book);
+            await _db.SaveChangesAsync();
+            return book;
+        }
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
