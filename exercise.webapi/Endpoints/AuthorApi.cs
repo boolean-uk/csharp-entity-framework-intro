@@ -20,7 +20,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
         {
             var authors = await authorRepository.GetAllAuthors();
-            if (authors.Count() == 0) TypedResults.NotFound($"No authors found in the database");
+            if (authors.Count() == 0) return TypedResults.NotFound($"No authors found in the database");
             return TypedResults.Ok(authors.Select(x => new Author_get(x)));
         }
 
@@ -29,7 +29,7 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetAuthor(IAuthorRepository authorRepository, int id)
         {
             var author = await authorRepository.GetAuthor(id);
-            if (author == null) TypedResults.NotFound($"No author with id[{id}] exists");
+            if (author == null) return TypedResults.NotFound($"No author with id[{id}] exists");
             return TypedResults.Ok(new Author_get(author));
         }
     }

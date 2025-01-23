@@ -8,8 +8,10 @@ namespace exercise.webapi.DTO
         {
             this.Id = book.Id;
             this.Title = book.Title;
+            this.Publisher = new Book_get_Publisher(book.Publisher);
         }
         public int Id { get; set; }
         public string Title { get; set; }
+        public Book_get_Publisher Publisher { get; set; }
     }
 }

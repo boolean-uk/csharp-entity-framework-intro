@@ -37,7 +37,7 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> UpdateBook(HttpContext context, IBookRepository bookRepository, IAuthorRepository authorRepository, int id, Book_update dto)
+        private static async Task<IResult> UpdateBook(HttpContext context, IBookRepository bookRepository, IAuthorRepository authorRepository, IPublisherRepository publisherRepository, int id, Book_update dto)
         {
             try
             {
@@ -61,17 +61,21 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        private static async Task<IResult> CreateBook(HttpContext context, IBookRepository bookRepository, IAuthorRepository authorRepository, Book_create dto)
+        private static async Task<IResult> CreateBook(HttpContext context, IBookRepository bookRepository, IAuthorRepository authorRepository, IPublisherRepository publisherRepository, Book_create dto)
         {
             
             try
             {
                 var author = await authorRepository.GetAuthor(dto.AuthorId);
                 if (author == null)return TypedResults.NotFound($"Book can't be created with AuthorId[{dto.AuthorId}], as no Author was found");
+                var publisher = await publisherRepository.GetPublisher(dto.PublisherId);
+                if (publisher == null) return TypedResults.NotFound($"Book can't be created with PublisherId[{dto.PublisherId}], as no Publisher was found");
                 var b = await bookRepository.CreateBook(
                     dto.Title,
                     dto.AuthorId,
-                    author
+                    author,
+                    dto.PublisherId,
+                    publisher
                     );
                 
                 //await authorRepository.AddAuthorBook(dto.AuthorId,b);
@@ -89,8 +93,8 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
         {
             var books = await bookRepository.GetAllBooks();
-            if (books.Count() == 0) TypedResults.NotFound($"No books found in the database");
-            return TypedResults.Ok(books);
+            if (books.Count() == 0) return TypedResults.NotFound($"No books found in the database");
+            return TypedResults.Ok(books.Select(x => new Book_get(x)).ToList());
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -98,8 +102,8 @@ namespace exercise.webapi.Endpoints
         private static async Task<IResult> GetBook(IBookRepository bookRepository, int id)
         {
             var book = await bookRepository.GetBook(id);
-            if (book== null) TypedResults.NotFound($"No book with id[{id}] exists");
-            return TypedResults.Ok(book);
+            if (book== null) return TypedResults.NotFound($"No book with id[{id}] exists");
+            return TypedResults.Ok(new Book_get(book));
         }
     }
 }
