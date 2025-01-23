@@ -56,6 +56,8 @@ namespace exercise.webapi.Endpoints
             return TypedResults.NoContent();
         }
         
+        [ProducesResponseType(typeof(BookResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> UpdateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, int id, [FromBody] BookPut book)
         {
             var existingBook = await bookRepository.GetBookById(id);
