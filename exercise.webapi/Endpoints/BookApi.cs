@@ -28,8 +28,8 @@ namespace exercise.webapi.Endpoints
             {
                 Id = book.Id,
                 Title = book.Title,
-                AuthorId = book.AuthorId,
-                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}"
+                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}",
+                PublisherName = book.Publisher.Name
             };
 
             return TypedResults.Ok(result);
@@ -47,8 +47,8 @@ namespace exercise.webapi.Endpoints
                 {
                     Id = b.Id,
                     Title = b.Title,
-                    AuthorId = b.AuthorId,
-                    AuthorName = $"{b.Author.FirstName} {b.Author.LastName}"
+                    AuthorName = $"{b.Author.FirstName} {b.Author.LastName}",
+                    PublisherName = b.Publisher.Name
                 };
                 result.Add(book);
 
@@ -64,16 +64,18 @@ namespace exercise.webapi.Endpoints
             {
                 var target = await bookRepository.GetBook(id);
                 if (model.AuthorId != null) target.AuthorId = (int)model.AuthorId;
-
-                var result = new BookDTO()
-                {
-                    Id = target.Id,
-                    Title = target.Title,
-                    AuthorId = target.AuthorId,
-                    AuthorName = $"{target.Author.FirstName} {target.Author.LastName}"
-                };
+                if (model.PublisherId != null) target.PublisherId = (int)model.PublisherId;
 
                 await bookRepository.UpdateBook(target);
+                var update = await bookRepository.GetBook(id);
+                var result = new BookDTO()
+                {
+                    Id = update.Id,
+                    Title = update.Title,
+                    AuthorName = $"{update.Author.FirstName} {update.Author.LastName}",
+                    PublisherName = update.Publisher.Name
+                };
+
                 return TypedResults.Ok(result);
             }
             catch (Exception ex)
@@ -96,8 +98,8 @@ namespace exercise.webapi.Endpoints
                     {
                         Id = target.Id,
                         Title = target.Title,
-                        AuthorId = target.AuthorId,
-                        AuthorName = $"{target.Author.FirstName} {target.Author.LastName}"
+                        AuthorName = $"{target.Author.FirstName} {target.Author.LastName}",
+                        PublisherName = target.Publisher.Name
                     };
                     return TypedResults.Ok(result);
                 }
@@ -114,7 +116,7 @@ namespace exercise.webapi.Endpoints
         {
             try
             {
-                var newBook = await bookRepository.CreateBook(new Book(){ Title = model.Title, AuthorId = model.AuthorId });
+                var newBook = await bookRepository.CreateBook(new Book(){ Title = model.Title, AuthorId = model.AuthorId, PublisherId = model.PublisherId});
 
                 var createdBook = await bookRepository.GetBook(newBook.Id);
 
@@ -122,10 +124,10 @@ namespace exercise.webapi.Endpoints
                 {
                     Id = createdBook.Id,
                     Title = createdBook.Title,
-                    AuthorId = createdBook.AuthorId,
-                    AuthorName = $"{createdBook.Author.FirstName} {createdBook.Author.LastName}"
+                    AuthorName = $"{createdBook.Author.FirstName} {createdBook.Author.LastName}",
+                    PublisherName = createdBook.Publisher.Name
                 };
-                return TypedResults.Ok(result);
+                return TypedResults.Created($"/{createdBook.Id}", result);
             }
             catch (Exception ex)
             {

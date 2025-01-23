@@ -29,10 +29,11 @@ namespace exercise.webapi.Endpoints
 
             foreach (var b in author.Books)
             {
-                BasicBookDTO bookDTO = new BasicBookDTO()
+                BookPublisherDTO bookDTO = new BookPublisherDTO()
                 {
                     Id = b.Id,
                     Title = b.Title,
+                    PublisherName = b.Publisher.Name
                 };
                 result.Books.Add(bookDTO);
             }
@@ -59,10 +60,11 @@ namespace exercise.webapi.Endpoints
 
                 foreach(var b in a.Books)
                 {
-                    BasicBookDTO bookDTO = new BasicBookDTO()
+                    BookPublisherDTO bookDTO = new BookPublisherDTO()
                     {
                         Id = b.Id,
                         Title = b.Title,
+                        PublisherName = b.Publisher.Name
                     };
                     authorDTO.Books.Add(bookDTO);
                 }
