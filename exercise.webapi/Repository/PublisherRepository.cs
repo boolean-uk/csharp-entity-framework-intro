@@ -13,13 +13,9 @@ namespace exercise.webapi.Repository
             _db = db;
         }
 
-
-
         public async Task<IEnumerable<Publisher>> GetAllPublishers()
         {
-            var publishers = await _db.Publishers.Include(b => b.Books).ThenInclude(a => a.Author).ToListAsync();
-
-            return publishers;
+            return await _db.Publishers.Include(b => b.Books).ThenInclude(a => a.Author).ToListAsync();
         }
 
         public async Task<Publisher> GetPublisher(int id)

@@ -13,7 +13,6 @@ namespace exercise.webapi.Endpoints
             publishers.MapGet("/{id}", GetPublisher);
         }
 
-
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetPublishers(IPublisherRepository publisherRepository)

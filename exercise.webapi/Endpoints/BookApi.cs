@@ -20,7 +20,7 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> DeleteBook(HttpContext context, IBookRepository bookRepository, int id)
         {
             try
@@ -30,9 +30,8 @@ namespace exercise.webapi.Endpoints
             }
             catch (Exception ex)
             {
-                return TypedResults.BadRequest("Invalid book data");
+                return TypedResults.NotFound("Invalid book data");
             }
-            
         }
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,10 +44,8 @@ namespace exercise.webapi.Endpoints
                 if (author == null) return TypedResults.NotFound($"Book can't be updated to use AuthorId[{dto.AuthorId}], as no Author was found");
                 var book = await bookRepository.GetBook(id);
                 if (book == null) return TypedResults.NotFound($"Book can't be updated, no book with id[{id}] exists");
-                var b = await bookRepository.UpdateBook(
-                    id,
-                    author
-                    );
+                var b = await bookRepository.UpdateBook(id, author);
+
                 var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}";
                 return TypedResults.Created($"{url}/{b.Id}", new Book_get(b));
             }
@@ -63,22 +60,14 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         private static async Task<IResult> CreateBook(HttpContext context, IBookRepository bookRepository, IAuthorRepository authorRepository, IPublisherRepository publisherRepository, Book_create dto)
         {
-            
             try
             {
                 var author = await authorRepository.GetAuthor(dto.AuthorId);
                 if (author == null)return TypedResults.NotFound($"Book can't be created with AuthorId[{dto.AuthorId}], as no Author was found");
                 var publisher = await publisherRepository.GetPublisher(dto.PublisherId);
                 if (publisher == null) return TypedResults.NotFound($"Book can't be created with PublisherId[{dto.PublisherId}], as no Publisher was found");
-                var b = await bookRepository.CreateBook(
-                    dto.Title,
-                    dto.AuthorId,
-                    author,
-                    dto.PublisherId,
-                    publisher
-                    );
+                var b = await bookRepository.CreateBook(dto.Title, dto.AuthorId, author, dto.PublisherId, publisher );
                 
-                //await authorRepository.AddAuthorBook(dto.AuthorId,b);
                 var url = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}";
                 return TypedResults.Created($"{url}/{b.Id}", new Book_get(b));
             }

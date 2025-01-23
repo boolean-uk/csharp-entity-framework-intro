@@ -14,7 +14,6 @@ namespace exercise.webapi.Endpoints
             authors.MapGet("/{id}", GetAuthor);
         }
 
-
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> GetAuthors(IAuthorRepository authorRepository)
