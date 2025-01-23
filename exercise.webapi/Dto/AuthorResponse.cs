@@ -17,5 +17,13 @@ public class AuthorResponse
         FirstName = author.FirstName;
         LastName = author.LastName;
         Email = author.Email;
+        if (author.Books.Count > 0)
+        {
+            Books = author.Books.Select((b) =>
+            {
+                b.Author = null;
+                return new BookResponse(b);
+            }).ToArray();
+        }
     }
 }

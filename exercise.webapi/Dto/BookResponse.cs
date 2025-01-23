@@ -14,6 +14,10 @@ public class BookResponse
     {
         Id = book.Id;
         Title = book.Title;
-        Author = new AuthorResponse(book.Author);
+        // TODO: Throws NullReferenceException when not in the if statement. FIX!
+        if (book.Author is not null)
+        {
+            Author = new AuthorResponse(book.Author);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Dto;
+using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,11 @@ namespace exercise.webapi.Endpoints
         {
             var books = await bookRepository.GetAllBooks();
             var response = books.Select(b => new BookResponse(b));
-            
+
+            foreach (var book in books)
+            {
+                book.Author.Books = new List<Book>();
+            }
             return TypedResults.Ok(response);
         }
         
@@ -30,6 +35,7 @@ namespace exercise.webapi.Endpoints
             {
                 return TypedResults.NotFound();
             }
+            book.Author.Books = new List<Book>();
             return TypedResults.Ok(new BookResponse(book));
         }
     }
