@@ -2,6 +2,7 @@
 using exercise.webapi.Exceptions;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace exercise.webapi.Endpoints
 {
@@ -18,6 +19,8 @@ namespace exercise.webapi.Endpoints
             group.MapGet("/{id}", GetBook);
             group.MapPut("/{id}", UpdateBook);
             group.MapDelete("/{id}", DeleteBook);
+            group.MapPost("/author/add/{id}", AddAuthor);
+            group.MapPost("/author/remove/{id}", RemoveAuthor);
         }
         public static async Task<IResult> CreateBook(IRepository<Book> bookRepository, IRepository<Author> authorRepository, IRepository<Publisher> publisherRepository, BookPost entity)
         {
@@ -152,6 +155,74 @@ namespace exercise.webapi.Endpoints
             {
                 Book book = await repository.Delete(id);
                 return TypedResults.Ok(new { Message = $"Deleted Book with Title = {book.Title}" });
+            }
+            catch (IdNotFoundException ex)
+            {
+                return TypedResults.NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.Problem(ex.Message);
+            }
+        }
+        public static async Task<IResult> AddAuthor(IRepository<Book> bookRepository, IRepository<Author> authorRepository, int id, int authorId)
+        {
+            try
+            {
+                Book book = await bookRepository.Get(id);
+                if (book.Authors.Any(a => a.Id == authorId)) return TypedResults.BadRequest(new { Message = $"Author with ID = {authorId} is already registered to this book!" });
+                Author author = await authorRepository.Get(authorId);
+                book.Authors.Add(author);
+                book = await bookRepository.Update(book);
+
+                return TypedResults.Ok(new BookView(
+                    book.Id,
+                    book.Title,
+                    book.Authors.Select(a => new AuthorInternal(
+                        a.Id,
+                        a.FirstName,
+                        a.LastName,
+                        a.Email
+                    )),
+                    new PublisherInternal(
+                        book.Publisher.Id,
+                        book.Publisher.Name
+                    )
+                ));
+            }
+            catch (IdNotFoundException ex)
+            {
+                return TypedResults.NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.Problem(ex.Message);
+            }
+        }
+        public static async Task<IResult> RemoveAuthor(IRepository<Book> bookRepository, IRepository<Author> authorRepository, int id, int authorId)
+        {
+            try
+            {
+                Book book = await bookRepository.Get(id);
+                if (book.Authors.Count <= 1) return TypedResults.BadRequest(new { Message = $"Book must have at least one author!" });
+                Author author = await authorRepository.Get(authorId);
+                book.Authors.Remove(author);
+                book = await bookRepository.Update(book);
+
+                return TypedResults.Ok(new BookView(
+                    book.Id,
+                    book.Title,
+                    book.Authors.Select(a => new AuthorInternal(
+                        a.Id,
+                        a.FirstName,
+                        a.LastName,
+                        a.Email
+                    )),
+                    new PublisherInternal(
+                        book.Publisher.Id,
+                        book.Publisher.Name
+                    )
+                ));
             }
             catch (IdNotFoundException ex)
             {
