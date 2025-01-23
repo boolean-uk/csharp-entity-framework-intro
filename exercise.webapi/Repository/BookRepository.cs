@@ -36,5 +36,11 @@ namespace exercise.webapi.Repository
                 }
             }).FirstOrDefaultAsync(b => b.Id == id);
         }
+
+        public void DeleteBook(Book book)
+        {
+            _db.Books.Remove(book);
+            _db.SaveChanges();
+        }
     }
 }

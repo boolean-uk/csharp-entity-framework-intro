@@ -11,6 +11,7 @@ namespace exercise.webapi.Endpoints
         {
             app.MapGet("/books", GetBooks);
             app.MapGet("/books/{id}", GetBook);
+            app.MapDelete("/books/{id}", DeleteBook);
         }
 
         [ProducesResponseType(typeof(IEnumerable<BookResponse>), StatusCodes.Status200OK)]
@@ -37,6 +38,19 @@ namespace exercise.webapi.Endpoints
             }
             book.Author.Books = new List<Book>();
             return TypedResults.Ok(new BookResponse(book));
+        }
+        
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        private static async Task<IResult> DeleteBook(IBookRepository bookRepository, int id)
+        {
+            var book = await bookRepository.GetBookById(id);
+            if (book == null)
+            {
+                return TypedResults.NotFound();
+            }
+            bookRepository.DeleteBook(book);
+            return TypedResults.NoContent();
         }
     }
 }

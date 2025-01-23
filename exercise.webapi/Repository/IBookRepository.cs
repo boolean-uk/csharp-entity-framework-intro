@@ -6,5 +6,6 @@ namespace exercise.webapi.Repository
     {
         public Task<IEnumerable<Book>> GetAllBooks();
         Task<Book?> GetBookById(int id);
+        void DeleteBook(Book book);
     }
 }
