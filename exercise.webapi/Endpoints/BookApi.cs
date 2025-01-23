@@ -20,25 +20,35 @@ namespace exercise.webapi.Endpoints
 
         private static async Task<IResult> GetBooks(IRepository<Book> bookRepository)
         {
-            //BookPaylaod<IEnumerable<Book>> payload = new();
 
-            BookPaylaod<IEnumerable<Book>> payload = new();
 
-            var books = await bookRepository.GetAllEntities();
-
-            payload.Data = books.ToList();
+            var payload = from b in bookRepository.GetAllEntities().Result
+                                         select new TestBookPayload()
+                                         {
+                                             Id = b.Id,
+                                             Title = b.Title,
+                                             AuthorId = b.AuthorId,
+                                             FirstName = b.Author.FirstName,
+                                             LastName = b.Author.LastName,
+                                             Email = b.Author.Email
+                                         };
 
             return TypedResults.Ok(payload);
         }
 
         private static async Task<IResult> GetBookById(IRepository<Book> bookRepository, int id)
         {
-            BookPaylaod<Book> payload = new()
-            {
-                Data = await bookRepository.GetEntityById(id),
-            };
+            var book = await bookRepository.GetEntityById(id);
 
-            payload.Message = (payload.Data is null) ? "No book matching provided ID" : "OK";
+            var payload = new TestBookPayload()
+            {
+                Id = book.Id,
+                Title = book.Title,
+                AuthorId = book.AuthorId,
+                FirstName = book.Author.FirstName,
+                LastName = book.Author.LastName,
+                Email = book.Author.Email
+            };
 
             return TypedResults.Ok(payload);
         }
@@ -57,9 +67,14 @@ namespace exercise.webapi.Endpoints
             }
             catch (Exception ex) { return TypedResults.BadRequest(ex); }
 
-            BookPaylaod<Book> payload = new()
+            var payload = new TestBookPayload()
             {
-                Data = book
+                Id = book.Id,
+                Title = book.Title,
+                AuthorId = book.AuthorId,
+                FirstName = book.Author.FirstName,
+                LastName = book.Author.LastName,
+                Email = book.Author.Email
             };
 
             return TypedResults.Ok(payload);
@@ -95,9 +110,14 @@ namespace exercise.webapi.Endpoints
                     AuthorId = model.AuthorId
                 };
 
-                BookPaylaod<Book> payload = new()
+                var payload = new TestBookPayload()
                 {
-                    Data = book
+                    Id = book.Id,
+                    Title = book.Title,
+                    AuthorId = book.AuthorId,
+                    FirstName = book.Author.FirstName,
+                    LastName = book.Author.LastName,
+                    Email = book.Author.Email
                 };
 
                 return TypedResults.Ok(payload);

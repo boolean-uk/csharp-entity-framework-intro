@@ -16,23 +16,47 @@ namespace exercise.webapi.Endpoints
 
         public static async Task<IResult> GetAllAuthors(IRepository<Author> authorRepository)
         {
-            BookPaylaod<IEnumerable<Author>> payload = new();
 
-            var authors = await authorRepository.GetAllEntities();
-
-            payload.Data = authors.ToList();
+            var payload = from a in authorRepository.GetAllEntities().Result
+                          select new AuthorPayload()
+                          {
+                              Id = a.Id,
+                              FirstName = a.FirstName,
+                              LastName = a.LastName,
+                              Email = a.Email,
+                              Books = from b in a.Books
+                                      select new TestBookPayload()
+                                      {
+                                          Id = b.Id,
+                                          Title = b.Title,
+                                          AuthorId = a.Id,
+                                          FirstName = a.FirstName,
+                                          LastName = a.LastName,
+                                          Email = a.Email
+                                      }
+                          };
 
             return TypedResults.Ok(payload);
         }
 
-        private static async Task<IResult> GetAuthorById(IRepository<Book> authorRepository, int id)
+        private static async Task<IResult> GetAuthorById(IRepository<Author> authorRepository, int id)
         {
-            BookPaylaod<Book> payload = new()
-            {
-                Data = await authorRepository.GetEntityById(id),
-            };
 
-            payload.Message = (payload.Data is null) ? "No book matching provided ID" : "OK";
+            var author = await authorRepository.GetEntityById(id);
+
+            var payload =  new AuthorPayload()
+                          {
+                              Id = author.Id,
+                              FirstName = author.FirstName,
+                              LastName = author.LastName,
+                              Email = author.Email,
+                              Books = from b in author.Books
+                                      select new TestBookPayload()
+                                      {
+                                          Id = b.Id,
+                                          Title = b.Title
+                                      }
+                          };
 
             return TypedResults.Ok(payload);
         }
