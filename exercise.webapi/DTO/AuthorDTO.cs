@@ -1,4 +1,6 @@
-﻿namespace exercise.webapi.DTO
+﻿using exercise.webapi.Models;
+
+namespace exercise.webapi.DTO
 {
     public class AuthorDTO
     {
@@ -6,5 +8,6 @@
         public string firstname { get; set; }
         public string lastname { get; set; }
         public string email { get; set; }
+        public List<BookDTO>books { get; set; }
     }
 }
