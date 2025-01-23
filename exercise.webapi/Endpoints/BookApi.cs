@@ -29,18 +29,34 @@ namespace exercise.webapi.Endpoints
             var results = await bookRepository.GetAllBooks();
             foreach (Book book in results)
             {
+
                 BookDTO bookDTO = new BookDTO();
+
+                //author
+                AuthorDTOnoBooks authorDTO = new AuthorDTOnoBooks();
+                authorDTO.FirstName = book.Author.FirstName;
+                authorDTO.LastName = book.Author.LastName;
+                authorDTO.Email = book.Author.Email;
+                authorDTO.id = book.Author.Id;
+
+                //publisher
+                PublisherNoBooks publisherDTO = new PublisherNoBooks();
+                publisherDTO.FirstName = book.Publisher.FirstName;
+                publisherDTO.LastName = book.Publisher.LastName;
+                publisherDTO.Id = book.Publisher.Id;
+
+                
+
+
+                //bookDTO
                 bookDTO.title = book.Title;
                 bookDTO.id = book.Id;
-                bookDTO.author_id = book.AuthorId;
-                AuthorDTO authorDTO = new AuthorDTO();
-                authorDTO.firstname = book.Author.FirstName;
-                authorDTO.lastname = book.Author.LastName;
-                authorDTO.email = book.Author.Email;
-                authorDTO.id = book.Author.Id;
+                
                 bookDTO.author = authorDTO;
+                
+                bookDTO.publisher = publisherDTO;
+                
                 books.Data.Add(bookDTO);
-
 
             }
             return TypedResults.Ok(books);
@@ -53,14 +69,24 @@ namespace exercise.webapi.Endpoints
             Book result = await bookRepository.GetBook(id);
 
             BookDTO bookDTO = new BookDTO();
-            AuthorDTO authorDTO = new AuthorDTO();
+
+            //author
+            AuthorDTOnoBooks authorDTO = new AuthorDTOnoBooks();
             bookDTO.title = result.Title;
             bookDTO.id = result.Id;
-            bookDTO.author_id = result.AuthorId;
-            authorDTO.firstname = result.Author.FirstName;
-            authorDTO.lastname = result.Author.LastName;
-            authorDTO.email = result.Author.Email;
+            
+            authorDTO.FirstName = result.Author.FirstName;
+            authorDTO.LastName = result.Author.LastName;
+            authorDTO.Email = result.Author.Email;
             authorDTO.id = result.Author.Id;
+
+            //publisher
+
+            PublisherNoBooks publisherDTO = new PublisherNoBooks();
+            publisherDTO.FirstName = result.Publisher.FirstName;
+            publisherDTO.LastName = result.Publisher.LastName;
+            publisherDTO.Id = result.Publisher.Id;
+            bookDTO.publisher = publisherDTO;
             bookDTO.author = authorDTO;
             book.Data = bookDTO;
             return TypedResults.Ok(book);
@@ -73,14 +99,23 @@ namespace exercise.webapi.Endpoints
             Book book = await bookRepository.UpdateBook(id, author_id);
 
             BookDTO bookDTO = new BookDTO();
-            AuthorDTO authorDTO = new AuthorDTO();
+            AuthorDTOnoBooks authorDTO = new AuthorDTOnoBooks();
             bookDTO.title = book.Title;
             bookDTO.id = book.Id;
-            bookDTO.author_id = book.AuthorId;
-            authorDTO.firstname = book.Author.FirstName;
-            authorDTO.lastname = book.Author.LastName;
-            authorDTO.email = book.Author.Email;
+            
+            //author
+            authorDTO.FirstName = book.Author.FirstName;
+            authorDTO.LastName = book.Author.LastName;
+            authorDTO.Email = book.Author.Email;
             authorDTO.id = book.Author.Id;
+
+            //publisher
+            PublisherNoBooks publisherDTO = new PublisherNoBooks();
+            publisherDTO.FirstName = book.Publisher.FirstName;
+            publisherDTO.LastName = book.Publisher.LastName;
+            publisherDTO.Id = book.Publisher.Id;
+
+            bookDTO.publisher = publisherDTO;
             bookDTO.author = authorDTO;
             booker.Data = bookDTO;
             return TypedResults.Ok(booker);
@@ -96,14 +131,21 @@ namespace exercise.webapi.Endpoints
 
             bookDTO.id = bookToDelete.Id;
             bookDTO.title = bookToDelete.Title;
-            bookDTO.author_id = bookToDelete.AuthorId;
-            AuthorDTO authorDTO = new AuthorDTO();
-            authorDTO.firstname = bookToDelete.Author.FirstName;
-            authorDTO.lastname = bookToDelete.Author.LastName;
+           
+            //author
+            AuthorDTOnoBooks authorDTO = new AuthorDTOnoBooks();
+            authorDTO.FirstName = bookToDelete.Author.FirstName;
+            authorDTO.LastName = bookToDelete.Author.LastName;
             authorDTO.id = bookToDelete.Author.Id;
-            authorDTO.email = bookToDelete.Author.Email;
+            authorDTO.Email = bookToDelete.Author.Email;
 
+            //publisher
+            PublisherNoBooks publisherDTO = new PublisherNoBooks();
+            publisherDTO.FirstName = bookToDelete.Publisher.FirstName;
+            publisherDTO.LastName = bookToDelete.Publisher.LastName;
+            publisherDTO.Id = bookToDelete.Publisher.Id;
 
+            bookDTO.publisher = publisherDTO;
             bookDTO.author = authorDTO;
             
             await bookRepository.DeleteBook(id);
@@ -111,22 +153,27 @@ namespace exercise.webapi.Endpoints
             return TypedResults.Ok(bookDTO);
         }
 
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, int author_id)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, string title, int author_id, int publisher_id)
         {
-            Book book = await bookRepository.CreateBook("Axel's Bedtime Stories", author_id);
+            Book book = await bookRepository.CreateBook(title, author_id, publisher_id);
             Payload<BookDTO>payload = new Payload<BookDTO>();
             BookDTO bookDTO = new BookDTO();
 
             bookDTO.id = book.Id;
             bookDTO.title = book.Title;
-            bookDTO.author_id = book.AuthorId;
-            AuthorDTO authorDTO = new AuthorDTO();
-            authorDTO.firstname = book.Author.FirstName;
-            authorDTO.lastname = book.Author.LastName;
+            
+            AuthorDTOnoBooks authorDTO = new AuthorDTOnoBooks();
+            authorDTO.FirstName = book.Author.FirstName;
+            authorDTO.LastName = book.Author.LastName;
             authorDTO.id = book.Author.Id;
-            authorDTO.email = book.Author.Email;
+            authorDTO.Email = book.Author.Email;
 
+            PublisherNoBooks publisherDTO = new PublisherNoBooks();
+            publisherDTO.FirstName = book.Publisher.FirstName;
+            publisherDTO.LastName = book.Publisher.LastName;
+            publisherDTO.Id = book.Publisher.Id;
 
+            bookDTO.publisher = publisherDTO;
             bookDTO.author = authorDTO;
             payload.Data = bookDTO;
             return TypedResults.Ok(payload);

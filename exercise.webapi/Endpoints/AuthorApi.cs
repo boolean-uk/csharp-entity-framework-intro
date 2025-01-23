@@ -5,6 +5,7 @@ using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Routing.Constraints;
 using static System.Reflection.Metadata.BlobBuilder;
 namespace exercise.webapi.Endpoints
 {
@@ -29,21 +30,27 @@ namespace exercise.webapi.Endpoints
             {
                 AuthorDTO authorDTO = new AuthorDTO();
                 
-                authorDTO.firstname = author.FirstName;
-                authorDTO.lastname = author.LastName;
-                authorDTO.email = author.Email;
-                authorDTO.id = author.Id;
-                authorDTO.books = new List<BookDTO>();
+                authorDTO.FirstName = author.FirstName;
+                authorDTO.LastName = author.LastName;
+                authorDTO.Email = author.Email;
+                authorDTO.Id = author.Id;
+                authorDTO.books = new List<BookDTONoAuthor>();
 
 
                 var authorBooks = books.Where(b => b.AuthorId == author.Id).ToList();
                 
                 foreach(Book book in authorBooks)
                 {
-                    BookDTO dto = new BookDTO();
+                    BookDTONoAuthor dto = new BookDTONoAuthor();
+                    PublisherNoBooks publisherDTO = new PublisherNoBooks();
+                    publisherDTO.Id = book.Publisher.Id;
+                    publisherDTO.FirstName = book.Publisher.FirstName;
+                    publisherDTO.LastName = book.Publisher.LastName;
                     dto.title = book.Title;
-                    dto.author_id = book.AuthorId;
+                    
                     dto.id = book.Id;
+                    dto.publisher = publisherDTO;
+                    
                     
                     authorDTO.books.Add(dto);
                 }
@@ -59,18 +66,22 @@ namespace exercise.webapi.Endpoints
             Author author = await bookRepository.GetAuthor(id);
             var books = await bookRepository.GetAllBooks();
             AuthorDTO authorDTO = new AuthorDTO();
-            authorDTO.email = author.Email;
-            authorDTO.firstname = author.FirstName;
-            authorDTO.lastname = author.LastName;
-            authorDTO.id = author.Id;
-            authorDTO.books = new List<BookDTO>();
+            authorDTO.Email = author.Email;
+            authorDTO.FirstName = author.FirstName;
+            authorDTO.LastName = author.LastName;
+            authorDTO.Id = author.Id;
+            authorDTO.books = new List<BookDTONoAuthor>();
             var authorBooks = books.Where(x => x.AuthorId == author.Id).ToList();
             foreach(Book book in authorBooks)
             {
-                BookDTO dto = new BookDTO();
+                PublisherNoBooks publisherDTO = new PublisherNoBooks();
+                publisherDTO.FirstName = book.Publisher.FirstName;
+                publisherDTO.Id = book.Publisher.Id;
+                publisherDTO.LastName = book.Publisher.LastName;
+                BookDTONoAuthor dto = new BookDTONoAuthor();
                 dto.title = book.Title;
                 dto.id = book.Id;
-                dto.author_id = book.AuthorId;
+                dto.publisher = publisherDTO;
                 authorDTO.books.Add(dto);
             }
 

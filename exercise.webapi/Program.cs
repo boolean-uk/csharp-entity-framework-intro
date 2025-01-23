@@ -28,6 +28,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.ConfigurePublisherApi();
 app.ConfigueAuthorEnpoints();
 app.ConfigureBooksApi();
 app.Run();
