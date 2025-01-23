@@ -112,10 +112,19 @@ namespace exercise.webapi.Endpoints
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        private static async Task<IResult> CreateBook(IBookRepository bookRepository, BookPost model)
+        private static async Task<IResult> CreateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, IPublisherRepository publisherRepository, BookPost model)
         {
             try
             {
+                if (string.IsNullOrEmpty(model.Title)) return TypedResults.BadRequest("Title is required.");
+                if (model.AuthorId <= 0) return TypedResults.BadRequest("Valid AuthorId is required.");
+                if (model.PublisherId <= 0) return TypedResults.BadRequest("Valid PublisherId is required.");
+               
+                var author = await authorRepository.GetAuthor(model.AuthorId);
+                if (author == null) return TypedResults.NotFound("Author does not exist in database");
+                var publisher = await publisherRepository.GetPublisher(model.PublisherId);
+                if (publisher == null) return TypedResults.NotFound("Publiser does not exist in database");
+
                 var newBook = await bookRepository.CreateBook(new Book(){ Title = model.Title, AuthorId = model.AuthorId, PublisherId = model.PublisherId});
 
                 var createdBook = await bookRepository.GetBook(newBook.Id);
