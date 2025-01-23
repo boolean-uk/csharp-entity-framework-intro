@@ -1,7 +1,6 @@
 ﻿using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace exercise.webapi.Data
 {
@@ -17,6 +16,7 @@ namespace exercise.webapi.Data
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
