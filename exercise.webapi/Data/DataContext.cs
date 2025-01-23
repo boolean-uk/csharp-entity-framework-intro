@@ -26,11 +26,13 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Book>().HasData(seeder.Books);
             modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
             modelBuilder.Entity<BookAuthor>().HasData(seeder.BookAuthors);
+            modelBuilder.Entity<Checkout>().HasData(seeder.Checkouts);
 
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<BookAuthor> BookAuthors { get; set; }
+        public DbSet<Checkout> Checkouts { get; set; }
     }
 }

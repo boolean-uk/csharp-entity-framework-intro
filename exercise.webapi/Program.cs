@@ -15,6 +15,7 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 builder.Services.AddScoped<IBookAuthorRepository, BookAuthorRepository>();
+builder.Services.AddScoped<ICheckoutRepository, CheckoutRepository>();
 builder.Services.AddDbContext<DataContext>(options => {
     //options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionString"));
     options.LogTo(message => Debug.WriteLine(message));
@@ -39,4 +40,5 @@ app.UseHttpsRedirection();
 app.ConfigureBooksApi();
 app.ConfigureAuthorsApi();
 app.ConfigurePublishersApi();
+app.ConfigureCheckoutApi();
 app.Run();

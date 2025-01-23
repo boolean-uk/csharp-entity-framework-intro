@@ -17,6 +17,8 @@ namespace exercise.webapi.Endpoints
             app.MapPost("/books", AddBook);
             app.MapPost("/books/{id}/authors/{authorId}", AddAuthorToBook);
             app.MapDelete("/books/{id}/authors/{authorId}", RemoveAuthorFromBook);
+            //Get unavailable books, we might use queryparameters and the checkoutrepository
+            app.MapGet("/books/unavailable", GetUnavailableBooks);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -43,11 +45,11 @@ namespace exercise.webapi.Endpoints
             {
                 return Results.NotFound();
             }
-           
+
             //book.AuthorId = updates.AuthorId;
-            if(!string.IsNullOrWhiteSpace(updates.Title))
+            if (!string.IsNullOrWhiteSpace(updates.Title))
                 book.Title = updates.Title;
-            if (updates.PublisherId != null )
+            if (updates.PublisherId != null)
                 book.PublisherId = (int)updates.PublisherId;
 
             await bookRepository.UpdateBook(book);
@@ -121,6 +123,21 @@ namespace exercise.webapi.Endpoints
             }
             bookAuthorRepository.DeleteBookAuthor(bookAuthor.Id);
             return TypedResults.Ok();
+        }
+
+        private static async Task<IResult> GetUnavailableBooks(ICheckoutRepository checkoutRepository, IBookRepository bookRepository)
+        {
+            var checkouts = await checkoutRepository.GetAllCheckouts();
+            var unavailableBooks = checkouts
+                .Where(c => !c.IsReturned)
+                .Select(c => new UnavailableDto
+                {
+                    Book = new BookDto(c.Book),
+                    AvailableBy = c.DueDate,
+                })
+                .ToList();
+
+            return TypedResults.Ok(unavailableBooks);
         }
     }
 }

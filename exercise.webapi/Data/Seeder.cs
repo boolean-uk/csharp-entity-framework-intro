@@ -94,6 +94,7 @@ namespace exercise.webapi.Data
         private List<Book> _books = new List<Book>();
         private List<Publisher> _publishers = new List<Publisher>();
         private List<BookAuthor> _bookAuthors = new List<BookAuthor>();
+        private List<Checkout> _checkouts = new List<Checkout>();
 
 
         public Seeder()
@@ -150,10 +151,25 @@ namespace exercise.webapi.Data
             }
 
 
+            //Randomly check some books out. They should all be from various previous dates, some should be overdue, but not most.
+            Random checkoutRandom = new Random();
+            for (int i = 1; i < 100; i++)
+            {
+                Checkout checkout = new Checkout();
+                checkout.Id = i;
+                checkout.BookId = bookRandom.Next(1, 250);
+                checkout.CheckoutDate = DateTime.Now.AddDays(-checkoutRandom.Next(1, 365));
+                checkout.DueDate = checkout.CheckoutDate.AddDays(14);
+                checkout.IsReturned = checkoutRandom.Next(0, 2) == 1 ? true : false;
+                _checkouts.Add(checkout);
+            }
+
+
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
         public List<Publisher> Publishers { get { return _publishers; } }
         public List<BookAuthor> BookAuthors { get { return _bookAuthors; } }
+        public List<Checkout> Checkouts { get { return _checkouts; } }
     }
 }
