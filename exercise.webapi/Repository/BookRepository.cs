@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using exercise.webapi.Data;
 using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using exercise.webapi.ViewModel;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace exercise.webapi.Repository
@@ -90,5 +93,39 @@ namespace exercise.webapi.Repository
             }
             return null;
         }
+        public async Task<List<AuthorDto>> GetAllAuthors()
+        {
+
+
+            var authors = await _db.Authors.Include(b => b.Books).ToListAsync();
+            var authorDtos = new List<AuthorDto>();
+            foreach (var author in authors)
+            {
+                List<string> books = await findBooksByAuthor(author.Id);
+                authorDtos.Add(new AuthorDto(author, books));
+            }
+            return  authorDtos;
+        }
+        public async Task<BookDto> GetAuthor(int id)
+        {
+            try
+            {
+                return new BookDto(await _db.Books.Include(b => b.Author).FirstOrDefaultAsync(book => book.Id == id));
+            }
+            catch (Exception ex)
+            {
+                Results.BadRequest(ex);
+            }
+            return null;
+
+        }
+        public async Task<List<string>> findBooksByAuthor(int authorid)
+        {
+           var books = await _db.Books.Where( b => b.AuthorId == authorid).ToListAsync();
+            List<string> bookTitles = new List<string>();
+            books.ForEach(b => bookTitles.Add(b.Title));
+            return bookTitles;
+        }
+
     }
 }

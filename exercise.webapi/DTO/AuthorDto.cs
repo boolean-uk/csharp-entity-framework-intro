@@ -10,7 +10,17 @@ namespace exercise.webapi.DTO
         public string LastName { get; set; }
         public string Email { get; set; }
 
-        public ICollection<BookDto> Books { get; set; } = new List<BookDto>();
+        public ICollection<string> Books { get; set; } = new List<string>();
+
+        public AuthorDto(Author author, List<string> books) 
+        {
+            Id = author.Id;
+            FirstName = author.FirstName;
+            LastName = author.LastName; 
+            Email = author.Email;
+            Books = books;
+            
+        }
 
     }
 }
