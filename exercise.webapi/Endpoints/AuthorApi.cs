@@ -31,6 +31,7 @@ namespace exercise.webapi.Endpoints
                 FirstName = author.FirstName,
                 LastName = author.LastName,
                 Email = author.Email,
+                Status = "Success",
                 Books = author.Books?.Select(book => new BookResponseDTO
                 {
                     Title = book.Title
@@ -55,6 +56,7 @@ namespace exercise.webapi.Endpoints
                 FirstName = author.FirstName,
                 LastName = author.LastName,
                 Email = author.Email,
+                Status = "Success",
                 Books = author.Books.Select(book => new BookResponseDTO
                 {
                     Title = book.Title

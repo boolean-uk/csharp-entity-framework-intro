@@ -8,7 +8,7 @@ namespace exercise.webapi.DTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        [JsonIgnore]
         public List<BookGetDTO>? Books { get; set; }
+        public List<PublisherGetDTO>? Publishers { get; set; }
     }
 }

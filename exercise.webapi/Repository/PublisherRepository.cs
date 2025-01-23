@@ -60,7 +60,7 @@ namespace exercise.webapi.Repository
                             LastName = b.Author.LastName,
                             Email = b.Author.Email
                         },
-                        Publisher = null
+                        Publisher = null // Prevents circular reference
                     }).ToList()
                 })
                 .FirstOrDefaultAsync();

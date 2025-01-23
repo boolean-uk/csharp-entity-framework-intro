@@ -18,15 +18,28 @@ namespace exercise.webapi.Repository
         {
             return await _db.Authors
                 .Include(a => a.Books)
+                .ThenInclude(b => b.Publisher)
                 .Select(a => new AuthorGetDTO
                 {
                     Id = a.Id,
                     FirstName = a.FirstName,
                     LastName = a.LastName,
-                    Email = a.Email
+                    Email = a.Email,
+                    Books = a.Books.Select(b => new BookGetDTO
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        Author = null, // Prevents circular reference
+                        Publisher = new PublisherGetDTO
+                        {
+                            Id = b.Publisher.Id,
+                            Name = b.Publisher.Name
+                        }
+                    }).ToList()
                 })
                 .ToListAsync();
         }
+
 
         public async Task<AuthorGetDTO> GetAuthorById(int id)
         {
@@ -44,15 +57,17 @@ namespace exercise.webapi.Repository
                     {
                         Id = b.Id,
                         Title = b.Title,
-                        Author = null,
-                        Publisher = new PublisherGetDTO
+                        Author = null, // ✅ Prevents circular reference
+                        Publisher = b.Publisher != null ? new PublisherGetDTO
                         {
                             Id = b.Publisher.Id,
-                            Name = b.Publisher.Name
-                        }
+                            Name = b.Publisher.Name,
+                            Books = null // ✅ Prevents recursion in Publisher's books
+                        } : null
                     }).ToList()
                 })
                 .FirstOrDefaultAsync();
         }
+
     }
 }

@@ -6,12 +6,14 @@ namespace exercise.webapi.DTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public int AuthorId { get; set; }
+
         [JsonIgnore]
+        public int AuthorId { get; set; }
         public AuthorGetDTO? Author { get; set; }
 
-        public int PublisherId { get; set; }
         [JsonIgnore]
+        public int PublisherId { get; set; }
+
         public PublisherGetDTO? Publisher { get; set; }
     }
 }

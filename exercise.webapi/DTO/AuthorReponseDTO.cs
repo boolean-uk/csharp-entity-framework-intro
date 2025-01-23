@@ -6,7 +6,7 @@ namespace exercise.webapi.DTO
     public class AuthorReponseDTO
     {
         public DateTime When { get; set; } = DateTime.Now;
-        public string Status { get; set; } = "Deleted";
+        public string Status { get; set; } = "";
 
         public int Id { get; set; }
         public string FirstName { get; set; }
