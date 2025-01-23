@@ -21,6 +21,7 @@ namespace exercise.webapi.Data
             modelBuilder.Entity<Publisher>().HasData(seeder.Publishers);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
             modelBuilder.Entity<AuthorBook>().HasData(seeder.AuthorBooks);
+            modelBuilder.Entity<Checkout>().HasData(seeder.Checkouts);
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }

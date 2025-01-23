@@ -81,10 +81,10 @@ namespace exercise.webapi.Endpoints
                     }
                     if (value)
                     {
-                        books = books.Where(book => book.Checkouts.Any(checkout => checkout.ReturnTime == null));
+                        books = books.Where(book => book.Checkouts.Count != 0 && book.Checkouts.Any(checkout => checkout.ReturnTime == null));
                     } else
                     {
-                        books = books.Where(book => book.Checkouts.All(checkout => checkout.ReturnTime != null));
+                        books = books.Where(book => book.Checkouts.Count == 0 || book.Checkouts.All(checkout => checkout.ReturnTime != null));
                     }
                 }
                 if (!string.IsNullOrEmpty(isOverdue))
@@ -96,10 +96,13 @@ namespace exercise.webapi.Endpoints
                     }
                     if (value)
                     {
-                        books = books.Where(book => book.Checkouts.Any(checkout => checkout.ReturnTime == null && checkout.ExpectedReturnTime < DateTime.UtcNow));
+                        books = books.Where(book => book.Checkouts.Count != 0 && book.Checkouts.Any(checkout => checkout.ReturnTime == null && checkout.ExpectedReturnTime < DateTime.UtcNow));
                     } else
                     {
-                        books = books.Where(book => book.Checkouts.All(checkout => checkout.ReturnTime != null || checkout.ExpectedReturnTime > DateTime.UtcNow));
+                        books = books.Where(book => book.Checkouts.Count == 0 || book.Checkouts.All(checkout => 
+                            (checkout.ReturnTime == null && checkout.ExpectedReturnTime > DateTime.UtcNow) 
+                            || (checkout.ReturnTime != null && checkout.ExpectedReturnTime > checkout.ReturnTime)
+                        ));
                     }
                 }
                 return TypedResults.Ok(books.Select(b =>

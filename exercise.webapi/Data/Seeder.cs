@@ -81,6 +81,7 @@ namespace exercise.webapi.Data
         private List<Book> _books = new List<Book>();
         private List<Publisher> _publishers = new List<Publisher>();
         private List<AuthorBook> _authorBooks = new List<AuthorBook>();
+        private List<Checkout> _checkouts = new List<Checkout>();
 
         public Seeder()
         {
@@ -88,7 +89,7 @@ namespace exercise.webapi.Data
             Random authorRandom = new Random();
             Random bookRandom = new Random();
             Random publisherRandom = new Random();
-
+            Random checkoutRandom = new Random();
 
 
             for (int x = 1; x < 250; x++)
@@ -139,11 +140,38 @@ namespace exercise.webapi.Data
                 _authorBooks.Add(authorBook);
             }
 
-
+            HashSet<int> checkedOutBooks = new HashSet<int>();
+            for (int y = 1; y < 100; y++)
+            {
+                Checkout checkout = new Checkout();
+                var bookId = _books[bookRandom.Next(_books.Count)].Id;
+                if (checkedOutBooks.Contains(bookId)) continue;
+                bool isReturned = checkoutRandom.NextDouble() < .7;
+                DateTime checkoutTime = DateTime.UtcNow.AddDays(-checkoutRandom.Next(180));
+                if (isReturned)
+                {
+                    bool isOnTime = checkoutRandom.NextDouble() < .65;
+                    if (isOnTime)
+                    {
+                        checkout.ReturnTime = checkoutTime.AddDays(checkoutRandom.Next(14));
+                    } else
+                    {
+                        checkout.ReturnTime = checkoutTime.AddDays(checkoutRandom.Next(15, 60));
+                    }
+                } else
+                {
+                    checkedOutBooks.Add(bookId);
+                }
+                checkout.Id = y;
+                checkout.CheckoutTime = checkoutTime;
+                checkout.BookId = bookId;
+                _checkouts.Add(checkout);
+            }
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
         public List<Publisher> Publishers { get { return _publishers; } }
         public List<AuthorBook> AuthorBooks { get { return _authorBooks; } }
+        public List<Checkout> Checkouts { get { return _checkouts; } }
     }
 }
