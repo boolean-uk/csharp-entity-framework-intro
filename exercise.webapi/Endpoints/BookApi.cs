@@ -104,6 +104,7 @@ namespace exercise.webapi.Endpoints
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> UpdateBook(IBookRepository bookRepository, IAuthorRepository authorRepository, int id, PutBook model)
         {
             try
