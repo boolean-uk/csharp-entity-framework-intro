@@ -5,9 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), ".."))
+    .AddJsonFile("appsettings.json")
+    .Build();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Library"));
+builder.Services.AddDbContext<DataContext>(opt =>
+    opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 
