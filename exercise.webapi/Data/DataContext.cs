@@ -1,17 +1,15 @@
-﻿using exercise.webapi.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using exercise.webapi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Data
 {
     public class DataContext : DbContext
     {
+        public DataContext(DbContextOptions<DataContext> options)
+            : base(options) { }
 
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
-        {
-
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
@@ -24,9 +22,11 @@ namespace exercise.webapi.Data
 
             modelBuilder.Entity<Author>().HasData(seeder.Authors);
             modelBuilder.Entity<Book>().HasData(seeder.Books);
-
+            modelBuilder.Entity<Publisher>().HasData(seeder.Publisher);
         }
+
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
+        public DbSet<Publisher> Publisher { get; set; }
     }
 }
