@@ -2,7 +2,7 @@
 
 1. Fork this repository
 2. Clone your fork to your machine
-3. Open the ef.intro.sln in Visual Studio
+3. Open the exercise.sln in Visual Studio
 
 ## Setup
 
