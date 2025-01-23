@@ -1,4 +1,5 @@
 ﻿using exercise.webapi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Data
 {
@@ -6,112 +7,97 @@ namespace exercise.webapi.Data
     {
         private List<string> _firstnames = new List<string>()
         {
-            "Audrey",
-            "Donald",
-            "Elvis",
-            "Barack",
-            "Oprah",
-            "Jimi",
-            "Mick",
-            "Kate",
-            "Charles",
-            "Kate"
+            "Audrey", "Donald", "Elvis", "Barack", "Oprah",
+            "Jimi", "Mick", "Kate", "Charles", "Kate"
         };
+
         private List<string> _lastnames = new List<string>()
         {
-            "Hepburn",
-            "Trump",
-            "Presley",
-            "Obama",
-            "Winfrey",
-            "Hendrix",
-            "Jagger",
-            "Winslet",
-            "Windsor",
-            "Middleton"
-
+            "Hepburn", "Trump", "Presley", "Obama", "Winfrey",
+            "Hendrix", "Jagger", "Winslet", "Windsor", "Middleton"
         };
+
         private List<string> _domain = new List<string>()
         {
-            "bbc.co.uk",
-            "google.com",
-            "theworld.ca",
-            "something.com",
-            "tesla.com",
-            "nasa.org.us",
-            "gov.us",
-            "gov.gr",
-            "gov.nl",
-            "gov.ru"
+            "bbc.co.uk", "google.com", "theworld.ca", "something.com",
+            "tesla.com", "nasa.org.us", "gov.us", "gov.gr", "gov.nl", "gov.ru"
         };
+
         private List<string> _firstword = new List<string>()
         {
-            "The",
-            "Two",
-            "Several",
-            "Fifteen",
-            "A bunch of",
-            "An army of",
-            "A herd of"
-
-
+            "The", "Two", "Several", "Fifteen", "A bunch of", "An army of", "A herd of"
         };
+
         private List<string> _secondword = new List<string>()
         {
-            "Orange",
-            "Purple",
-            "Large",
-            "Microscopic",
-            "Green",
-            "Transparent",
-            "Rose Smelling",
-            "Bitter"
+            "Orange", "Purple", "Large", "Microscopic", "Green", "Transparent", "Rose Smelling", "Bitter"
         };
+
         private List<string> _thirdword = new List<string>()
         {
-            "Buildings",
-            "Cars",
-            "Planets",
-            "Houses",
-            "Flowers",
-            "Leopards"
+            "Buildings", "Cars", "Planets", "Houses", "Flowers", "Leopards"
+        };
+
+        private List<string> _publisherNames = new List<string>()
+        {
+            "Penguin Random House", "Simon & Schuster", "HarperCollins",
+            "Hachette Livre", "Scholastic", "Macmillan Publishers",
+            "Bloomsbury Publishing", "DK Publishing", "Wiley", "McGraw-Hill Education"
         };
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publishers = new List<Publisher>();
 
         public Seeder()
         {
+            Random random = new Random();
 
-            Random authorRandom = new Random();
-            Random bookRandom = new Random();
-
-
-
-            for (int x = 1; x < 250; x++)
+            // Create Authors
+            for (int x = 1; x <= 50; x++)
             {
-                Author author = new Author();
-                author.Id = x;
-                author.FirstName = _firstnames[authorRandom.Next(_firstnames.Count)];
-                author.LastName = _lastnames[authorRandom.Next(_lastnames.Count)];
-                author.Email = $"{author.FirstName}.{author.LastName}@{_domain[authorRandom.Next(_domain.Count)]}".ToLower();
+                Author author = new Author
+                {
+                    Id = x,
+                    FirstName = _firstnames[random.Next(_firstnames.Count)],
+                    LastName = _lastnames[random.Next(_lastnames.Count)],
+                    Email = $"{_firstnames[random.Next(_firstnames.Count)]}.{_lastnames[random.Next(_lastnames.Count)]}@{_domain[random.Next(_domain.Count)]}".ToLower()
+                };
                 _authors.Add(author);
             }
 
-
-            for (int y = 1; y < 250; y++)
+            // Create Publishers
+            for (int x = 1; x <= _publisherNames.Count; x++)
             {
-                Book book = new Book();
-                book.Id = y;
-                book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+                Publisher publisher = new Publisher
+                {
+                    Id = x,
+                    Name = _publisherNames[x - 1]
+                };
+                _publishers.Add(publisher);
+            }
+
+            // Create Books
+            for (int x = 1; x <= 50; x++)
+            {
+                Author randomAuthor = _authors[random.Next(_authors.Count)];
+                Publisher randomPublisher = _publishers[random.Next(_publishers.Count)];
+
+                Book book = new Book
+                {
+                    Id = x,
+                    Title = $"{_firstword[random.Next(_firstword.Count)]} {_secondword[random.Next(_secondword.Count)]} {_thirdword[random.Next(_thirdword.Count)]}",
+                    AuthorId = randomAuthor.Id,
+                    PublisherId = randomPublisher.Id
+                };
+
                 _books.Add(book);
             }
 
-
         }
-        public List<Author> Authors { get { return _authors; } }
-        public List<Book> Books { get { return _books; } }
+        public List<Author> Authors => _authors;
+        public List<Book> Books => _books;
+        public List<Publisher> Publishers => _publishers;
     }
+    
 }
