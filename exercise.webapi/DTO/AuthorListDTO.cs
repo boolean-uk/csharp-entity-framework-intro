@@ -1,13 +1,12 @@
-﻿using System.Text.Json.Serialization;
-
-namespace exercise.webapi.Models
+﻿namespace exercise.webapi.DTO
 {
-    public class Author
+    public class AuthorListDTO
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public List<Book> Books { get; set; } = new List<Book>();
+        public List<BookListDTO> BookList { get; set; } = new List<BookListDTO>();
+
     }
 }
