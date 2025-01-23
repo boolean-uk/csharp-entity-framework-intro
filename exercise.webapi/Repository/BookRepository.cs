@@ -42,5 +42,13 @@ namespace exercise.webapi.Repository
             _db.Books.Remove(book);
             _db.SaveChanges();
         }
+
+        public async Task<Book> UpdateBook(Book book)
+        {
+            //_db.Books.Update(book);
+            _db.Attach(book).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+            return book;
+        }
     }
 }
