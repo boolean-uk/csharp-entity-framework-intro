@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using exercise.webapi.DTO;
 
 namespace exercise.webapi.Models
 {
@@ -11,5 +12,6 @@ namespace exercise.webapi.Models
 
         [JsonIgnore] // Todo: replace this with DTO approach
         public ICollection<Book> Books { get; set; } = new List<Book>();
+
     }
 }
