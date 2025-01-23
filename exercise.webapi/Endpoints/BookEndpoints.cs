@@ -22,6 +22,10 @@ namespace exercise.webapi.Endpoints
             group.MapPost("/author/add/{id}", AddAuthor);
             group.MapPost("/author/remove/{id}", RemoveAuthor);
         }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> CreateBook(IRepository<Book> bookRepository, IRepository<Author> authorRepository, IRepository<Publisher> publisherRepository, BookPost entity)
         {
             try
@@ -35,7 +39,7 @@ namespace exercise.webapi.Endpoints
                 });
                 book.Authors.Add(author);
                 await bookRepository.Update(book);
-                return TypedResults.Ok(new BookView(
+                return TypedResults.Created($"/{Path}/{book.Id}", new BookView(
                     book.Id,
                     book.Title,
                     [new AuthorInternal(
@@ -47,7 +51,8 @@ namespace exercise.webapi.Endpoints
                     new PublisherInternal(
                         publisher.Id,
                         publisher.Name
-                    )
+                    ),
+                    null
                 ));
             }
             catch (IdNotFoundException ex)
@@ -59,13 +64,48 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Problem(ex.Message);
             }
         }
-        public static async Task<IResult> GetBooks(IRepository<Book> repository)
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public static async Task<IResult> GetBooks(IRepository<Book> repository, string? isCheckedOut, string? isOverdue)
         {
             try
             {
                 IEnumerable<Book> books = await repository.GetAll();
+                if (!string.IsNullOrEmpty(isCheckedOut))
+                {
+                    bool value = false;
+                    if (!bool.TryParse(isCheckedOut, out value))
+                    {
+                        return TypedResults.BadRequest(new { Message = "The query param 'isCheckedOut' should be true / false" });
+                    }
+                    if (value)
+                    {
+                        books = books.Where(book => book.Checkouts.Any(checkout => checkout.ReturnTime == null));
+                    } else
+                    {
+                        books = books.Where(book => book.Checkouts.All(checkout => checkout.ReturnTime != null));
+                    }
+                }
+                if (!string.IsNullOrEmpty(isOverdue))
+                {
+                    bool value = false;
+                    if (!bool.TryParse(isOverdue, out value))
+                    {
+                        return TypedResults.BadRequest(new { Message = "The query param 'isOverdue' should be true / false" });
+                    }
+                    if (value)
+                    {
+                        books = books.Where(book => book.Checkouts.Any(checkout => checkout.ReturnTime == null && checkout.ExpectedReturnTime < DateTime.UtcNow));
+                    } else
+                    {
+                        books = books.Where(book => book.Checkouts.All(checkout => checkout.ReturnTime != null || checkout.ExpectedReturnTime > DateTime.UtcNow));
+                    }
+                }
                 return TypedResults.Ok(books.Select(b =>
                 {
+                    Checkout? checkout = b.Checkouts.OrderByDescending(c => c.CheckoutTime).FirstOrDefault();
+
                     return new BookView(
                         b.Id,
                         b.Title,
@@ -78,6 +118,12 @@ namespace exercise.webapi.Endpoints
                         new PublisherInternal(
                             b.Publisher.Id,
                             b.Publisher.Name
+                        ),
+                        checkout == null ? null : new CheckoutInternal(
+                            checkout.Id,
+                            checkout.CheckoutTime,
+                            checkout.ReturnTime,
+                            checkout.ExpectedReturnTime
                         )
                     );
                 }));
@@ -88,11 +134,15 @@ namespace exercise.webapi.Endpoints
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> GetBook(IRepository<Book> repository, int id)
         {
             try
             {
                 Book book = await repository.Get(id);
+                Checkout? checkout = book.Checkouts.OrderByDescending(c => c.CheckoutTime).FirstOrDefault();
                 return TypedResults.Ok(new BookView(
                     book.Id,
                     book.Title,
@@ -105,6 +155,12 @@ namespace exercise.webapi.Endpoints
                     new PublisherInternal(
                         book.Publisher.Id,
                         book.Publisher.Name
+                    ),
+                    checkout == null ? null : new CheckoutInternal(
+                        checkout.Id,
+                        checkout.CheckoutTime,
+                        checkout.ReturnTime,
+                        checkout.ExpectedReturnTime
                     )
                 ));
             }
@@ -117,6 +173,10 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Problem(ex.Message);
             }
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> UpdateBook(IRepository<Book> repository, int id, BookPut entity)
         {
             try
@@ -125,6 +185,7 @@ namespace exercise.webapi.Endpoints
                 if (entity.Title != null) book.Title = entity.Title;
 
                 book = await repository.Update(book);
+                Checkout? checkout = book.Checkouts.OrderByDescending(c => c.CheckoutTime).FirstOrDefault();
                 return TypedResults.Ok(new BookView(
                     book.Id,
                     book.Title,
@@ -137,6 +198,12 @@ namespace exercise.webapi.Endpoints
                     new PublisherInternal(
                         book.Publisher.Id,
                         book.Publisher.Name
+                    ),
+                    checkout == null ? null : new CheckoutInternal(
+                        checkout.Id,
+                        checkout.CheckoutTime,
+                        checkout.ReturnTime,
+                        checkout.ExpectedReturnTime
                     )
                 ));
             }
@@ -149,6 +216,10 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Problem(ex.Message);
             }
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> DeleteBook(IRepository<Book> repository, int id)
         {
             try
@@ -174,6 +245,7 @@ namespace exercise.webapi.Endpoints
                 Author author = await authorRepository.Get(authorId);
                 book.Authors.Add(author);
                 book = await bookRepository.Update(book);
+                Checkout? checkout = book.Checkouts.OrderByDescending(c => c.CheckoutTime).FirstOrDefault();
 
                 return TypedResults.Ok(new BookView(
                     book.Id,
@@ -187,6 +259,12 @@ namespace exercise.webapi.Endpoints
                     new PublisherInternal(
                         book.Publisher.Id,
                         book.Publisher.Name
+                    ),
+                    checkout == null ? null : new CheckoutInternal(
+                        checkout.Id,
+                        checkout.CheckoutTime,
+                        checkout.ReturnTime,
+                        checkout.ExpectedReturnTime
                     )
                 ));
             }
@@ -208,6 +286,7 @@ namespace exercise.webapi.Endpoints
                 Author author = await authorRepository.Get(authorId);
                 book.Authors.Remove(author);
                 book = await bookRepository.Update(book);
+                Checkout? checkout = book.Checkouts.OrderByDescending(c => c.CheckoutTime).FirstOrDefault();
 
                 return TypedResults.Ok(new BookView(
                     book.Id,
@@ -221,6 +300,12 @@ namespace exercise.webapi.Endpoints
                     new PublisherInternal(
                         book.Publisher.Id,
                         book.Publisher.Name
+                    ),
+                    checkout == null ? null : new CheckoutInternal(
+                        checkout.Id,
+                        checkout.CheckoutTime,
+                        checkout.ReturnTime,
+                        checkout.ExpectedReturnTime
                     )
                 ));
             }

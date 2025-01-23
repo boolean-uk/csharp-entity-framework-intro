@@ -12,5 +12,7 @@ namespace exercise.webapi.Models
 
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
+
+        public List<Checkout> Checkouts { get; set; }
     }
 }

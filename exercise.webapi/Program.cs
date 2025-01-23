@@ -29,6 +29,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<IRepository<Book>, BookRepository>();
 builder.Services.AddScoped<IRepository<Author>, AuthorRepository>();
 builder.Services.AddScoped<IRepository<Publisher>, PublisherRepository>();
+builder.Services.AddScoped<IRepository<Checkout>, CheckoutRepository>();
 
 var app = builder.Build();
 
@@ -44,5 +45,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.ConfigureBooksEndpoints();
 app.ConfigureAuthorsEndpoints();
+app.ConfigureCheckoutEndpoints();
 app.ConfigurePublisherEndpoints();
 app.Run();
