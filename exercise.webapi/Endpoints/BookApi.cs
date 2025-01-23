@@ -15,6 +15,8 @@ namespace exercise.webapi.Endpoints
             app.MapPut("/books/{id}", UpdateBook);
             app.MapDelete("/books/{id}", DeleteBook);
             app.MapPost("/books", AddBook);
+            app.MapPost("/books/{id}/authors/{authorId}", AddAuthorToBook);
+            app.MapDelete("/books/{id}/authors/{authorId}", RemoveAuthorFromBook);
         }
 
         private static async Task<IResult> GetBooks(IBookRepository bookRepository)
@@ -41,12 +43,15 @@ namespace exercise.webapi.Endpoints
             {
                 return Results.NotFound();
             }
-            book.AuthorId = updates.AuthorId;
-            book.Title = updates.Title;
-            book.PublisherId = updates.PublisherId;
+           
+            //book.AuthorId = updates.AuthorId;
+            if(!string.IsNullOrWhiteSpace(updates.Title))
+                book.Title = updates.Title;
+            if (updates.PublisherId != null )
+                book.PublisherId = (int)updates.PublisherId;
 
             await bookRepository.UpdateBook(book);
-            Book updatedBook = await bookRepository.GetBook(book.Id);
+            Book updatedBook = await bookRepository.GetBook(id);
             return TypedResults.Ok(new BookDto(updatedBook));
         }
 
@@ -65,27 +70,57 @@ namespace exercise.webapi.Endpoints
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         private static async Task<IResult> AddBook(IBookRepository bookRepository, IAuthorRepository authorRepository, IPublisherRepository publisherRepository, BookUpdateDto bookUpdateDto)
         {
-            var author = await authorRepository.GetAuthor(bookUpdateDto.AuthorId);
-            var publisher = await publisherRepository.GetPublisher(bookUpdateDto.PublisherId);
-            if (author == null || publisher == null)
+            if (bookUpdateDto.PublisherId == null)
             {
-                return TypedResults.NotFound("Author or publisher not found");
+                return TypedResults.BadRequest("PublisherId is required");
             }
-            if (string.IsNullOrWhiteSpace(bookUpdateDto.Title))
+            var publisher = await publisherRepository.GetPublisher((int)bookUpdateDto.PublisherId);
+            if (publisher == null)
             {
-                return TypedResults.BadRequest("Invalid title");
+                return TypedResults.NotFound();
             }
             var book = new Book
             {
-                AuthorId = bookUpdateDto.AuthorId,
                 Title = bookUpdateDto.Title,
-                PublisherId = bookUpdateDto.PublisherId,
-                Publisher = publisher,
-                Author = author
+                PublisherId = (int)bookUpdateDto.PublisherId
             };
             await bookRepository.AddBook(book);
-            return TypedResults.Created($"https://localhost/7054/books/{book.Id}",new BookDto(book));
+            return TypedResults.Created($"https://localhost/7054/books/{book.Id}", new BookDto(book));
+        }
 
+        private static async Task<IResult> AddAuthorToBook(IBookRepository bookRepository, IAuthorRepository authorRepository, IBookAuthorRepository bookAuthorRepository, int id, int authorId)
+        {
+            var book = await bookRepository.GetBook(id);
+            var author = await authorRepository.GetAuthor(authorId);
+            if (book == null || author == null)
+            {
+                return TypedResults.NotFound();
+            }
+            var BookAuthor = new BookAuthor
+            {
+                BookId = book.Id,
+                AuthorId = author.Id
+            };
+
+            bookAuthorRepository.AddBookAuthor(BookAuthor);
+            return TypedResults.Ok(new BookAuthorDto(book.Title, author.FirstName + author.LastName));
+        }
+
+        private static async Task<IResult> RemoveAuthorFromBook(IBookRepository bookRepository, IAuthorRepository authorRepository, IBookAuthorRepository bookAuthorRepository, int id, int authorId)
+        {
+            var book = await bookRepository.GetBook(id);
+            var author = await authorRepository.GetAuthor(authorId);
+            if (book == null || author == null)
+            {
+                return TypedResults.NotFound();
+            }
+            var bookAuthor = book.BookAuthors.FirstOrDefault(ba => ba.AuthorId == author.Id);
+            if (bookAuthor == null)
+            {
+                return TypedResults.NotFound();
+            }
+            bookAuthorRepository.DeleteBookAuthor(bookAuthor.Id);
+            return TypedResults.Ok();
         }
     }
 }

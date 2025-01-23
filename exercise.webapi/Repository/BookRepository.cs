@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace exercise.webapi.Repository
 {
-    public class BookRepository: IBookRepository
+    public class BookRepository : IBookRepository
     {
         DataContext _db;
-        
+
         public BookRepository(DataContext db)
         {
             _db = db;
@@ -15,15 +15,26 @@ namespace exercise.webapi.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).ToListAsync();
-
+            var books = await _db.Books
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Publisher)
+                .ToListAsync();
+            books.ForEach(b => b.Authors = b.BookAuthors.Select(ba => ba.Author).ToList());
+            return books;
         }
 
         public async Task<Book> GetBook(int id)
         {
-            return await _db.Books.Include(b => b.Author).Include(b => b.Publisher).FirstOrDefaultAsync(b => b.Id == id);
+            var book = await _db.Books
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Publisher)
+                .FirstOrDefaultAsync(b => b.Id == id);
+           book.Authors = book.BookAuthors.Select(ba => ba.Author).ToList();
+            return book;
         }
-
+   
         public async Task<Book> UpdateBook(Book book)
         {
             _db.Books.Update(book);
@@ -33,7 +44,7 @@ namespace exercise.webapi.Repository
 
         public async Task<bool> DeleteBook(int id)
         {
-            var book = await _db.Books.FirstOrDefaultAsync(b => b.Id == id);
+            var book = await _db.Books.FindAsync(id);
             if (book == null)
             {
                 return false;

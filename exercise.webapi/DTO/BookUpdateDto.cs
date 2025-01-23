@@ -2,8 +2,8 @@
 {
     public class BookUpdateDto
     {
-        public string Title { get; set; }
-        public int AuthorId { get; set; }
-        public int PublisherId { get; set; }
+        public string? Title { get; set; }
+        //public List<int>? AuthorIds { get; set; }
+        public int? PublisherId { get; set; }
     }
 }

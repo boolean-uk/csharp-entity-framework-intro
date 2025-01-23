@@ -20,10 +20,6 @@ namespace exercise.webapi.Endpoints
             {
                 return Results.NotFound();
             }
-            foreach (var book in author.Books)
-            {
-                book.Publisher = await publisherRepository.GetPublisher(book.PublisherId);
-            }
 
             return TypedResults.Ok(new AuthorResponseDto(author));
         }
