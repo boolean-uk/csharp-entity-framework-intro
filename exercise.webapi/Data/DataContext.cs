@@ -1,5 +1,6 @@
 ﻿using exercise.webapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
@@ -7,15 +8,15 @@ namespace exercise.webapi.Data
 {
     public class DataContext : DbContext
     {
-
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        private readonly IConfiguration _configuration;
+        public DataContext(DbContextOptions<DataContext> options, IConfiguration configuration) : base(options)
         {
-
+            _configuration = configuration;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseInMemoryDatabase("Library");
+            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DefaultConnectionString"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
