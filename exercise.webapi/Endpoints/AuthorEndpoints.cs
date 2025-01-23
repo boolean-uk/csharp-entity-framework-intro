@@ -34,9 +34,13 @@ namespace exercise.webapi.Endpoints
                     author.FirstName,
                     author.LastName,
                     author.Email,
-                    author.Books.Select(b => new BookInternal(
+                    author.Books.Select(b => new BookInternalPublisher(
                         b.Id,
-                        b.Title
+                        b.Title,
+                        new PublisherInternal(
+                            b.Publisher.Id,
+                            b.Publisher.Name
+                        )
                     ))
                 ));
             }
@@ -61,9 +65,13 @@ namespace exercise.webapi.Endpoints
                         a.FirstName,
                         a.LastName,
                         a.Email,
-                        a.Books.Select(b => new BookInternal(
+                        a.Books.Select(b => new BookInternalPublisher(
                             b.Id,
-                            b.Title
+                            b.Title,
+                            new PublisherInternal(
+                                b.Publisher.Id,
+                                b.Publisher.Name
+                            )
                         )));
                 }));
             }
@@ -83,9 +91,13 @@ namespace exercise.webapi.Endpoints
                     author.FirstName,
                     author.LastName,
                     author.Email,
-                    author.Books.Select(b => new BookInternal(
+                    author.Books.Select(b => new BookInternalPublisher(
                         b.Id,
-                        b.Title
+                        b.Title,
+                        new PublisherInternal(
+                            b.Publisher.Id,
+                            b.Publisher.Name
+                        )
                     ))
                 ));
             }
@@ -113,9 +125,13 @@ namespace exercise.webapi.Endpoints
                     author.FirstName,
                     author.LastName,
                     author.Email,
-                    author.Books.Select(b => new BookInternal(
+                    author.Books.Select(b => new BookInternalPublisher(
                         b.Id,
-                        b.Title
+                        b.Title,
+                        new PublisherInternal(
+                            b.Publisher.Id,
+                            b.Publisher.Name
+                        )
                     ))
                 ));
             }

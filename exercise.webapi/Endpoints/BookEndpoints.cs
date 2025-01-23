@@ -19,24 +19,31 @@ namespace exercise.webapi.Endpoints
             group.MapPut("/{id}", UpdateBook);
             group.MapDelete("/{id}", DeleteBook);
         }
-        public static async Task<IResult> CreateBook(IRepository<Book> bookRepository, IRepository<Author> authorRepository, BookPost entity)
+        public static async Task<IResult> CreateBook(IRepository<Book> bookRepository, IRepository<Author> authorRepository, IRepository<Publisher> publisherRepository, BookPost entity)
         {
             try
             {
                 Author author = await authorRepository.Get(entity.AuthorId);
+                Publisher publisher = await publisherRepository.Get(entity.PublisherId);
                 Book book = await bookRepository.Add(new Book
                 {
                     Title = entity.Title,
-                    AuthorId = entity.AuthorId,
+                    PublisherId = entity.PublisherId,
                 });
+                book.Authors.Add(author);
+                await bookRepository.Update(book);
                 return TypedResults.Ok(new BookView(
                     book.Id,
                     book.Title,
-                    new AuthorInternal(
+                    [new AuthorInternal(
                         author.Id,
                         author.FirstName,
                         author.LastName,
                         author.Email
+                    )],
+                    new PublisherInternal(
+                        publisher.Id,
+                        publisher.Name
                     )
                 ));
             }
@@ -59,12 +66,17 @@ namespace exercise.webapi.Endpoints
                     return new BookView(
                         b.Id,
                         b.Title,
-                        new AuthorInternal(
-                            b.Author.Id,
-                            b.Author.FirstName,
-                            b.Author.LastName,
-                            b.Author.Email
-                        ));
+                        b.Authors.Select(author => new AuthorInternal(
+                            author.Id,
+                            author.FirstName,
+                            author.LastName,
+                            author.Email
+                        )),
+                        new PublisherInternal(
+                            b.Publisher.Id,
+                            b.Publisher.Name
+                        )
+                    );
                 }));
             }
             catch (Exception ex)
@@ -81,12 +93,17 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Ok(new BookView(
                     book.Id,
                     book.Title,
-                    new AuthorInternal(
-                        book.Author.Id,
-                        book.Author.FirstName,
-                        book.Author.LastName,
-                        book.Author.Email
-                )));
+                    book.Authors.Select(author => new AuthorInternal(
+                        author.Id,
+                        author.FirstName,
+                        author.LastName,
+                        author.Email
+                    )),
+                    new PublisherInternal(
+                        book.Publisher.Id,
+                        book.Publisher.Name
+                    )
+                ));
             }
             catch (IdNotFoundException ex)
             {
@@ -97,28 +114,28 @@ namespace exercise.webapi.Endpoints
                 return TypedResults.Problem(ex.Message);
             }
         }
-        public static async Task<IResult> UpdateBook(IRepository<Book> bookRepository, IRepository<Author> authorRepository, int id, BookPut entity)
+        public static async Task<IResult> UpdateBook(IRepository<Book> repository, int id, BookPut entity)
         {
             try
             {
-                Book book = await bookRepository.Get(id);
+                Book book = await repository.Get(id);
                 if (entity.Title != null) book.Title = entity.Title;
-                if (entity.AuthorId != null)
-                {
-                    Author author = await authorRepository.Get(entity.AuthorId.Value);
-                    book.AuthorId = author.Id;
-                }
 
-                Book b = await bookRepository.Update(book);
+                book = await repository.Update(book);
                 return TypedResults.Ok(new BookView(
-                    b.Id,
-                    b.Title,
-                    new AuthorInternal(
-                        b.Author.Id,
-                        b.Author.FirstName,
-                        b.Author.LastName,
-                        b.Author.Email
-                )));
+                    book.Id,
+                    book.Title,
+                    book.Authors.Select(author => new AuthorInternal(
+                        author.Id,
+                        author.FirstName,
+                        author.LastName,
+                        author.Email
+                    )),
+                    new PublisherInternal(
+                        book.Publisher.Id,
+                        book.Publisher.Name
+                    )
+                ));
             }
             catch (IdNotFoundException ex)
             {

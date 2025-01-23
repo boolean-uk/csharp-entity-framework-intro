@@ -27,14 +27,14 @@ namespace exercise.webapi.Repository
 
         public async Task<Author> Get(int id)
         {
-            Author? author = await _db.Authors.Include(a => a.Books).SingleOrDefaultAsync(x => x.Id == id);
+            Author? author = await _db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).SingleOrDefaultAsync(x => x.Id == id);
             if (author == null) throw new IdNotFoundException("The provided author Id does not exist!");
             return author;
         }
 
         public async Task<IEnumerable<Author>> GetAll()
         {
-            return await _db.Authors.Include(a => a.Books).ToListAsync();
+            return await _db.Authors.Include(a => a.Books).ThenInclude(b => b.Publisher).ToListAsync();
         }
 
         public async Task<Author> Update(Author entity)

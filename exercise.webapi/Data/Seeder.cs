@@ -79,12 +79,15 @@ namespace exercise.webapi.Data
 
         private List<Author> _authors = new List<Author>();
         private List<Book> _books = new List<Book>();
+        private List<Publisher> _publishers = new List<Publisher>();
+        private List<AuthorBook> _authorBooks = new List<AuthorBook>();
 
         public Seeder()
         {
 
             Random authorRandom = new Random();
             Random bookRandom = new Random();
+            Random publisherRandom = new Random();
 
 
 
@@ -98,20 +101,49 @@ namespace exercise.webapi.Data
                 _authors.Add(author);
             }
 
+            for (int y = 1; y < 250; y++)
+            {
+                Publisher publisher = new Publisher();
+                publisher.Id = y;
+                publisher.Name = $"{_lastnames[publisherRandom.Next(_lastnames.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
+                _publishers.Add(publisher);
+            }
 
+
+            HashSet<Tuple<int, int>> authorBookSet = new HashSet<Tuple<int, int>>();
             for (int y = 1; y < 250; y++)
             {
                 Book book = new Book();
                 book.Id = y;
                 book.Title = $"{_firstword[bookRandom.Next(_firstword.Count)]} {_secondword[bookRandom.Next(_secondword.Count)]} {_thirdword[bookRandom.Next(_thirdword.Count)]}";
-                book.AuthorId = _authors[authorRandom.Next(_authors.Count)].Id;
-                //book.Author = authors[book.AuthorId-1];
+                book.PublisherId = _publishers[publisherRandom.Next(_publishers.Count)].Id;
+                AuthorBook authorBook = new AuthorBook();
+                var ids = new Tuple<int, int>(book.Id, _authors[authorRandom.Next(_authors.Count)].Id);
+                // Horrible stuff, cant be bothered to do better.
+                while (authorBookSet.Contains(ids)) ids = new Tuple<int, int>(book.Id, _authors[authorRandom.Next(_authors.Count)].Id);
+                authorBookSet.Add(ids);
+                authorBook.BookId = ids.Item1;
+                authorBook.AuthorId = ids.Item2;
+                _authorBooks.Add(authorBook);
                 _books.Add(book);
+            }
+
+            for (int y = 1; y < 250; y++)
+            {
+                AuthorBook authorBook = new AuthorBook();
+                var ids = new Tuple<int, int>(_books[bookRandom.Next(_books.Count)].Id, _authors[authorRandom.Next(_authors.Count)].Id);
+                if (authorBookSet.Contains(ids)) continue;
+                authorBookSet.Add(ids);
+                authorBook.BookId = ids.Item1;
+                authorBook.AuthorId = ids.Item2;
+                _authorBooks.Add(authorBook);
             }
 
 
         }
         public List<Author> Authors { get { return _authors; } }
         public List<Book> Books { get { return _books; } }
+        public List<Publisher> Publishers { get { return _publishers; } }
+        public List<AuthorBook> AuthorBooks { get { return _authorBooks; } }
     }
 }

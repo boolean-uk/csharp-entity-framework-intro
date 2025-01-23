@@ -1,7 +1,9 @@
 ﻿namespace exercise.webapi.DTO
 {
-    public record BookPost(string Title, int AuthorId);
-    public record BookPut(string? Title, int? AuthorId);
-    public record BookView(int Id, string Title, AuthorInternal Author);
+    public record BookPost(string Title, int AuthorId, int PublisherId);
+    public record BookPut(string? Title);
+    public record BookView(int Id, string Title, IEnumerable<AuthorInternal> Authors, PublisherInternal Publisher);
     public record BookInternal(int Id, string Title);
+    public record BookInternalPublisher(int Id, string Title, PublisherInternal Publisher);
+    public record BookInternalAuthor(int Id, string Title, IEnumerable<AuthorInternal> Authors);
 }
