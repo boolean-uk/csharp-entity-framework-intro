@@ -1,9 +1,21 @@
 # C# Entity Framework Intro
 
-1. Fork this repository
-2. Clone your fork to your machine
-3. Open the ef.intro.sln in Visual Studio
+## Completed
+Completed everything but super extensions. To run the project, make sure to
+update / create an appsettings.json with a connection string. E.g.
 
+<code>
+"ConnectionStrings": {
+        "DefaultConnectionString": "Host=your; Database=values; Username=goes; Password=here;"
+}
+</code>
+
+Then run migrations and update the database. Test the endpoints in scalar or swagger.
+(I recommend scalar)
+
+1. `add-migration init`
+1. `update-database init`
+1. Start the project
 ## Setup
 
 
