@@ -28,11 +28,10 @@ namespace exercise.webapi.Endpoints
                 {
                     Name = $"{x.FirstName} {x.LastName}",
                     Email = x.Email,
-                    Books = x.Books.Select(b => new BookDTO
+                    Books = x.Books.Select(b => new AuthorWithBooks
                     {
                         Title = b.Title,
-                        AuthorName = $"{b.Author.FirstName} {b.Author.LastName}",
-                        AuthorEmail = b.Author.Email
+                        PublisherName = b.Publisher.Name,
                     }).ToList()
 
                 }).ToList();
@@ -63,7 +62,7 @@ namespace exercise.webapi.Endpoints
             {
                 Name = $"{author.FirstName} {author.LastName}",
                 Email = author.Email,
-                Books = author.Books.Select(b => new BookDTO
+                Books = author.Books.Select(b => new AuthorWithBooks
                 {
                     Title = b.Title,
                     PublisherName = b.Publisher.Name

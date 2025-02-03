@@ -3,6 +3,7 @@ using exercise.webapi.DTO;
 using exercise.webapi.Models;
 using exercise.webapi.Repository;
 using exercise.webapi.ViewModels;
+using Mapster;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -29,11 +30,10 @@ namespace exercise.webapi.Endpoints
             try
             {
                 var books = await repository.GetAllBooks();
-                var bookDto = books.Select(b => new BookDTO
+                var bookDto = books.Select(b => new BookResponse
                 {
                     Title = b.Title,
                     AuthorName = $"{b.Author.FirstName} {b.Author.LastName}",
-                    AuthorEmail = b.Author.Email,
                     PublisherName = b.Publisher.Name}).ToList();
 
 
@@ -56,23 +56,12 @@ namespace exercise.webapi.Endpoints
             var book = await repository.GetBookById(id);
             if (book == null)
             {
-
                 return TypedResults.NotFound("Book not found");
 
             }
+            var response = book.Adapt<BookResponse>(); 
 
-            var bookDto = new BookDTO
-            { 
-                Title = book.Title,
-                AuthorEmail = book.Author.Email,
-                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}",    
-                PublisherName = book.Publisher.Name
-              
-                
-            
-            };
-
-            return TypedResults.Ok(bookDto);
+            return TypedResults.Ok(response);
 
         }
 
@@ -96,27 +85,30 @@ namespace exercise.webapi.Endpoints
             
             }
 
+            Console.WriteLine("Debug:" + author);
+
             Book book = new Book()
             {
                 Title = model.Title,
                 AuthorId = author.Id,
                 PublisherId = publisher.Id,
                 Author = author,
-                Publisher = publisher
+                Publisher = publisher,
+
+                
             };
 
             // Save the book to the repository
             await bookRepository.CreateBook(book);
 
-            var bookDto = new BookDTO
+            var response = new BookResponse
             {
                 Title = book.Title,
                 AuthorName = $"{book.Author.FirstName} {book.Author.LastName}",
-                AuthorEmail = book.Author.Email,
                 PublisherName = book.Publisher.Name
             };
 
-            return TypedResults.Created($"/neondb/books/{book.Id}", bookDto);
+            return TypedResults.Created($"/neondb/books/{book.Id}", response);
         }
 
 
