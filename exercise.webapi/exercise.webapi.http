@@ -1,6 +1,52 @@
 @exercise.webapi_HostAddress = http://localhost:5201
 
-GET {{exercise.webapi_HostAddress}}/weatherforecast/
+GET {{exercise.webapi_HostAddress}}/Authors/
+Accept: application/json
+
+###
+
+GET {{exercise.webapi_HostAddress}}/Books/
+Accept: application/json
+
+###
+
+GET {{exercise.webapi_HostAddress}}/Authors/245
+Accept: application/json
+
+###
+
+GET {{exercise.webapi_HostAddress}}/Books/250/
+Accept: application/json
+
+###
+
+
+POST {{exercise.webapi_HostAddress}}/Books/
+Content-Type: application/json
+{
+    "title": "Me",
+    "authorId": 24
+}
+###
+
+PUT {{exercise.webapi_HostAddress}}/Books/250
+Content-Type: application/json
+{
+    "authorId": 245
+}
+###
+
+GET {{exercise.webapi_HostAddress}}/Books/1/
+Accept: application/json
+
+###
+
+DELETE {{exercise.webapi_HostAddress}}/Books/4
+Accept: application/json
+
+###
+
+GET {{exercise.webapi_HostAddress}}/Books/4/
 Accept: application/json
 
 ###
